@@ -300,8 +300,9 @@ const getFlagCountry = country => {
               cols="12"
               md="6"
             >
-                <AppTextField
+              <AppTextField
                 v-model="billingAddress.phone"
+                type="tel"
                 label="Teléfono"
                 placeholder="+57 23 456 7890"
                 :rules="[requiredValidator, phoneValidator]"

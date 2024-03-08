@@ -1,6 +1,6 @@
 <script setup>
 
-import { emailValidator, requiredValidator, phoneValidator } from '@/@core/utils/validators'
+import { emailValidator, requiredValidator } from '@/@core/utils/validators'
 import { useUsersStores } from '@/stores/useUsers'
 import { useStatesStores } from '@/stores/useStates'
 import { useCitiesStores } from '@/stores/useCities'
@@ -47,10 +47,11 @@ const email = ref('')
 const name = ref('')
 const password = ref('')
 const last_name = ref('')
-const phone = ref('')
-const address = ref('')
-const document = ref('')
-const gender_id = ref('')
+const phone = ref('----')
+const address = ref('----')
+const document = ref('----')
+const gender_id = ref('Masculino')
+const genderOld_id = ref(1)
 const state_id = ref('')
 const city_id = ref('')
 const municipality_id = ref('')
@@ -162,9 +163,10 @@ const closeUserCreateDialog  = function(){
     name.value = ''
     password.value = ''
     last_name.value = ''
-    phone.value = ''
-    address.value = ''
-    document.value = ''
+    phone.value = '----'
+    address.value = '----'
+    gender_id.value = 'Masculino'
+    document.value = '----'
     assignedRoles.value = []
   })
 }
@@ -174,18 +176,14 @@ const onSubmitCreate = () => {
     if (isValid) {
       
       let data = {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-            last_name: last_name.value,
-            phone: phone.value,
-            address: address.value,
-            document: document.value,
-            gender_id: gender_id.value,
-            parish_id: parish_id.value,
-            city_id: city_id.value,
-            roles: assignedRoles.value
-        }
+        name: name.value,
+        email: email.value,
+        password: password.value,
+        last_name: last_name.value,
+        parish_id: parish_id.value,
+        city_id: city_id.value,
+        roles: assignedRoles.value
+      }
 
       usersStores.addUser(data)
         .then(response => {
@@ -208,9 +206,10 @@ const onSubmitCreate = () => {
             name.value = ''
             password.value = ''
             last_name.value = ''
-            phone.value = ''
-            address.value = ''
-            document.value = ''
+            phone.value = '----'
+            address.value = '----'
+            gender_id.value = 'Masculino'
+            document.value = '----'
             assignedRoles.value = []
           })
 
@@ -317,27 +316,29 @@ const onSubmitCreate = () => {
               <VCol cols="12" md="6" >
                 <VTextField
                   v-model="phone"
+                  type="tel"
                   label="Teléfono"
                   placeholder="+(XX) XXXXXXXXX"
-                  :rules="[requiredValidator, phoneValidator]"
+                  disabled
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VAutocomplete
                   v-model="gender_id"
                   label="Género"
-                  :rules="[requiredValidator]"
                   :items="listGenders"
                   item-title="name"
                   item-value="id"
                   :menu-props="{ maxHeight: '200px' }"
+                  disabled
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="document"
+                  type="tel"
                   label="Cédula"
-                  :rules="[requiredValidator, phoneValidator]"
+                  disabled
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -385,7 +386,7 @@ const onSubmitCreate = () => {
                   v-model="address"
                   rows="3"
                   label="Dirección"
-                  :rules="[requiredValidator]"
+                  disabled
                 />
               </VCol>
               <VCol cols="12">

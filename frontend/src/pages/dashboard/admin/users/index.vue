@@ -393,7 +393,7 @@ const downloadCSV = async () => {
 
                 <!-- 👉 phone -->
                   <td>
-                  {{ user.user_detail.phone }}
+                  {{ user.user_detail.phone ?? '----' }}
                 </td>
                 <!-- 👉 acciones -->
                 <td style="width: 8rem;">

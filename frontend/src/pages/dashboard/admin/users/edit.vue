@@ -336,6 +336,7 @@ const getFlagCountry = country => {
                           md="6"
                         >
                           <VTextField
+                            type="tel"
                             v-model="document"
                             label="Cédula"
                           />

@@ -44,22 +44,11 @@ class UserDetails extends Model
             [    'user_id' => $user->id ],
             [
                 'city_id' => $request->city_id,
-                'gender_id' => $request->gender_id,
+                'gender_id' => $request->gender_id ?? null,
                 'parish_id' => $request->parish_id,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'document' => $request->document
-            ]
-        );
-
-        return $userD;
-    }
-
-    public static function updateOrCreatePhone($request, $user) {
-        $userD = UserDetails::updateOrCreate(
-            [    'user_id' => $user->id ],
-            [
-                'phone' => $request->phone
+                'phone' => $request->phone ?? null,
+                'address' => $request->address ?? null,
+                'document' => $request->document ?? null
             ]
         );
 
