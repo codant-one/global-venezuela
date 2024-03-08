@@ -52,13 +52,7 @@ class UserRequest extends FormRequest
                 'integer',
                 'required',
                 'exists:App\Models\Parish,id'
-            ],
-            'phone' => [
-                'required'
-            ],
-            'address' => [
-                'required'
-            ]         
+            ]    
         ];
     }
 
@@ -76,9 +70,7 @@ class UserRequest extends FormRequest
             'roles.exists' => 'El rol ingresado no existe.',
             'parish_id.required' => 'La parroquia es requerida.',
             'parish_id.integer' => 'El formato de parroquia debe ser entero.',
-            'parish_id.exists' => 'La parroquia ingresada no existe.',
-            'phone.required' => 'El teléfono es requerido.',
-            'address.required' => 'La dirección es requerida.'
+            'parish_id.exists' => 'La parroquia ingresada no existe.'
         ];
     }
 

@@ -124,8 +124,8 @@ async function fetchData() {
 
     avatarOld.value = data.user_details?.avatar
 
-    genderOld_id.value = data.user_details?.gender.id
-    gender_id.value = data.user_details?.gender.name
+    genderOld_id.value = data.user_details?.gender?.id
+    gender_id.value = data.user_details?.gender?.name
 
     stateOld_id.value = data.user_details?.parish.municipality.state.id
     state_id.value = data.user_details?.parish.municipality.state.name
@@ -469,6 +469,7 @@ const blobToBase64 = blob => {
                 >
                   <VTextField
                     v-model="phone"
+                    type="tel"
                     label="Teléfono"
                     placeholder="+(XX) XXXXXXXXX"
                     :rules="[phoneValidator, requiredValidator]"
@@ -488,8 +489,9 @@ const blobToBase64 = blob => {
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="document_"
+                    type="tel"
                     label="Cédula"
-                    :rules="[requiredValidator]"
+                    :rules="[requiredValidator, phoneValidator]"
                   />
                 </VCol>
                 <VCol cols="12" md="6">

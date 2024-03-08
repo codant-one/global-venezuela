@@ -15,9 +15,9 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('parish_id');
             $table->unsignedBigInteger('city_id')->nullable();
-            $table->unsignedBigInteger('gender_id');
+            $table->unsignedBigInteger('gender_id')->nullable();
             $table->string('document')->nullable();
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->timestamps();
 

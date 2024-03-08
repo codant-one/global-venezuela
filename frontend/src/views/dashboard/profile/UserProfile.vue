@@ -555,8 +555,9 @@ const closeUserEditDialog = ()=>{
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="document"
+                    type="tel"
                     label="Cédula"
-                    :rules="[requiredValidator]"
+                    :rules="[requiredValidator, phoneValidator]"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
