@@ -337,7 +337,7 @@ const onSubmitCreate = () => {
                 <VTextField
                   v-model="document"
                   label="Cédula"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, phoneValidator]"
                 />
               </VCol>
               <VCol cols="12" md="6">

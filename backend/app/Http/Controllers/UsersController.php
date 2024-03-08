@@ -100,7 +100,8 @@ class UsersController extends Controller
             $info = [
                 'title' => 'Cuenta creada satisfactoriamente!!!',
                 'user' => $user->name . ' ' . $user->last_name,
-                'email'=> $user->email,
+                'username' => $user->email,
+                'email' => 'emails.auth.user_created',
                 'password' => $request->password,
                 'text' => 'Tu cuenta no está verificada. Confirma tu cuenta con los pasos a seguir para verificarla.',
                 'buttonLink' =>  env('APP_DOMAIN').'/register-confirm?token=' . $registerConfirm['token'],
@@ -108,12 +109,12 @@ class UsersController extends Controller
                 'subject' => 'Bienvenido a VENEZUELA GLOBAL',
             ];
             
-            $responseMail = $this->sendMail($user->id, $info); 
+            $this->sendMail($user->id, $info); 
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'user' => $user
+                    'user' => User::with(['roles', 'userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender'])->find($user->id)
                 ]
             ], 200);
         
@@ -358,6 +359,8 @@ class UsersController extends Controller
             'title' => $info['title']?? null,
             'user' => $user->name . ' ' . $user->last_name,
             'text' => $info['text'] ?? null,
+            'username' => $info['username'] ?? null,
+            'password' => $info['password'] ?? null,
             'buttonLink' =>  $info['buttonLink'] ?? null,
             'buttonText' =>  $info['buttonText'] ?? null
         ];

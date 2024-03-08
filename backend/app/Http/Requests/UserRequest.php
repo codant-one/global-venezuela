@@ -26,7 +26,7 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        Log::info($this->user);
+        // Log::info($this->user);
 
         return [
             'name' => [
