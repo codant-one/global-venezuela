@@ -35,7 +35,6 @@ const listParishesByMunicipalities = ref([])
 const refVForm = ref()
 const user_id = ref('')
 const email = ref('')
-const username = ref('')
 const name = ref('')
 const last_name = ref('')
 const phone = ref('')
@@ -117,7 +116,6 @@ async function fetchData() {
     
     user_id.value = data.id
     email.value = data.email
-    username.value = data.username
     name.value = data.name
     last_name.value = data.last_name
     phone.value = data.user_details?.phone
@@ -220,7 +218,6 @@ const onSubmit = () =>{
       
       formData.append('user_id', user_id.value)
       formData.append('email', email.value)
-      formData.append('username', username.value)
       formData.append('name', name.value)
       formData.append('last_name', last_name.value)
       formData.append('phone', phone.value)

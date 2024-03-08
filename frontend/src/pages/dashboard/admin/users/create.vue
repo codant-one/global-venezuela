@@ -2,8 +2,11 @@
 
 import { emailValidator, requiredValidator, phoneValidator } from '@/@core/utils/validators'
 import { useUsersStores } from '@/stores/useUsers'
-import { useCountriesStores } from '@/stores/useCountries'
-import { useProvincesStores } from '@/stores/useProvinces'
+import { useStatesStores } from '@/stores/useStates'
+import { useCitiesStores } from '@/stores/useCities'
+import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
+import { useParishesStores } from '@/stores/useParishes'
+import { useGendersStores } from '@/stores/useGenders'
 
 const props = defineProps({
   rolesList: {
@@ -20,8 +23,21 @@ const emit = defineEmits([
 ])
 
 const usersStores = useUsersStores()
-const countriesStores = useCountriesStores()
-const provincesStores = useProvincesStores()
+const statesStores = useStatesStores()
+const citiesStores = useCitiesStores()
+const municipalitiesStores = useMunicipalitiesStores()
+const parishesStores = useParishesStores()
+const gendersStores = useGendersStores()
+
+const listStates = ref([])
+const listCities = ref([])
+const listMunicipalities = ref([])
+const listParishes = ref([])
+const listGenders = ref([])
+
+const listCitiesByStates = ref([])
+const listMunicipalitiesByStates = ref([])
+const listParishesByMunicipalities = ref([])
 
 const refFormCreate = ref()
 
@@ -33,10 +49,12 @@ const password = ref('')
 const last_name = ref('')
 const phone = ref('')
 const address = ref('')
-const username = ref('')
 const document = ref('')
-const province_id = ref('')
-const country_id = ref('Colombia')
+const gender_id = ref('')
+const state_id = ref('')
+const city_id = ref('')
+const municipality_id = ref('')
+const parish_id = ref('')
 const assignedRoles = ref([])
 
 const advisor = ref({
@@ -45,47 +63,93 @@ const advisor = ref({
   show: false
 })
 
-const listCountries = ref([])
-const listProvinces = ref([])
-const listProvincesByCountry = ref([])
-
-const getProvinces = computed(() => {
-  return listProvincesByCountry.value.map((province) => {
+const getCities = computed(() => {
+  return listCitiesByStates.value.map((state) => {
     return {
-      title: province.name,
-      value: province.id,
+      title: state.name,
+      value: state.id,
     }
   })
 })
 
-const selectCountry = country => {
-  if (country) {
-    let _country = listCountries.value.find(item => item.name === country)
-    country_id.value = _country.name
- 
-    province_id.value = ''
-    listProvincesByCountry.value = listProvinces.value.filter(item => item.country_id === _country.id)
-  }
-}
+const getMunicipalities = computed(() => {
+  return listMunicipalitiesByStates.value.map((state) => {
+    return {
+      title: state.name,
+      value: state.id,
+    }
+  })
+})
+
+const getParishes = computed(() => {
+  return listParishesByMunicipalities.value.map((municipality) => {
+    return {
+      title: municipality.name,
+      value: municipality.id,
+    }
+  })
+})
 
 onMounted(async () => {
 
-    await countriesStores.fetchCountries();
-    await provincesStores.fetchProvinces();
-
-    loadCountries()
-    loadProvinces()
-
-    selectCountry('Colombia')
+  await statesStores.fetchStates();
+  await citiesStores.fetchCities();
+  await municipalitiesStores.fetchMunicipalities();
+  await parishesStores.fetchParishes();
+  await gendersStores.fetchGenders();
+  
+  loadStates()
+  loadCities()
+  loadMunicipalities()
+  loadParishes()
+  loadGenders()
 
 })
 
-const loadCountries = () => {
-  listCountries.value = countriesStores.getCountries
+
+const loadStates = () => {
+  listStates.value = statesStores.getStates
 }
 
-const loadProvinces = () => {
-  listProvinces.value = provincesStores.getProvinces
+const loadCities = () => {
+  listCities.value = citiesStores.getCities
+}
+
+const loadMunicipalities = () => {
+  listMunicipalities.value = municipalitiesStores.getMunicipalities
+}
+
+const loadParishes = () => {
+  listParishes.value = parishesStores.getParishes
+}
+
+const loadGenders = () => {
+  listGenders.value = gendersStores.getGenders
+}
+
+const selectState = state => {
+  if (state) {
+    let _state = listStates.value.find(item => item.name === state)
+    state_id.value = _state.name
+ 
+    city_id.value = ''
+    municipality_id.value = ''
+
+    listCitiesByStates.value = listCities.value.filter(item => item.state_id === _state.id)
+    listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
+  }
+}
+
+const selectMunicipalities = municipality => {
+  if (municipality) {
+    let _municipality = listMunicipalities.value.find(item => item.id === municipality)
+    municipality_id.value = _municipality.name
+ 
+    parish_id.value = ''
+
+    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
+
+  }
 }
 
 const closeUserCreateDialog  = function(){
@@ -100,10 +164,7 @@ const closeUserCreateDialog  = function(){
     last_name.value = ''
     phone.value = ''
     address.value = ''
-    username.value = ''
     document.value = ''
-    province_id.value = ''
-    country_id.value = ''
     assignedRoles.value = []
   })
 }
@@ -119,9 +180,10 @@ const onSubmitCreate = () => {
             last_name: last_name.value,
             phone: phone.value,
             address: address.value,
-            username: username.value,
             document: document.value,
-            province_id: province_id.value,
+            gender_id: gender_id.value,
+            parish_id: parish_id.value,
+            city_id: city_id.value,
             roles: assignedRoles.value
         }
 
@@ -148,10 +210,7 @@ const onSubmitCreate = () => {
             last_name.value = ''
             phone.value = ''
             address.value = ''
-            username.value = ''
             document.value = ''
-            province_id.value = ''
-            country_id.value = ''
             assignedRoles.value = []
           })
 
@@ -193,16 +252,6 @@ const onSubmitCreate = () => {
   })
 }
 
-const getFlagCountry = country => {
-  let val = listCountries.value.find(item => {
-    return item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === country.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-  })
-
-  if(val)
-    return 'https://hatscripts.github.io/circle-flags/flags/'+val.iso.toLowerCase()+'.svg'
-  else
-    return ''
-}
 </script>
 
 <template>
@@ -257,13 +306,6 @@ const getFlagCountry = country => {
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
-                  v-model="username"
-                  label="Username"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
                   v-model="password"
                   label="Contraseña"
                   :type="isPasswordVisible ? 'text' : 'password'"
@@ -275,48 +317,19 @@ const getFlagCountry = country => {
               <VCol cols="12" md="6" >
                 <VTextField
                   v-model="phone"
-                  Label="Telefono"
+                  label="Teléfono"
                   placeholder="+(XX) XXXXXXXXX"
                   :rules="[requiredValidator, phoneValidator]"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
-                  v-model="address"
-                  label="Direccion"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
                 <VAutocomplete
-                  v-model="country_id"
-                  label="País"
+                  v-model="gender_id"
+                  label="Género"
                   :rules="[requiredValidator]"
-                  :items="listCountries"
+                  :items="listGenders"
                   item-title="name"
-                  item-value="name"
-                  :menu-props="{ maxHeight: '200px' }"
-                  @update:model-value="selectCountry"
-                >
-                  <template
-                    v-if="country_id"
-                    #prepend
-                    >
-                    <VAvatar
-                      start
-                      style="margin-top: -8px;"
-                      size="36"
-                      :image="getFlagCountry(country_id)"
-                    />
-                  </template>
-                </VAutocomplete>
-              </VCol>
-              <VCol cols="12" md="6">
-                <v-autocomplete
-                  v-model="province_id"
-                  label="Estado"
-                  :rules="[requiredValidator]"
-                  :items="getProvinces"
+                  item-value="id"
                   :menu-props="{ maxHeight: '200px' }"
                 />
               </VCol>
@@ -324,6 +337,55 @@ const getFlagCountry = country => {
                 <VTextField
                   v-model="document"
                   label="Cédula"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="state_id"
+                  label="Estado"
+                  :rules="[requiredValidator]"
+                  :items="listStates"
+                  item-title="name"
+                  item-value="name"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @update:model-value="selectState"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="city_id"
+                  label="Ciudad"
+                  :rules="[requiredValidator]"
+                  :items="getCities"
+                  :menu-props="{ maxHeight: '200px' }"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="municipality_id"
+                  label="Municipio"
+                  :rules="[requiredValidator]"
+                  :items="getMunicipalities"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @update:model-value="selectMunicipalities"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="parish_id"
+                  label="Parroquia"
+                  :rules="[requiredValidator]"
+                  :items="getParishes"
+                  :menu-props="{ maxHeight: '200px' }"
+                />
+              </VCol>
+              <VCol cols="12" md="12">
+                <VTextarea
+                  v-model="address"
+                  rows="3"
+                  label="Dirección"
+                  :rules="[requiredValidator]"
                 />
               </VCol>
               <VCol cols="12">
@@ -340,7 +402,7 @@ const getFlagCountry = country => {
                  />
               </VCol>
             </VRow>
-            <VCardText class="d-flex justify-end gap-3 flex-wrap">
+            <VCardText class="d-flex justify-end gap-3 flex-wrap px-0">
               <VBtn
                 color="secondary"
                 variant="tonal"

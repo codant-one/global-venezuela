@@ -7,12 +7,14 @@ use App\Http\Requests\UserRequest;
 
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserRegisterToken;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 
 class UsersController extends Controller
@@ -35,7 +37,7 @@ class UsersController extends Controller
             
             $limit = $request->has('limit') ? $request->limit : 10;;
 
-            $query = User::with(['roles','userDetail'])
+            $query = User::with(['roles', 'userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender'])
                          ->whereHas('roles', function ($query) {
                             $query->where('name', 'SuperAdmin')
                                   ->orWhere('name', 'Administrador');
@@ -87,6 +89,26 @@ class UsersController extends Controller
         try{
             
             $user = User::createUser($request);
+            $user->syncRoles($request->roles);
+
+            //Crear o Actualizar token.
+            $registerConfirm = UserRegisterToken::updateOrCreate(
+                ['user_id' => $user->id],
+                ['token' => Str::random(60)]
+            );
+
+            $info = [
+                'title' => 'Cuenta creada satisfactoriamente!!!',
+                'user' => $user->name . ' ' . $user->last_name,
+                'email'=> $user->email,
+                'password' => $request->password,
+                'text' => 'Tu cuenta no está verificada. Confirma tu cuenta con los pasos a seguir para verificarla.',
+                'buttonLink' =>  env('APP_DOMAIN').'/register-confirm?token=' . $registerConfirm['token'],
+                'buttonText' => 'Confirmar',
+                'subject' => 'Bienvenido a VENEZUELA GLOBAL',
+            ];
+            
+            $responseMail = $this->sendMail($user->id, $info); 
 
             return response()->json([
                 'success' => true,
@@ -122,6 +144,8 @@ class UsersController extends Controller
                 ], 404);
 
             $user->updateUser($request, $user); 
+            $user->roles()->detach();
+            $user->syncRoles($request->roles);
 
             return response()->json([
                 'success' => true,
@@ -156,7 +180,7 @@ class UsersController extends Controller
                 ], 404);
             
             $user->deleteUser($id);
-
+                        
             return response()->json([
                 'success' => true,
                 'data' => [ 
@@ -181,7 +205,7 @@ class UsersController extends Controller
 
         try {
 
-            $user = Auth::user()->load(['userDetail']);
+            $user = Auth::user()->load(['userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender']);
             $user->updateProfile($request, $user);
 
             if ($request->hasFile('image')) {
@@ -195,7 +219,7 @@ class UsersController extends Controller
                 $user->update();
             } 
 
-            $userData = getUserData($user->load(['userDetail']));
+            $userData = getUserData($user->load(['userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender']));
 
             return response()->json([
                 'success' => true,
@@ -233,7 +257,7 @@ class UsersController extends Controller
 
         try {
 
-            $user = Auth::user()->load(['userDetail']);
+            $user = Auth::user()->load(['userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender']);
             $user->password = Hash::make($request->password);
             $user->save();
 
@@ -272,7 +296,7 @@ class UsersController extends Controller
 
         try {
 
-            $user = User::with(['userDetail'])->find($id);
+            $user = User::with(['userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender'])->find($id);
         
             if (!$user)
                 return response()->json([
@@ -324,5 +348,38 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
+    private function sendMail($id, $info ){
+
+        $user = User::find($id);
+        $response = [];
+
+        $data = [
+            'title' => $info['title']?? null,
+            'user' => $user->name . ' ' . $user->last_name,
+            'text' => $info['text'] ?? null,
+            'buttonLink' =>  $info['buttonLink'] ?? null,
+            'buttonText' =>  $info['buttonText'] ?? null
+        ];
+
+        $email = $user->email;
+        $subject = $info['subject'];
+        
+        try {
+            \Mail::send($info['email'], $data, function ($message) use ($email, $subject) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                    $message->to($email)->subject($subject);
+            });
+
+            $response['success'] = true;
+            $response['message'] = "Tu solicitud se ha procesado satisfactoriamente.";
+        } catch (\Exception $e){
+            $response['success'] = false;
+            $response['message'] = "Ocurrió un error, no se pudo enviar el correo electrónico. ".$e;
+        }        
+
+        return $response;
+
+    } 
 
 }

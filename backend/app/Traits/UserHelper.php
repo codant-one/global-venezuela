@@ -36,7 +36,7 @@ trait UserHelper
     public static function updateProfile($request, $user) {
         $user->update([
             'last_name' => $request->last_name,
-            'username' => $request->username,
+            'username' => Str::slug($user->name . ' ' . $request->last_name . ' ' . $user->id),
             'full_profile' => true
         ]);
 
@@ -49,7 +49,7 @@ trait UserHelper
         $user = self::create([
             'name' => $request->name,
             'last_name' =>  $request->last_name,
-            'username' => Str::slug($request->name . ' ' . $request->last_name),
+            'username' => Str::slug($request->name . ' ' . $request->last_name . ' ' . rand(1,100)),
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
@@ -63,7 +63,6 @@ trait UserHelper
         $user->update([
             'name' => $request->name,
             'last_name' =>  $request->last_name,
-            'username' => Str::slug($request->name . ' ' . $request->last_name),
             'email' => $request->email
         ]);
         

@@ -63,7 +63,6 @@ const userData = ref(props.user)
 const user_id = ref('')
 const email = ref('')
 const name = ref('')
-const username = ref('')
 const last_name = ref('')
 const phone = ref('')
 const address = ref('')
@@ -137,7 +136,6 @@ async function fetchData() {
 
     user_id.value = userData.value.id
     email.value = userData.value.email
-    username.value = userData.value.username
     name.value = userData.value.name
     last_name.value = userData.value.last_name ?? ''
     phone.value = userData.value.user_details?.phone
@@ -206,7 +204,6 @@ const onSubmit = () =>{
       
             formData.append('user_id', user_id.value)
             formData.append('email', email.value)
-            formData.append('username', username.value)
             formData.append('name', name.value)
             formData.append('last_name', last_name.value)
             formData.append('phone', phone.value)
@@ -339,14 +336,6 @@ const closeUserEditDialog = ()=>{
                     Email:
                     <span class="text-body-2">
                       {{ email }}
-                    </span>
-                  </h6>
-                </VListItemTitle>
-                <VListItemTitle>
-                  <h6 class="text-base font-weight-semibold">
-                    Username:
-                    <span class="text-body-2">
-                      {{ username }}
                     </span>
                   </h6>
                 </VListItemTitle>

@@ -53,10 +53,6 @@ class UserRequest extends FormRequest
                 'required',
                 'exists:App\Models\Parish,id'
             ],
-            'username' => [
-                'required',
-                Rule::unique('users', 'username')->ignore($this->user)
-            ],
             'phone' => [
                 'required'
             ],
@@ -81,8 +77,6 @@ class UserRequest extends FormRequest
             'parish_id.required' => 'La parroquia es requerida.',
             'parish_id.integer' => 'El formato de parroquia debe ser entero.',
             'parish_id.exists' => 'La parroquia ingresada no existe.',
-            'username.required' => 'El nombre de usuario es requerido.',
-            'username.unique' => 'Ya existe un usuario con el username ingresado.',
             'phone.required' => 'El teléfono es requerido.',
             'address.required' => 'La dirección es requerida.'
         ];

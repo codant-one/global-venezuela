@@ -1,6 +1,6 @@
 <script setup>
 
-// import create from './create.vue' 
+import create from './create.vue' 
 // import show from './show.vue' 
 // import password from './password.vue' 
 // import edit from './edit.vue'
@@ -66,7 +66,7 @@ const onlineList = () => {
 
 const searchRoles =() => {
   rolesStores.allRoles().then(response => {
-    const index = response.roles.indexOf('Cliente')
+    const index = response.roles.indexOf('SuperAdmin')
     
     if (index !== -1)
       response.roles.splice(index, 1);
@@ -203,10 +203,11 @@ const downloadCSV = async () => {
   usersStores.getUsers.forEach(element => {
     let data = {
       ID: element.id,
-      NOMBRE: element.name,
+      NOMBRE: element.name + ' ' + (element.last_name ?? ''),
       CORREO: element.email,
       ROLES: element.roles.map(e => e['name']).join(','),
-      USUARIO: element.username
+      ESTADO: element.user_detail.parish.municipality.state.name,
+      TELÉFONO: element.user_detail.phone
     }
         
     dataArray.push(data)
@@ -276,11 +277,11 @@ const downloadCSV = async () => {
             </div>
 
             <div class="me-3">
-              <!-- <create
+              <create
                 :rolesList="rolesList"
                 @close="roleUsers = []"
                 @data="fetchData"
-                @alert="showAlert"/> -->
+                @alert="showAlert"/>
             </div>
 
             <VSpacer />
@@ -322,7 +323,8 @@ const downloadCSV = async () => {
                 <th scope="col"> NOMBRE </th>
                 <th scope="col"> CORREO </th>
                 <th scope="col"> ROLES </th>
-                <th scope="col"> USUARIO </th>
+                <th scope="col"> ESTADO </th>
+                <th scope="col"> TELÉFONO </th>
                 <th scope="col" v-if="$can('ver','usuarios') || $can('editar','usuarios') || $can('eliminar','usuarios')">
                   Acciones 
                 </th>
@@ -365,7 +367,7 @@ const downloadCSV = async () => {
                       </VAvatar>
                     </VBadge>
                     <div class="ml-3 d-flex flex-column">
-                      {{ user.name }}
+                      {{ user.name }}  {{ user.last_name ?? '' }}
                     </div>
                   </div>
                 </td>
@@ -384,11 +386,15 @@ const downloadCSV = async () => {
                   </ul>
                 </td>
 
-                <!-- 👉 username -->
+                <!-- 👉 state -->
                 <td>
-                  {{ user.username }}
+                  {{ user.user_detail.parish.municipality.state.name }}
                 </td>
 
+                <!-- 👉 phone -->
+                  <td>
+                  {{ user.user_detail.phone }}
+                </td>
                 <!-- 👉 acciones -->
                 <td style="width: 8rem;">
                   <VBtn

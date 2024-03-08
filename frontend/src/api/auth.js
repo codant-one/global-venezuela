@@ -34,8 +34,12 @@ class Auth {
         return axios.get('auth/generateQR')
     }
 
-    store() {
-        return axios.get('auth/store')
+    findToken(token) {
+        return axios.get(`auth/find/${token}`)
+    }
+
+    completed(data) {
+        return axios.post('auth/completed', data)
     }
 
 }

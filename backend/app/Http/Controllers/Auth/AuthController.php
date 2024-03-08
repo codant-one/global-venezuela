@@ -25,7 +25,7 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware('jwt', ['except' => 
-            ['login', 'register', 'find']
+            ['login', 'register', 'find', 'completed']
         ]);
     }
 
@@ -269,6 +269,39 @@ class AuthController extends Controller
 
     }
 
+    public function completed(Request $request)
+    {
+        try {
+        
+            $emailConfirm = UserRegisterToken::where('token', $request->token)->first();
+            $user = User::where('id', $emailConfirm->user_id)->first();
+
+            if (!$user)
+                return response()->json([
+                    'success' => false,
+                    'feedback' => 'not_found',
+                    'message' => 'Cliente no registrado'
+                ], 404);
+
+            if ($user->email_verified_at == null) {
+                $user->email_verified_at = now();
+                $user->update();
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Tu solicitud se ha procesado satisfactoriamente. Correo electrónico verificado. Le invitamos a que inicie sesion',
+            ], 200);
+
+        } catch(\Illuminate\Database\QueryException $ex) {
+            return response()->json([
+                'success' => false,
+                'message' => 'database_error '.$ex->getMessage(),
+                'exception' => $ex->getMessage()
+            ], 500);
+        }
+    } 
+
     /**
      * Get the token array structure.
      *
@@ -288,34 +321,4 @@ class AuthController extends Controller
             'userAbilities' => $permissions
         ];
     }
-
-    private function sendMail($id, $info ){
-
-        $user = User::find($id);
-        
-        $data = [
-            'title' => $info['title'],
-            'user' => $user->name . ' ' . $user->last_name,
-            'text' => $info['text'],
-            'buttonLink' =>  $info['buttonLink'] ?? null,
-            'buttonText' =>  $info['buttonText'] ?? null
-        ];
-
-        $email = $user->email;
-        $subject = $info['subject'];
-        
-        try {
-            \Mail::send($info['email'], $data, function ($message) use ($email, $subject) {
-                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-                    $message->to($email)->subject($subject);
-            });
-
-            return "Tu solicitud se ha procesado satisfactoriamente. Correo electrónico verificado. Le invitamos a que inicie sesion.";
-        } catch (\Exception $e){
-            return "Error al enviar el correo electrónico. ".$e;
-        }        
-
-        return "";
-
-    } 
 }
