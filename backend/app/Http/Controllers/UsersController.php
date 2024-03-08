@@ -151,7 +151,7 @@ class UsersController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'user' => $user
+                    'user' => User::with(['roles', 'userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender'])->find($user->id)
                 ]
             ], 200);
 

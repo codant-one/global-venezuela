@@ -1,20 +1,30 @@
 <script setup>
 
 import create from './create.vue' 
-// import show from './show.vue' 
-// import password from './password.vue' 
-// import edit from './edit.vue'
-// import destroy from './destroy.vue'
+import show from './show.vue' 
+import password from './password.vue' 
+import edit from './edit.vue'
+import destroy from './destroy.vue'
 
 import { avatarText } from '@/@core/utils/formatters'
 
 import { useUsersStores } from '@/stores/useUsers'
 import { useRolesStores } from '@/stores/useRoles'
+import { useStatesStores } from '@/stores/useStates'
+import { useCitiesStores } from '@/stores/useCities'
+import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
+import { useParishesStores } from '@/stores/useParishes'
+import { useGendersStores } from '@/stores/useGenders'
 import { themeConfig } from '@themeConfig'
 import { excelParser } from '@/plugins/csv/excelParser'
 
 const usersStores = useUsersStores()
 const rolesStores = useRolesStores()
+const statesStores = useStatesStores()
+const citiesStores = useCitiesStores()
+const municipalitiesStores = useMunicipalitiesStores()
+const parishesStores = useParishesStores()
+const gendersStores = useGendersStores()
 
 const users = ref([])
 const searchQuery = ref('')
@@ -40,6 +50,12 @@ const userOnline = ref([])
 
 const isRequestOngoing = ref(true)
 
+const listStates = ref([])
+const listCities = ref([])
+const listMunicipalities = ref([])
+const listParishes = ref([])
+const listGenders = ref([])
+
 const advisor = ref({
   type: '',
   message: '',
@@ -47,6 +63,27 @@ const advisor = ref({
 })
 
 let interval = null
+
+const loadStates = () => {
+  listStates.value = statesStores.getStates
+}
+
+const loadCities = () => {
+  listCities.value = citiesStores.getCities
+}
+
+const loadMunicipalities = () => {
+  listMunicipalities.value = municipalitiesStores.getMunicipalities
+}
+
+const loadParishes = () => {
+  listParishes.value = parishesStores.getParishes
+}
+
+const loadGenders = () => {
+  listGenders.value = gendersStores.getGenders
+}
+
 
 const onlineList = () => {
   return new Promise((resolve, reject) => {
@@ -118,7 +155,21 @@ async function fetchData() {
 
   searchRoles()
   onlineList()
- 
+
+  if(listGenders.value.length === 0) {
+    await statesStores.fetchStates();
+    await citiesStores.fetchCities();
+    await municipalitiesStores.fetchMunicipalities();
+    await parishesStores.fetchParishes();
+    await gendersStores.fetchGenders();
+
+    loadStates()
+    loadCities()
+    loadMunicipalities()
+    loadParishes()
+    loadGenders()
+  }
+
   isRequestOngoing.value = false
 }
 
@@ -276,9 +327,14 @@ const downloadCSV = async () => {
               </VBtn>
             </div>
 
-            <div class="me-3">
+            <div class="me-3" v-if="listGenders.length > 0">
               <create
                 :rolesList="rolesList"
+                :states="listStates"
+                :cities="listCities"
+                :municipalities="listMunicipalities"
+                :parishes="listParishes"
+                :genders="listGenders"
                 @close="roleUsers = []"
                 @data="fetchData"
                 @alert="showAlert"/>
@@ -521,21 +577,33 @@ const downloadCSV = async () => {
             />
           </VCardText>
 
-          <!-- <show 
+          <show
+            v-if="listGenders.length > 0" 
             v-model:isDrawerOpen="isUserDetailDialog"
             :rolesList="rolesList"
             :user="selectedUser"
-            @close="roleUsers = []"/> -->
+            :states="listStates"
+            :cities="listCities"
+            :municipalities="listMunicipalities"
+            :parishes="listParishes"
+            :genders="listGenders"
+            @close="roleUsers = []"/>
 
-          <!-- <password
+          <password
             v-model:isDrawerOpen="isUserPasswordDialog"
             :user="selectedUser"
             @alert="showAlert"/>
 
           <edit 
+            v-if="listGenders.length > 0" 
             v-model:isDrawerOpen="isUserEditDialog"
             :rolesList="rolesList"
             :user="selectedUser"
+            :states="listStates"
+            :cities="listCities"
+            :municipalities="listMunicipalities"
+            :parishes="listParishes"
+            :genders="listGenders"
             @data="fetchData"
             @close="roleUsers = []"
             @alert="showAlert"/>
@@ -544,7 +612,7 @@ const downloadCSV = async () => {
             v-model:isDrawerOpen="isUserDeleteDialog"
             :user="selectedUser"
             @data="fetchData"
-            @alert="showAlert"/> -->
+            @alert="showAlert"/>
 
         </VCard>
       </v-col>

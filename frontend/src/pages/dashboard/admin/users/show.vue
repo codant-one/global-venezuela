@@ -1,7 +1,5 @@
 <script setup>
 
-import { useCountriesStores } from '@/stores/useCountries'
-
 const props = defineProps({
   isDrawerOpen: {
     type: Boolean,
@@ -14,6 +12,26 @@ const props = defineProps({
   rolesList: {
     type: Object,
     required: true
+  },
+  states: {
+    type: Object,
+    required: true
+  },
+  cities: {
+    type: Object,
+    required: true
+  },
+  municipalities: {
+    type: Object,
+    required: true
+  },
+  parishes: {
+    type: Object,
+    required: true
+  },
+  genders: {
+    type: Object,
+    required: true
   }
 
 })
@@ -23,33 +41,38 @@ const emit = defineEmits([
   'close'
 ])
 
-const countriesStores = useCountriesStores()
+const listStates = ref(props.states)
+const listCities = ref(props.cities)
+const listMunicipalities = ref(props.municipalities)
+const listParishes = ref(props.parishes)
+const listGenders = ref(props.genders)
 
 const email = ref('')
 const name = ref('')
 const password = ref('')
 const last_name = ref('')
 const phone = ref('')
+const isPhone = ref(false)
 const address = ref('')
-const username = ref('')
+const isAddress = ref(false)
 const document = ref('')
-const provinceOld_id = ref('')
-const province_id = ref('')
-const province = ref('')
-const country_id = ref('')
-const country = ref('')
+const isDocument = ref(false)
+const gender_id = ref('')
+const genderOld_id = ref('')
+const isGender = ref(false)
+const state_id = ref('')
+const stateOld_id = ref('')
+const city_id = ref('')
+const cityOld_id = ref('')
+const municipality_id = ref('')
+const municipalityOld_id = ref('')
+const parish_id = ref('')
+const parishOld_id = ref('')
 const assignedRoles = ref([])
-const listCountries = ref([])
-
-const loadCountries = () => {
-  listCountries.value = countriesStores.getCountries
-}
 
 onMounted(async () => {
 
-    await countriesStores.fetchCountries()
-
-    loadCountries()
+  
 })
 
 watchEffect(() => {
@@ -60,15 +83,30 @@ watchEffect(() => {
             password.value = props.user.password
             name.value = props.user.name
             last_name.value = props.user.last_name
-            phone.value = props.user.user_detail?.phone
-            address.value = props.user.user_detail?.address
-            username.value = props.user.username
-            document.value = props.user.user_detail?.document
-            province_id.value = props.user.user_detail?.province.name
-            provinceOld_id.value = props.user.user_detail?.province_id
-            country_id.value = props.user.user_detail?.province.country.name
-            province.value = props.user.user_detail?.province.name
-            country.value = props.user.user_detail?.province.country.name
+            phone.value = props.user.user_detail?.phone ?? '----'
+            isPhone.value = (props.user.user_detail?.phone === null) ? true : false
+            address.value = props.user.user_detail?.address ?? '----'
+            isAddress.value = (props.user.user_detail?.address === null) ? true : false
+            document.value = props.user.user_detail?.document ?? '----'
+            isDocument.value = (props.user.user_detail?.document === null) ? true : false
+
+            // console.log('aa',  props.user)
+            genderOld_id.value = props.user.user_detail?.gender?.id
+            gender_id.value = props.user.user_detail?.gender?.name
+            isGender.value = (props.user.user_detail?.gender === null) ? true : false
+
+            stateOld_id.value = props.user.user_detail?.parish.municipality.state.id
+            state_id.value = props.user.user_detail?.parish.municipality.state.name
+
+            cityOld_id.value = props.user.user_detail?.city.id
+            city_id.value = props.user.user_detail?.city.name
+
+            municipalityOld_id.value = props.user.user_detail?.parish.municipality.id
+            municipality_id.value = props.user.user_detail?.parish.municipality.name
+
+            parishOld_id.value = props.user.user_detail?.parish.id
+            parish_id.value = props.user.user_detail?.parish.name
+
             assignedRoles.value = props.user.assignedRoles
         }
     }
@@ -77,17 +115,6 @@ watchEffect(() => {
 const closeUserDetailDialog = function() {
     emit('update:isDrawerOpen', false)
     emit('close')
-}
-
-const getFlagCountry = country => {
-  let val = listCountries.value.find(item => {
-    return item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === country.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-  })
-
-  if(val)
-    return 'https://hatscripts.github.io/circle-flags/flags/'+val.iso.toLowerCase()+'.svg'
-  else
-    return ''
 }
 
 </script>
@@ -121,7 +148,7 @@ const getFlagCountry = country => {
                             readonly
                         />
                     </VCol>
-                    <VCol md="6" cols="12">
+                    <VCol md="12" cols="12">
                         <VTextField
                             v-model="email"
                             label="E-mail"
@@ -130,53 +157,81 @@ const getFlagCountry = country => {
                     </VCol>
                     <VCol md="6" cols="12">
                         <VTextField
-                            v-model="username"
-                            label="Username"
+                            v-model="phone"
+                            type="password"
+                            label="Contraseña"
                             readonly
                         />
-                    </VCol>
+                    </VCol>                    
                     <VCol md="6" cols="12">
                         <VTextField
                             v-model="phone"
+                            type="tel"
                             label="Teléfono"
-                            readonly
+                            :readonly="!isPhone"
+                            :disabled="isPhone"
                         />
                     </VCol>
                     <VCol md="6" cols="12">
-                        <VTextField
-                            v-model="address"
-                            label="Dirección"
-                            readonly
-                        />
-                    </VCol>
-                    <VCol md="1" cols="1">
-                        <VAvatar
-                            start
-                            size="36"
-                            :image="getFlagCountry(country)"
-                         />
-                    </VCol>
-                    <VCol md="5" cols="11">
-                        <VTextField
-                            v-model="country"
-                            label="País"
-                            readonly
-                        />
-                    </VCol>
-                    <VCol md="6" cols="12">
-                        <VTextField
-                            v-model="province"
-                            label="Estado"
-                            readonly
+                        <VAutocomplete
+                            v-model="gender_id"
+                            label="Género"
+                            :items="listGenders"
+                            :readonly="!isGender"
+                            :disabled="isGender"
                         />
                     </VCol>
                     <VCol md="6" cols="12">
                         <VTextField
                             v-model="document"
+                            type="tel"
                             label="Cédula"
+                            :readonly="!isDocument"
+                            :disabled="isDocument"
+                        />
+                    </VCol>
+                    <VCol md="6" cols="12">
+                        <VAutocomplete
+                            v-model="state_id"
+                            label="Estado"
+                            :items="listStates"
                             readonly
                         />
-                    </VCol>                    
+                       
+                    </VCol>
+                    <VCol md="6" cols="12">
+                        <VAutocomplete
+                            v-model="city_id"
+                            label="Ciudad"
+                            :items="listCities"
+                            readonly
+                        />
+                    </VCol>
+                    <VCol md="6" cols="12">
+                        <VAutocomplete
+                            v-model="municipality_id"
+                            label="Municipio"
+                            :items="listMunicipalities"
+                            readonly
+                        />
+                    </VCol> 
+                    <VCol md="6" cols="12">
+                        <VAutocomplete
+                            v-model="parish_id"
+                            label="Parroquia"
+                            :items="listParishes"
+                            readonly
+                        />
+                    </VCol>
+                    <VCol cols="12" md="12">
+                        <VTextarea
+                            v-model="address"
+                            rows="3"
+                            label="Dirección"
+                            :readonly="!isAddress"
+                            :disabled="isAddress"
+                            />
+                    </VCol>               
                     <VCol md="12" cols="12">
                         <VCombobox
                             v-model="assignedRoles"
