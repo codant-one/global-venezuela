@@ -6,7 +6,7 @@
         <meta name="x-apple-disable-message-reformatting">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta content="telephone=no" name="format-detection">
-        <title>E-mails PARTYMAX</title>
+        <title>E-mails Venezuela Global</title>
 
         <style type="text/css">
             #outlook a {
@@ -51,17 +51,17 @@
                                 <td align="center" style="padding:0;Margin:0">
                                     <table class="es-header-body" cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
                                         <tr>
-                                            <td align="left" bgcolor="#E2F8FC" style="padding:20px;Margin:0;background-color:#e2f8fc">
+                                            <td align="left" bgcolor="#FFFFFF" style="padding:20px;Margin:0;background-color:#FFFFFF">
                                                 @include("emails.layouts.header")
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td align="left" bgcolor="#E2F8FC" style="Margin:0;padding-left:40px;padding-right:40px;background-color:#e2f8fc">
+                                            <td align="left" bgcolor="#FFFFFF" style="Margin:0;padding-left:40px;padding-right:40px;background-color:#FFFFFF">
                                                 @yield("content")
                                             </td>                
                                         </tr>
                                         <tr>
-                                            <td align="left" bgcolor="#E2F8FC" style="Margin:0;padding-top:25px;padding-bottom:25px;padding-left:40px;padding-right:40px;background-color:#e2f8fc">
+                                            <td align="left" bgcolor="#FFFFFF" style="display:none;Margin:0;padding-top:25px;padding-bottom:25px;padding-left:40px;padding-right:40px;background-color:#FFFFFF">
                                                 @include("emails.layouts.footer")
                                             </td>
                                         </tr>
@@ -72,7 +72,7 @@
                     </td>
                 </tr> 
             </table>
-            @include("emails.layouts.copy")
+           
         </div>
     </body>
 </html>
