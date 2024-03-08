@@ -110,9 +110,7 @@ trait UserHelper
     public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {
             $query->whereHas('roles', function ($q) use ($term) {
-                $q->where(function ($query) use ($term) {
-                    $query->where('name', 'LIKE', '%' . $term . '%');
-                });
+                $q->where('name', 'LIKE', '%' . $term . '%');
             })
             ->orWhere('name', 'LIKE', '%' . $term . '%')
             ->orWhere('email', 'LIKE', '%' . $term . '%');

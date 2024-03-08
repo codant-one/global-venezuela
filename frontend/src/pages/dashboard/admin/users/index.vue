@@ -33,7 +33,6 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const totalUsers = ref(0)
 
-const searchRol = ref()
 const selectedRows = ref([])
 
 const isUserDeleteDialog = ref(false)
@@ -348,7 +347,7 @@ const downloadCSV = async () => {
                 style="width: 20rem;"
               >
                 <VSelect
-                  v-model="searchRol"
+                  v-model="searchQuery"
                   label="Filtrar por rol"
                   clearable
                   clear-icon="tabler-x"
