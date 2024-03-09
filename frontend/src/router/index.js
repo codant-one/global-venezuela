@@ -25,6 +25,13 @@ const router = createRouter({
       },
     },
     {
+      path: '/register-confirm',
+      redirect: to => {     
+        
+        return { name: 'register-confirm', query: to.query }
+      },
+    },
+    {
       path: '/info',
       redirect: to => {
         const userData = JSON.parse(localStorage.getItem('user_data') || 'null')

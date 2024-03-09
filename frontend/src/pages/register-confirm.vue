@@ -1,44 +1,52 @@
 <script setup>
 
-import { useAuthStores } from '@/stores/auth'
-import Loader from '@/components/common/Loader.vue'
-import check_circle from '@assets/icons/check-circle.svg';
-import error_circle from '@assets/icons/error-circle.svg';
+import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+import logoSlogan from '@images/logo_slogan.png'
+import { useAuthStores } from '@/stores/useAuth'
+import miscMaskDark from '@images/pages/misc-mask-dark.png'
+import miscMaskLight from '@images/pages/misc-mask-light.png'
+import miscUnderMaintenance from '@images/pages/misc-under-maintenance.png'
 import router from '@/router'
+
+const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
 const route = useRoute()
 const authStores = useAuthStores()
 
-const message = ref('')
-const isError = ref(false)
-const show = ref(false)
-const isLoading = ref(true)
+const advisor = ref({
+  type: '',
+  message: '',
+  show: false
+})
+
+const isRequestOngoing = ref(true)
 
 watchEffect(fetchData)
 
 async function fetchData() {
 
-    isLoading.value = true
+    isRequestOngoing.value = true
 
     authStores.findToken(route.query.token)
         .then(response => {
 
-            message.value = response.message
-            show.value = true
+            advisor.value.show = true
+            advisor.value.type = 'success'
+            advisor.value.message = response.message
 
             setTimeout(() => { 
                 completed(response.data.token)
             }, 3000)
 
         }).catch(err => {
-            isError.value = true
-            show.value = true
-            isLoading.value = false
+            advisor.value.show = true
+            advisor.value.type = 'error'
+            isRequestOngoing.value = false
 
             if(err.response.data.feedback === 'not_found' || err.response.data.feedback === 'error_token' )
-                message.value = err.response.data.message
+                advisor.value.message = err.response.data.message
             else
-                message.value = err.response.data.exception
+                advisor.value.message = err.response.data.exception
 
             console.error(err.response)
         })
@@ -49,23 +57,29 @@ const completed = (token) => {
     authStores.completed({token: token})
         .then(response => {
 
-            isLoading.value = false
-            message.value = response.message
+            isRequestOngoing.value = false
+
+            advisor.value.show = true
+            advisor.value.type = 'success'
+            advisor.value.message = response.message
 
             setTimeout(() => { 
-                message.value = ''
-                isError.value = false
+                advisor.value.show = false
+                advisor.value.type = ''
+                advisor.value.message = ''
                 router.push({ name: 'login' })
             }, 3000)
             
 
         }).catch(err => {
-            isError.value = true
-            isLoading.value = false
+            advisor.value.show = true
+            advisor.value.type = 'error'
+            isRequestOngoing.value = false
+
             if(err.response.data.feedback === 'not_found') {
-                message.value = err.response.data.message
+                advisor.value.message = err.response.data.message
             } else {
-                message.value = err.response.data.exception
+                advisor.value.message = err.response.data.exception
             }
 
             console.error(err.response)
@@ -73,52 +87,76 @@ const completed = (token) => {
 }
 
 </script>
+
 <template>
-    <VContainer class="mt-1 mt-md-10 confirm">
-        <Loader :isLoading="isLoading"/>
-        <VCard 
-            v-if="show"
-            class="mt-10 px-10 py-14 pb-2 pb-md-4 no-shadown card-register d-block text-center mx-auto">
-            <VImg width="100" :src="isError ? error_circle : check_circle" class="mx-auto"/>
-            <VCardText class="text-message mt-10 mb-5">
-                {{ message }}
+    <div class="misc-wrapper">
+
+        <VDialog
+            v-model="isRequestOngoing"
+            width="300"
+            persistent>
+            
+            <VCard
+            color="primary"
+            width="300">
+                
+            <VCardText class="pt-3">
+                Cargando
+
+                <VProgressLinear
+                    indeterminate
+                    color="white"
+                    class="mb-0"/>
             </VCardText>
-        </VCard>
-    </VContainer>
+            </VCard>
+        </VDialog>
+
+        <v-col cols="12">
+            <v-alert
+            v-if="advisor.show"
+            :type="advisor.type"
+            class="mb-6">
+                {{ advisor.message }}
+            </v-alert>
+        </v-col>
+
+        <div class="text-center mb-12">
+            <div class="d-flex">
+                <VImg
+                    :src="logoSlogan"
+                    width="350"
+                />
+            </div>
+            <VBtn to="/">
+                LOGIN
+            </VBtn>
+        </div>
+
+        <!-- 👉 Image -->
+        <div class="misc-avatar w-100 text-center">
+        <VImg
+            :src="miscUnderMaintenance"
+            alt="Coming Soon"
+            :max-width="550"
+            class="mx-auto"
+        />
+        </div>
+
+        <VImg
+        :src="authThemeMask"
+        class="misc-footer-img d-none d-md-block"
+        />
+  </div>
 </template>
 
-<style scoped>
-
-    .text-message {
-        color:  #FF0090;
-        text-align: center;
-        font-size: 24px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 30px; 
-        padding: 0 80px !important;
-    }
-
-    .confirm {
-        height: 600px;
-    }
-
-    .card-register {
-        padding: 20px;
-        border-radius: 32px !important;
-        width: 500px; 
-    }
-
-    @media only screen and (max-width: 767px) {
-        .card-register {
-            width: auto;
-            padding: 40px 20px !important;
-        }
-
-        .text-message {
-            padding: 0 30px !important;
-            font-size: 18px;
-        }
-
-    }
+<style lang="scss">
+    @use "@core/scss/template/pages/misc.scss";
 </style>
+
+<route lang="yaml">
+    meta:
+      layout: blank
+      action: ver
+      subject: Auth
+      redirectIfLoggedIn: false
+</route>
