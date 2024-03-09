@@ -15,7 +15,7 @@ class CommunityCouncilController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = CommunityCouncil::with(['parish.municipality.state'])
+            $query = CommunityCouncil::with(['circuit.parish.municipality.state'])
                         ->applyFilters(
                             $request->only([
                                 'search',

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\Parish;
+use App\Models\Circuit;
 
 class CommunityCouncil extends Model
 {
@@ -15,8 +15,8 @@ class CommunityCouncil extends Model
     protected $guarded = [];
 
     /**** Relationship ****/
-    public function parish() {
-        return $this->belongsTo(Parish::class, 'parish_id', 'id');
+    public function circuit() {
+        return $this->belongsTo(Circuit::class, 'circuit_id', 'id');
     }
 
     /**** Scopes ****/

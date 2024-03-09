@@ -1,7 +1,7 @@
 <script setup>
 
 import AddNewCircuitDrawer from './AddNewCircuitDrawer.vue' 
-
+import router from '@/router'
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 import { useCircuitsStores } from '@/stores/useCircuits'
@@ -149,6 +149,10 @@ const onSubmit = () => {
             })
     }
   })
+}
+
+const seeCircuit = circuitData => {
+  router.push({ name : 'dashboard-admin-circuits-id', params: { id: circuitData.id } })
 }
 
 const submitForm = async (circuit, method) => {
@@ -408,7 +412,7 @@ const downloadCSV = async () => {
                 <th scope="col"> ESTADO </th>
                 <th scope="col"> UBICACIÓN </th>
                 <th scope="col"> CIUDAD </th>
-                <th scope="col" v-if="$can('editar','circuitos') || $can('eliminar','circuitos')">
+                <th scope="col" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">
                   ACCIONES
                 </th>
               </tr>
@@ -435,7 +439,20 @@ const downloadCSV = async () => {
                 </td>
                 <td class="text-uppercase"> {{ circuit.city?.name }} </td>
                 <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('editar','circuitos') || $can('eliminar','circuitos')">      
+                <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">      
+                  <VBtn
+                    v-if="$can('ver','circuitos')"
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                    @click="seeCircuit(circuit)">
+                              
+                    <VIcon
+                        size="22"
+                        icon="tabler-eye" />
+                  </VBtn>
+
                   <VBtn
                     v-if="$can('editar','circuitos')"
                     icon
