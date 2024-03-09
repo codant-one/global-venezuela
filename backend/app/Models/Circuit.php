@@ -21,6 +21,10 @@ class Circuit extends Model
         return $this->belongsTo(City::class, 'city_id', 'id');
     }
 
+    public function community_councils() {
+        return $this->hasMany(CommunityCouncil::class, 'circuit_id', 'id');
+    }
+
     /**** Scopes ****/
     public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {

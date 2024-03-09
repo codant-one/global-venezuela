@@ -74,7 +74,7 @@ class CircuitController extends Controller
     {
         try {
 
-            $circuit = Circuit::find($id);
+            $circuit = Circuit::with(['community_councils'])->find($id);
 
             if (!$circuit)
                 return response()->json([

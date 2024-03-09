@@ -46,6 +46,20 @@ export const useCircuitsStores = defineStore('circuits', {
                 })
             
         },
+        showCircuit(id) {
+            this.setLoading(true)
+
+            return Circuits.show(id)
+                .then((response) => {
+                    if(response.data.success)
+                        return Promise.resolve(response.data.data.circuit)
+                })
+                .catch(error => Promise.reject(error))
+                .finally(() => {
+                    this.setLoading(false)
+                })
+            
+        },
         updateCircuit(data, id) {
             this.setLoading(true)
             

@@ -1,10 +1,11 @@
 <script setup>
 
+// import AddNewCommunityCouncilDrawer from './AddNewCommunityCouncilDrawer.vue'
+import router from '@/router'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useStatesStores } from '@/stores/useStates'
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
-// import AddNewCommunityCouncilDrawer from './AddNewCommunityCouncilDrawer.vue' 
 
 const communityCouncilsStores = useCommunityCouncilsStores()
 const statesStores = useStatesStores()
@@ -73,21 +74,6 @@ async function fetchData() {
   totalCommunityCouncils.value = communityCouncilsStores.communityCouncilsTotalCount
 
   isRequestOngoing.value = false
-}
-
-const getColor = () =>  {
-
-    const colors = [
-        'success',
-        'warning',
-        'info',
-        'primary',
-        'secondary',
-        'error',
-        'secondary'
-    ]
-
-    return { color: colors[Math.floor(Math.random() * colors.length)]}
 }
 
 // 👉 dialog close
@@ -237,6 +223,10 @@ const removeCommunityCouncil = async () => {
   return true
 }
 
+const seeCircuit = communityCouncilData => {
+  router.push({ name : 'dashboard-admin-circuits-id', params: { id: communityCouncilData.circuit.id } })
+}
+
 const downloadCSV = async () => {
 
   isRequestOngoing.value = true
@@ -251,9 +241,9 @@ const downloadCSV = async () => {
     let data = {
       ID: element.id,
       NOMBRE: element.name,
-      ESTADO: element.parish.municipality.state.name,
-      MUNICIPIO: element.parish.municipality.name,
-      PARROQUIA: element.parish.name
+      ESTADO: element.circuit.parish.municipality.state.name,
+      MUNICIPIO: element.circuit.parish.municipality.name,
+      PARROQUIA: element.circuit.parish.name
     }
 
     dataArray.push(data)
@@ -352,6 +342,7 @@ const downloadCSV = async () => {
               <tr>
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
+                <th scope="col"> CIRCUITO </th>
                 <th scope="col"> ESTADO </th>
                 <th scope="col"> UBICACIÓN </th>
                 <th scope="col" v-if="$can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">
@@ -368,17 +359,18 @@ const downloadCSV = async () => {
 
                 <td> {{communityCouncil.id }} </td>
                 <td class="text-base font-weight-medium mb-0"> {{communityCouncil.name }} </td>
-                <td class="text-uppercase"> {{communityCouncil.parish.municipality.state.name }} </td>
                 <td class="text-wrap"> 
                   <div class="d-flex align-center">
                     <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0">
-                        {{communityCouncil.parish.municipality.name }}
+                      <h6 class="text-base font-weight-medium mb-0 text-primary"  @click="seeCircuit(communityCouncil)">
+                        {{communityCouncil.circuit.name}}
                       </h6>
-                      <span class="text-disabled text-sm">{{communityCouncil.parish.name }}</span>
+                      <span class="text-disabled text-sm">{{communityCouncil.circuit.parish.name }}</span>
                     </div>
                   </div>
                 </td>
+                <td class="text-uppercase"> {{communityCouncil.circuit.parish.municipality.state.name }} </td>
+                <td class="text-uppercase"> {{communityCouncil.circuit.parish.municipality.state.name }} </td>
                 <!-- 👉 Acciones -->
                 <td class="text-center" style="width: 5rem;" v-if="$can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">      
                   <VBtn
