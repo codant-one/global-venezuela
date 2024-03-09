@@ -15,12 +15,13 @@ class CommunityCouncilController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = CommunityCouncil::with(['circuit.parish.municipality.state'])
+            $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
                         ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy'
+                                'orderBy',
+                                'state_id'
                             ])
                         );
 
@@ -28,7 +29,8 @@ class CommunityCouncilController extends Controller
                                 $request->only([
                                     'search',
                                     'orderByField',
-                                    'orderBy'
+                                    'orderBy',
+                                    'state_id'
                                 ])
                             )->count();
 
@@ -49,12 +51,12 @@ class CommunityCouncilController extends Controller
     {
         try {
 
-            $council = CommunityCouncil::createCommunityCouncil($request);
+            $communityCouncil = CommunityCouncil::createCommunityCouncil($request);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'Community Council' => CommunityCouncil::find($council->id)
+                    'communityCouncil' => CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])->find($communityCouncil->id)
                 ]
             ]);
 
@@ -71,9 +73,9 @@ class CommunityCouncilController extends Controller
     {
         try {
 
-            $council = CommunityCouncil::find($id);
+            $communityCouncil = CommunityCouncil::find($id);
 
-            if (!$council)
+            if (!$communityCouncil)
                 return response()->json([
                     'sucess' => false,
                     'feedback' => 'not_found',
@@ -83,7 +85,7 @@ class CommunityCouncilController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'Community Council' => $council
+                    'Community Council' => $communityCouncil
                 ]
             ]);
 
@@ -100,21 +102,21 @@ class CommunityCouncilController extends Controller
     {
         try {
 
-            $council = CommunityCouncil::find($id);
+            $communityCouncil = CommunityCouncil::find($id);
         
-            if (!$council)
+            if (!$communityCouncil)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
                     'message' => 'Consejo Comunal no encontrado'
                 ], 404);
 
-            $council = $council->updateCommunityCouncil($request, $council);
+            $communityCouncil = $communityCouncil->updateCommunityCouncil($request, $communityCouncil);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'tag' => CommunityCouncil::find($council->id)
+                    'communityCouncil' => CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])->find($communityCouncil->id)
                 ]
             ]);
 
@@ -131,21 +133,21 @@ class CommunityCouncilController extends Controller
     {
         try {
 
-            $council = CommunityCouncil::find($id);
+            $communityCouncil = CommunityCouncil::find($id);
         
-            if (!$council)
+            if (!$communityCouncil)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
                     'message' => 'Consejo Comunal no encontrado'
                 ], 404);
 
-            $council->deleteCommunityCouncil($id);
+            $communityCouncil->deleteCommunityCouncil($id);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'Community Council' => $council
+                    'Community Council' => $communityCouncil
                 ]
             ], 200);
             

@@ -30,7 +30,6 @@ const seeCommunityCouncil = communityCouncilData => {
   router.push({ name : 'dashboard-admin-community-councils-id', params: { id: communityCouncilData.id } })
 }
 
-
 </script>
 
 <template>

@@ -29,8 +29,7 @@ const props = defineProps({
   parishes: {
     type: Object,
     required: true
-  },
-
+  }
 })
 
 const emit = defineEmits([

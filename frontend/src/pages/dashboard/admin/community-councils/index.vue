@@ -1,14 +1,20 @@
 <script setup>
 
-// import AddNewCommunityCouncilDrawer from './AddNewCommunityCouncilDrawer.vue'
+import AddNewCommunityCouncilDrawer from './AddNewCommunityCouncilDrawer.vue'
 import router from '@/router'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
+import { useCircuitsStores } from '@/stores/useCircuits'
 import { useStatesStores } from '@/stores/useStates'
+import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
+import { useParishesStores } from '@/stores/useParishes'
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 
 const communityCouncilsStores = useCommunityCouncilsStores()
+const circuitsStores = useCircuitsStores()
 const statesStores = useStatesStores()
+const municipalitiesStores = useMunicipalitiesStores()
+const parishesStores = useParishesStores()
 
 const communityCouncils = ref([])
 const searchQuery = ref('')
@@ -25,7 +31,11 @@ const refForm = ref()
 const message = ref('')
 const success = ref(false)
 
+const state_id = ref(null)
 const listStates = ref([])
+const listMunicipalities = ref([])
+const listParishes = ref([])
+const listCircuits = ref([])
 
 const advisor = ref({
   type: '',
@@ -58,12 +68,14 @@ watchEffect(() => {
 watchEffect(fetchData)
 
 async function fetchData() {
+
   let data = {
     search: searchQuery.value,
     orderByField: 'id',
     orderBy: 'desc',
     limit: rowPerPage.value,
-    page: currentPage.value
+    page: currentPage.value,
+    state_id: state_id.value
   }
 
   isRequestOngoing.value = true
@@ -73,7 +85,35 @@ async function fetchData() {
   totalPages.value = communityCouncilsStores.last_page
   totalCommunityCouncils.value = communityCouncilsStores.communityCouncilsTotalCount
 
+  if(listParishes.value.length === 0) {
+    await statesStores.fetchStates();
+    await municipalitiesStores.fetchMunicipalities();
+    await parishesStores.fetchParishes();
+    await circuitsStores.fetchCircuits();
+
+    loadStates()
+    loadMunicipalities()
+    loadParishes()
+    loadCircuits()
+  }
+
   isRequestOngoing.value = false
+}
+
+const loadStates = () => {
+  listStates.value = statesStores.getStates
+}
+
+const loadMunicipalities = () => {
+  listMunicipalities.value = municipalitiesStores.getMunicipalities
+}
+
+const loadParishes = () => {
+  listParishes.value = parishesStores.getParishes
+}
+
+const loadCircuits = () => {
+  listCircuits.value = circuitsStores.getCircuits
 }
 
 // 👉 dialog close
@@ -116,7 +156,6 @@ const submitForm = async (communityCouncil, method) => {
   isRequestOngoing.value = true
 
   if (method === 'update') {
-    communityCouncil.data.append('_method', 'PUT')
     submitUpdate(communityCouncil)
     return
   }
@@ -158,7 +197,7 @@ const submitCreate = communityCouncilData => {
 
 const submitUpdate = communityCouncilData => {
 
-  communityCouncilsStores.updateCommunityCouncil(communityCouncilData)
+  communityCouncilsStores.updateCommunityCouncil(communityCouncilData.data, communityCouncilData.id)
     .then((res) => {
       if (res.data.success) {
         advisor.value = {
@@ -201,7 +240,7 @@ const showDeleteDialog = communityCouncilData => {
 
 const removeCommunityCouncil = async () => {
   isConfirmDeleteDialogVisible.value = false
-  let res = await communityCouncilsStores.deleteCommunityCouncil({ ids: [selectedCommunityCouncil.value.id] })
+  let res = await communityCouncilsStores.deleteCommunityCouncil(selectedCommunityCouncil.value.id)
   selectedCommunityCouncil.value = {}
 
   advisor.value = {
@@ -227,11 +266,18 @@ const seeCircuit = communityCouncilData => {
   router.push({ name : 'dashboard-admin-circuits-id', params: { id: communityCouncilData.circuit.id } })
 }
 
+const seeCommunityCouncil = communityCouncilData => {
+  router.push({ name : 'dashboard-admin-community-councils-id', params: { id: communityCouncilData.id } })
+}
+
 const downloadCSV = async () => {
 
   isRequestOngoing.value = true
 
-  let data = { limit: -1 }
+  let data = {
+    state_id: state_id.value,
+    limit: -1
+  }
 
   await communityCouncilsStores.fetchCommunityCouncils(data)
 
@@ -239,11 +285,12 @@ const downloadCSV = async () => {
   
   communityCouncilsStores.getCommunityCouncils.forEach(element => {
     let data = {
-      ID: element.id,
       NOMBRE: element.name,
+      CIRCUITO: element.circuit.name,
       ESTADO: element.circuit.parish.municipality.state.name,
       MUNICIPIO: element.circuit.parish.municipality.name,
-      PARROQUIA: element.circuit.parish.name
+      PARROQUIA: element.circuit.parish.name,
+      CIUDAD: element.circuit.city?.name
     }
 
     dataArray.push(data)
@@ -290,8 +337,42 @@ const downloadCSV = async () => {
           {{ advisor.message }}
         </v-alert>
 
-        <v-card title="Filtros">
-          <v-card-text class="d-flex flex-wrap py-4 gap-4">
+        <VCard title="Filtros">
+          <VCardText>
+            <VRow>
+              <VCol
+                cols="12"
+                sm="4"
+              >
+                <VSelect
+                  v-model="state_id"
+                  label="Estados"
+                  :items="listStates"
+                  item-value="id"
+                  item-title="name"
+                  clearable
+                  clear-icon="tabler-x"
+                  no-data-text="No disponible"
+                />
+              </VCol>
+              <VCol cols="12" sm="2" />
+              <VCol
+                cols="12"
+                sm="6"
+              >
+                <VTextField
+                  v-model="searchQuery"
+                  label="Buscar"
+                  placeholder="Buscar"
+                  density="compact"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+
+          <VDivider />
+
+          <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div
               class="me-3"
               style="width: 80px;">
@@ -316,15 +397,8 @@ const downloadCSV = async () => {
             <v-spacer />
 
             <div class="d-flex align-center flex-wrap gap-4">
-              <!-- 👉 Search  -->
-              <div style="width: 10rem;">
-                <v-text-field
-                  v-model="searchQuery"
-                  placeholder="Buscar"
-                  density="compact"/>
-              </div>
 
-              <!-- 👉 Add user button -->
+              <VSpacer />
               <v-btn
                 v-if="$can('crear','consejos-comunales')"
                 prepend-icon="tabler-plus"
@@ -332,7 +406,7 @@ const downloadCSV = async () => {
                   Agregar Consejo Comunal
               </v-btn>
             </div>
-          </v-card-text>
+          </VCardText>
 
           <v-divider />
 
@@ -345,7 +419,7 @@ const downloadCSV = async () => {
                 <th scope="col"> CIRCUITO </th>
                 <th scope="col"> ESTADO </th>
                 <th scope="col"> UBICACIÓN </th>
-                <th scope="col" v-if="$can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">
+                <th scope="col" v-if="$can('ver','consejos-comunales') || $can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">
                   ACCIONES
                 </th>
               </tr>
@@ -365,14 +439,35 @@ const downloadCSV = async () => {
                       <h6 class="text-base font-weight-medium mb-0 text-primary"  @click="seeCircuit(communityCouncil)">
                         {{communityCouncil.circuit.name}}
                       </h6>
-                      <span class="text-disabled text-sm">{{communityCouncil.circuit.parish.name }}</span>
+                      <span class="text-disabled text-sm">{{communityCouncil.circuit.city?.name }}</span>
                     </div>
                   </div>
                 </td>
                 <td class="text-uppercase"> {{communityCouncil.circuit.parish.municipality.state.name }} </td>
-                <td class="text-uppercase"> {{communityCouncil.circuit.parish.municipality.state.name }} </td>
+                <td class="text-uppercase">
+                  <div class="d-flex align-center">
+                    <div class="d-flex flex-column">
+                      <h6 class="text-base font-weight-medium mb-0">
+                        {{ communityCouncil.circuit.parish.municipality.name }}
+                      </h6>
+                      <span class="text-disabled text-sm">{{communityCouncil.circuit.parish.name }}</span>
+                    </div>
+                  </div>
+                </td>
                 <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">      
+                <td class="text-center" style="width: 5rem;" v-if="$can('ver','consejos-comunales') || $can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">      
+                  <VBtn
+                    v-if="$can('ver','consejos-comunales')"
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                    @click="seeCommunityCouncil(communityCouncil)">
+                              
+                    <VIcon
+                        size="22"
+                        icon="tabler-eye" />
+                  </VBtn>
                   <VBtn
                     v-if="$can('editar','consejos-comunales')"
                     icon
@@ -427,15 +522,20 @@ const downloadCSV = async () => {
               :length="totalPages"/>
           
           </VCardText>
-        </v-card>
+        </VCard>
       </v-col>
     </v-row>
 
     <!-- 👉 Add New Community Council -->
-    <!-- <AddNewCommunityCouncilDrawer
+    <AddNewCommunityCouncilDrawer
+      v-if="listCircuits.length > 0"
       v-model:isDrawerOpen="isAddNewCommunityCouncilDrawerVisible"
       :communityCouncil="selectedCommunityCouncil"
-      @community-council-data="submitForm"/> -->
+      :states="listStates"
+      :municipalities="listMunicipalities"
+      :parishes="listParishes"
+      :circuits="listCircuits"
+      @community-council-data="submitForm"/>
 
     <!-- 👉 Confirm Delete -->
     <VDialog
