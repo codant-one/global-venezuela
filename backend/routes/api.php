@@ -21,7 +21,8 @@ use App\Http\Controllers\{
     PermissionController,
     UserMenuController,
     GenderController,
-    ProxyController
+    ProxyController,
+    CouncilController
 };
 
 /*
@@ -62,6 +63,7 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
     Route::apiResource('users', UsersController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
+    Route::apiResource('communitycouncil', CouncilController::class);
 
     //Users
     Route::group(['prefix' => 'users'], function () {
