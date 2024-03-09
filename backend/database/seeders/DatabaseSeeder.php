@@ -21,7 +21,10 @@ class DatabaseSeeder extends Seeder
             ParishSeeder::class,
             AdminSeeder::class,
 
-            GenderSeeder::class
+            GenderSeeder::class,
+            CommunityCouncilSeeder::class,
+            InmigrantSeeder::class
+
         ]);
 
     }
