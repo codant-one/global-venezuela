@@ -26,12 +26,12 @@ async function fetchData() {
             Felicidades {{ name }}! 🎉
           </h6>
           <p class="mb-2">
-            Progreso de ventas
+            Registros realizados
           </p>
           <h4 class="text-h4 font-weight-medium text-primary mb-1">
-            $48.90
+            5000
           </h4>
-          <VBtn>Ver pedidos</VBtn>
+          <VBtn>Ver registros</VBtn>
         </VCardText>
       </VCol>
 
