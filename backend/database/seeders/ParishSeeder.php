@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Parish;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+
+use App\Models\Parish;
 
 class ParishSeeder extends Seeder
 {

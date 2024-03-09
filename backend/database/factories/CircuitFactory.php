@@ -4,13 +4,13 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Models\CommunityCouncil;
 use App\Models\Circuit;
+use App\Models\Parish;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
-class CommunityCouncilFactory extends Factory
+class CircuitFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,12 +18,12 @@ class CommunityCouncilFactory extends Factory
      * @return array<string, mixed>
      */
 
-     protected $model = CommunityCouncil::class;
+     protected $model = Circuit::class;
 
     public function definition(): array
     {
         return [
-            'circuit_id' => Circuit::InRandomOrder()->first()->id,
+            'parish_id' => Parish::InRandomOrder()->first()->id,
             'name' => $this->faker->name,
             'created_at' => now(),
             'updated_at' => now()

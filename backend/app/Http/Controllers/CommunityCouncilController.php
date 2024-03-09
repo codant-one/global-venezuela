@@ -1,24 +1,47 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use App\Models\CommunityCouncil;
-use App\Models\Parish;
 use Illuminate\Http\JsonResponse;
 
+use App\Models\CommunityCouncil;
+use App\Models\Parish;
 
-class CouncilController extends Controller
+class CommunityCouncilController extends Controller
 {
 
     public function index(Request $request): JsonResponse
     {
-        try {
-            $councils = CommunityCouncil::all();
-            return response()->json($councils);
-        } catch (\Exception $e) {
-            // Manejar la excepción aquí, por ejemplo, registrarla o devolver un mensaje de error
-            return response()->json(['error' => 'Error al obtener los consejos comunales: ' . $e->getMessage()], 500);
-        }
+        $limit = $request->has('limit') ? $request->limit : 10;
+
+            $query = CommunityCouncil::with(['parish.municipality.state'])
+                        ->applyFilters(
+                            $request->only([
+                                'search',
+                                'orderByField',
+                                'orderBy',
+                                'role'
+                            ])
+                        );
+
+            $count = $query->applyFilters(
+                                $request->only([
+                                    'search',
+                                    'orderByField',
+                                    'orderBy'
+                                ])
+                            )->count();
+
+            $communityCouncils = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+
+            return response()->json([
+                'success' => true,
+                'data' => [ 
+                    'communityCouncils' => $communityCouncils,
+                    'communityCouncilsTotalCount' => $count
+                ]
+            ], 200);
     }
 
 

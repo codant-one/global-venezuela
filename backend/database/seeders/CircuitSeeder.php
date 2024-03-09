@@ -5,15 +5,15 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-use App\Models\Inmigrant;
+use App\Models\Circuit;
 
-class InmigrantSeeder extends Seeder
+class CircuitSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Inmigrant::factory()->count(1000)->create();
+        Circuit::factory()->count(50)->create();
     }
 }

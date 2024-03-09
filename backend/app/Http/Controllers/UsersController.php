@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UserRequest;
 
-use App\Models\User;
-use App\Models\UserDetails;
-use App\Models\UserRegisterToken;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
+
+use App\Models\User;
+use App\Models\UserDetails;
+use App\Models\UserRegisterToken;
 
 class UsersController extends Controller
 {

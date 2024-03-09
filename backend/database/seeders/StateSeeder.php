@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\State;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+
+use App\Models\State;
 
 class StateSeeder extends Seeder
 {

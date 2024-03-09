@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
 
             GenderSeeder::class,
+
+            CircuitSeeder::class,
             CommunityCouncilSeeder::class,
             InmigrantSeeder::class
 

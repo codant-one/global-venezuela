@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Models\Parish;
 
+use App\Models\Parish;
 
 class CommunityCouncil extends Model
 {
@@ -15,13 +15,49 @@ class CommunityCouncil extends Model
     protected $guarded = [];
 
     /**** Relationship ****/
-    public function Parish() {
+    public function parish() {
         return $this->belongsTo(Parish::class, 'parish_id', 'id');
     }
 
+    /**** Scopes ****/
+    public function scopeWhereSearch($query, $search) {
+        foreach (explode(' ', $search) as $term) {
+            $query->whereHas('roles', function ($q) use ($term) {
+                $q->where('name', 'LIKE', '%' . $term . '%');
+            })
+            ->orWhere('name', 'LIKE', '%' . $term . '%')
+            ->orWhere('email', 'LIKE', '%' . $term . '%');
+        }
+    }
 
-     /**** Public methods ****/
-     public static function createCommunityCouncil($request) {
+    public function scopeWhereOrder($query, $orderByField, $orderBy) {
+        $query->orderBy($orderByField, $orderBy);
+    }
+    
+    public function scopeApplyFilters($query, array $filters) {
+        $filters = collect($filters);
+
+        if ($filters->get('search')) {
+            $query->whereSearch($filters->get('search'));
+        }
+
+        if ($filters->get('orderByField') || $filters->get('orderBy')) {
+            $field = $filters->get('orderByField') ? $filters->get('orderByField') : 'created_at';
+            $orderBy = $filters->get('orderBy') ? $filters->get('orderBy') : 'asc';
+            $query->whereOrder($field, $orderBy);
+        }
+    }
+
+    public function scopePaginateData($query, $limit) {
+        if ($limit == 'all') {
+            return collect(['data' => $query->get()]);
+        }
+
+        return $query->paginate($limit);
+    }
+
+    /**** Public methods ****/
+    public static function createCommunityCouncil($request) {
         $council = self::create([
             'parish_id' => $request->parish_id,
             'name' => $request->name
@@ -49,6 +85,5 @@ class CommunityCouncil extends Model
             $council->delete();
         }
     }
-
 
 }

@@ -14,29 +14,32 @@ return new class extends Migration
         Schema::create('inmigrants', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('country_id');
-            $table->unsignedBigInteger('community_council_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('gender_id');
+            $table->unsignedBigInteger('parish_id');
+            $table->unsignedBigInteger('community_council_id')->nullable();
             $table->string('name');
             $table->string('last_name');
+            $table->string('email');
             $table->date('birthdate');
-            $table->string('passport_number')->nullable();
-            $table->tinyInteger('transient')->nullable();
-            $table->tinyInteger('resident')->nullable();
+            $table->string('passport_number');
+            $table->tinyInteger('transient')->default(0);
+            $table->tinyInteger('resident')->default(0);
             $table->integer('years_in_country')->nullable();
-            $table->tinyInteger('antecedents')->nullable();
-            $table->tinyInteger('married_venezuela')->nullable();
-            $table->tinyInteger('has_venezuelan_children')->nullable();
-            $table->integer('number_of_children')->nullable();
+            $table->tinyInteger('antecedents')->default(0);
+            $table->tinyInteger('isMarried')->default(0);
+            $table->tinyInteger('has_children')->default(0);
+            $table->integer('children_number')->nullable();
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->longText('address')->nullable();
             $table->string('file_document')->nullable();
             $table->timestamps();
 
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
-            $table->foreign('community_council_id')->references('id')->on('community_councils')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('gender_id')->references('id')->on('genders')->onDelete('cascade');
+            $table->foreign('parish_id')->references('id')->on('parishes')->onDelete('cascade');
+            $table->foreign('community_council_id')->references('id')->on('community_councils')->onDelete('cascade');
 
         });
     }

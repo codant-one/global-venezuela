@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('community_councils', function (Blueprint $table) {
+        Schema::create('circuits', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('circuit_id');
+            $table->unsignedBigInteger('parish_id');
             $table->string('name');
             $table->timestamps();
 
-            $table->foreign('circuit_id')->references('id')->on('circuits')->onDelete('cascade');
+            $table->foreign('parish_id')->references('id')->on('parishes')->onDelete('cascade');
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('community_councils');
+        Schema::dropIfExists('circuits');
     }
 };

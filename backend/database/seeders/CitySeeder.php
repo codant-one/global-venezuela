@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\City;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+
+use App\Models\City;
 
 class CitySeeder extends Seeder
 {

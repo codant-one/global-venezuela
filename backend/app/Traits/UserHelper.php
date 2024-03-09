@@ -103,9 +103,6 @@ trait UserHelper
         return $user;
     }
 
-    
-
-
     /**** Scopes ****/
     public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('gender_id')->nullable();
             $table->string('document')->nullable();
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->longText('address')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

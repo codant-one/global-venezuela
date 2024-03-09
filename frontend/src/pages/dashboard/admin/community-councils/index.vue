@@ -1,59 +1,30 @@
 <script setup>
 
-import create from './create.vue' 
-import show from './show.vue' 
-import password from './password.vue' 
-import edit from './edit.vue'
-import destroy from './destroy.vue'
-
-import { avatarText } from '@/@core/utils/formatters'
-
-import { useUsersStores } from '@/stores/useUsers'
-import { useRolesStores } from '@/stores/useRoles'
+import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useStatesStores } from '@/stores/useStates'
-import { useCitiesStores } from '@/stores/useCities'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
-import { useGendersStores } from '@/stores/useGenders'
-import { themeConfig } from '@themeConfig'
+import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
+// import AddNewCommunityCouncilDrawer from './AddNewCommunityCouncilDrawer.vue' 
 
-const usersStores = useUsersStores()
-const rolesStores = useRolesStores()
+const communityCouncilsStores = useCommunityCouncilsStores()
 const statesStores = useStatesStores()
-const citiesStores = useCitiesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
-const gendersStores = useGendersStores()
 
-const users = ref([])
+const communityCouncils = ref([])
 const searchQuery = ref('')
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPages = ref(1)
-const totalUsers = ref(0)
-
-const selectedRows = ref([])
-
-const isUserDeleteDialog = ref(false)
-const isUserDetailDialog = ref(false)
-const isUserEditDialog = ref(false)
-const isUserPasswordDialog = ref(false)
-
-const selectedUser = ref({})
-const rolesList = ref([])
-const roleUsers = ref([]) 
-
-const IdsUserOnline = ref([])
-const userOnline = ref([])
-
+const totalCommunityCouncils = ref(0)
 const isRequestOngoing = ref(true)
+const isAddNewCommunityCouncilDrawerVisible = ref(false)
+const isConfirmDeleteDialogVisible = ref(false)
+const selectedCommunityCouncil = ref({})
+const isDialogVisible = ref(false)
+const refForm = ref()
+const message = ref('')
+const success = ref(false)
 
 const listStates = ref([])
-const listCities = ref([])
-const listMunicipalities = ref([])
-const listParishes = ref([])
-const listGenders = ref([])
 
 const advisor = ref({
   type: '',
@@ -61,212 +32,238 @@ const advisor = ref({
   show: false
 })
 
-let interval = null
-
-const loadStates = () => {
-  listStates.value = statesStores.getStates
-}
-
-const loadCities = () => {
-  listCities.value = citiesStores.getCities
-}
-
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
-}
-
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
-}
-
-const loadGenders = () => {
-  listGenders.value = gendersStores.getGenders
-}
-
-
-const onlineList = () => {
-  return new Promise((resolve, reject) => {
-
-    let params = {
-      ids: IdsUserOnline.value.join(',')
-    }
-
-    usersStores.getUsersOnline(params)
-      .then(response => {
-        userOnline.value = response
-        resolve()
-      }).catch(error => {})
-
-  })
-}
-
-const searchRoles =() => {
-  rolesStores.allRoles().then(response => {
-    const index = response.roles.indexOf('SuperAdmin')
-    
-    if (index !== -1)
-      response.roles.splice(index, 1);
-
-    rolesList.value = response.roles
-  }).catch(error => { })
-}
+const alert = ref({
+  show: false,
+  message: ''
+})
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = users.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = users.value.length + (currentPage.value - 1) * rowPerPage.value
-  
-  return `Mostrando ${ firstIndex } al ${ lastIndex } de ${ totalUsers.value } usuarios`
-})
+  const firstIndex = communityCouncils.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = communityCouncils.value.length + (currentPage.value - 1) * rowPerPage.value
 
+  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalCommunityCouncils.value } registros`
+})
 
 // 👉 watching current page
 watchEffect(() => {
   if (currentPage.value > totalPages.value)
     currentPage.value = totalPages.value
+
+  if (!isAddNewCommunityCouncilDrawerVisible.value)
+    selectedCommunityCouncil.value = {}
 })
 
 watchEffect(fetchData)
 
-// 👉 Fetch usuarios
 async function fetchData() {
-  isRequestOngoing.value = true
-
   let data = {
     search: searchQuery.value,
     orderByField: 'id',
-    orderBy: 'asc',
+    orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value
   }
 
-  await usersStores.fetchUsers(data)
+  isRequestOngoing.value = true
 
-  users.value = usersStores.getUsers
-  totalPages.value = usersStores.last_page
-  totalUsers.value = usersStores.usersTotalCount
-
-  IdsUserOnline.value = []
-    
-  users.value.forEach(element => {
-    IdsUserOnline.value.push(element.id)
-  })
-
-  searchRoles()
-  onlineList()
-
-  if(listGenders.value.length === 0) {
-    await statesStores.fetchStates();
-    await citiesStores.fetchCities();
-    await municipalitiesStores.fetchMunicipalities();
-    await parishesStores.fetchParishes();
-    await gendersStores.fetchGenders();
-
-    loadStates()
-    loadCities()
-    loadMunicipalities()
-    loadParishes()
-    loadGenders()
-  }
+  await communityCouncilsStores.fetchCommunityCouncils(data)
+  communityCouncils.value = communityCouncilsStores.getCommunityCouncils
+  totalPages.value = communityCouncilsStores.last_page
+  totalCommunityCouncils.value = communityCouncilsStores.communityCouncilsTotalCount
 
   isRequestOngoing.value = false
 }
 
-// show dialogs
-const showUserDetailDialog = function(user){
-  isUserDetailDialog.value = true
-  selectedUser.value = { ...user }
-  
-  user.roles.forEach(function(ro) {
-    roleUsers.value.push(ro.name)
+const getColor = () =>  {
+
+    const colors = [
+        'success',
+        'warning',
+        'info',
+        'primary',
+        'secondary',
+        'error',
+        'secondary'
+    ]
+
+    return { color: colors[Math.floor(Math.random() * colors.length)]}
+}
+
+// 👉 dialog close
+const closeNavigationDrawer = () => {
+  nextTick(() => {
+    refForm.value?.reset()
+    refForm.value?.resetValidation()
+
+    isDialogVisible.value = false
+    message.value = ''
+    success.value = false
+  })
+}
+
+const onSubmit = () => {
+  refForm.value?.validate().then(({ valid }) => {
+    if (valid) {
+     
+        let data = {
+            id: selectedCommunityCouncil.value.id,
+        }
+
+        communityCouncilsStores.showCommunityCouncil(data)
+            .then((res) => {
+                message.value = res.data.message
+                success.value = res.data.success
+            })
+            .catch((err) => {
+                advisor.value = {
+                    type: 'error',
+                    message: err,
+                    show: true
+                }
+            })
+    }
+  })
+}
+
+const submitForm = async (communityCouncil, method) => {
+  isRequestOngoing.value = true
+
+  if (method === 'update') {
+    communityCouncil.data.append('_method', 'PUT')
+    submitUpdate(communityCouncil)
+    return
+  }
+
+  submitCreate(communityCouncil.data)
+}
+
+const submitCreate = communityCouncilData => {
+
+  communityCouncilsStores.addCommunityCouncil(communityCouncilData)
+    .then((res) => {
+      if (res.data.success) {
+        advisor.value = {
+          type: 'success',
+          message: 'Consejo Comunal creado con éxito',
+          show: true
+        }
+        fetchData()
+      }
+      isRequestOngoing.value = false
+    })
+    .catch((err) => {
+      advisor.value = {
+        type: 'error',
+        message: err,
+        show: true
+      }
+      isRequestOngoing.value = false
   })
 
-  selectedUser.value.assignedRoles = roleUsers
+  setTimeout(() => {
+    advisor.value = {
+      type: '',
+      message: '',
+      show: false
+    }
+  }, 3000)
 }
 
-const showUserPasswordDialog = function(user){
-  isUserPasswordDialog.value = true
-  selectedUser.value.id = user.id
-  selectedUser.value.email = user.email
+const submitUpdate = communityCouncilData => {
+
+  communityCouncilsStores.updateCommunityCouncil(communityCouncilData)
+    .then((res) => {
+      if (res.data.success) {
+        advisor.value = {
+          type: 'success',
+          message: 'Consejo Comunal actualizado con éxito',
+          show: true
+        }
+        fetchData()
+      }
+      isRequestOngoing.value = false
+    })
+    .catch((err) => {
+      advisor.value = {
+        type: 'error',
+        message: err,
+        show: true
+      }
+      isRequestOngoing.value = false
+    })
+
+  setTimeout(() => {
+    advisor.value = {
+      type: '',
+      message: '',
+      show: false
+    }
+  }, 3000)
 }
 
-const showUserEditDialog = function(user){
-  isUserEditDialog.value = true
-  selectedUser.value = { ...user }
 
-  user.roles.forEach(function(ro) {
-    roleUsers.value.push(ro.name)
-  })
-
-  selectedUser.value.assignedRoles = roleUsers
+const editCommunityCouncil = communityCouncilData => {
+    isAddNewCommunityCouncilDrawerVisible.value = true
+    selectedCommunityCouncil.value = { ...communityCouncilData }
 }
 
-const showUserDeleteDialog = function(user){
-  isUserDeleteDialog.value =true
-  selectedUser.value = { ...user }
+const showDeleteDialog = communityCouncilData => {
+  isConfirmDeleteDialogVisible.value = true
+  selectedCommunityCouncil.value = { ...communityCouncilData }
 }
 
-const online = id =>{
+const removeCommunityCouncil = async () => {
+  isConfirmDeleteDialogVisible.value = false
+  let res = await communityCouncilsStores.deleteCommunityCouncil({ ids: [selectedCommunityCouncil.value.id] })
+  selectedCommunityCouncil.value = {}
 
-  let uo = userOnline.value.find(user => user.id == id )
-  let current = new Date()
-  let online = new Date(2000, 0, 1, 12, 0, 0)
+  advisor.value = {
+    type: res.data.success ? 'success' : 'error',
+    message: res.data.success ? 'Consejo Comunal eliminado con éxito!' : res.data.message,
+    show: true
+  }
 
-  if(uo && uo.online!=null)
-    online = new Date(uo.online)
+  await fetchData()
 
-  let gapSeconds = Math.abs((online.getTime() - current.getTime()) / 1000)
+  setTimeout(() => {
+    advisor.value = {
+      type: '',
+      message: '',
+      show: false
+    }
+  }, 3000)
 
-  if(gapSeconds>120) {
-    return 'error'
-  } else {
-    return 'success'
-  }  
-}
-
-onMounted(()=>{
-  interval = setInterval(()=>{
-    onlineList()
-  }, 60000)
-})
-
-onUnmounted(()=>{
-  clearInterval(interval)
-})
-
-const showAlert = function(alert) {
-  advisor.value.show = alert.value.show
-  advisor.value.type = alert.value.type
-  advisor.value.message = alert.value.message
+  return true
 }
 
 const downloadCSV = async () => {
 
   isRequestOngoing.value = true
 
-  let data = { limit: -1}
+  let data = { limit: -1 }
 
-  await usersStores.fetchUsers(data)
+  await communityCouncilsStores.fetchCommunityCouncils(data)
 
-  let dataArray = []
+  let dataArray = [];
   
-  usersStores.getUsers.forEach(element => {
+  communityCouncilsStores.getCommunityCouncils.forEach(element => {
     let data = {
       ID: element.id,
-      NOMBRE: element.name + ' ' + (element.last_name ?? ''),
-      CORREO: element.email,
-      ROLES: element.roles.map(e => e['name']).join(','),
-      ESTADO: element.user_detail.parish.municipality.state.name,
-      TELÉFONO: element.user_detail.phone
+      NOMBRE: element.name,
+      ESTADO: element.parish.municipality.state.name,
+      MUNICIPIO: element.parish.municipality.name,
+      PARROQUIA: element.parish.name
     }
-        
+
     dataArray.push(data)
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "usuarios", "csv")
+    .exportDataFromJSON(dataArray, "community-councils", "csv");
 
   isRequestOngoing.value = false
+
 }
 
 </script>
@@ -299,21 +296,21 @@ const downloadCSV = async () => {
           v-if="advisor.show"
           :type="advisor.type"
           class="mb-6">
-            {{ advisor.message }}
+            
+          {{ advisor.message }}
         </v-alert>
 
-        <VCard v-if="users" id="rol-list" >
-          <VCardText class="d-flex align-center flex-wrap gap-4">
-            <!-- 👉 Rows per page -->
+        <v-card title="Filtros">
+          <v-card-text class="d-flex flex-wrap py-4 gap-4">
             <div
-              class="d-flex align-center"
-              style="width: 135px;"
-            >
+              class="me-3"
+              style="width: 80px;">
+              
               <VSelect
                 v-model="rowPerPage"
                 density="compact"
-                :items="[10, 20, 30, 50]"
-              />
+                variant="outlined"
+                :items="[10, 20, 30, 50]"/>
             </div>
 
             <div class="d-flex align-center">
@@ -322,331 +319,174 @@ const downloadCSV = async () => {
                 color="secondary"
                 prepend-icon="tabler-file-export"
                 @click="downloadCSV">
-                  Exportar
+                Exportar
               </VBtn>
             </div>
 
-            <div class="me-3" v-if="listGenders.length > 0">
-              <create
-                :rolesList="rolesList"
-                :states="listStates"
-                :cities="listCities"
-                :municipalities="listMunicipalities"
-                :parishes="listParishes"
-                :genders="listGenders"
-                @close="roleUsers = []"
-                @data="fetchData"
-                @alert="showAlert"/>
-            </div>
-
-            <VSpacer />
+            <v-spacer />
 
             <div class="d-flex align-center flex-wrap gap-4">
-              <!-- 👉 Select status -->
-              <div class="invoice-list-filter"
-                style="width: 20rem;"
-              >
-                <VSelect
-                  v-model="searchQuery"
-                  label="Filtrar por rol"
-                  clearable
-                  clear-icon="tabler-x"
-                  single-line
-                  :items="rolesList"
-                />
-              </div>
-              
               <!-- 👉 Search  -->
-              <div class="search rol-list-filter">
-                <VTextField
+              <div style="width: 10rem;">
+                <v-text-field
                   v-model="searchQuery"
-                  placeholder="Buscar usuario"
-                  density="compact"
-                />
+                  placeholder="Buscar"
+                  density="compact"/>
               </div>
+
+              <!-- 👉 Add user button -->
+              <v-btn
+                v-if="$can('crear','consejos-comunales')"
+                prepend-icon="tabler-plus"
+                @click="isAddNewCommunityCouncilDrawerVisible = true">
+                  Agregar Consejo Comunal
+              </v-btn>
             </div>
-          </VCardText>
+          </v-card-text>
 
-          <VDivider />
+          <v-divider />
 
-          <!-- SECTION Table -->
-          <VTable class="text-no-wrap rol-list-table">
-            <!-- 👉 Table head -->
-            <thead class="text-uppercase">
+          <v-table class="text-no-wrap">
+            <!-- 👉 table head -->
+            <thead>
               <tr>
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
-                <th scope="col"> CORREO </th>
-                <th scope="col"> ROLES </th>
                 <th scope="col"> ESTADO </th>
-                <th scope="col"> TELÉFONO </th>
-                <th scope="col" v-if="$can('ver','usuarios') || $can('editar','usuarios') || $can('eliminar','usuarios')">
-                  Acciones 
+                <th scope="col"> UBICACIÓN </th>
+                <th scope="col" v-if="$can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">
+                  ACCIONES
                 </th>
               </tr>
             </thead>
-
-            <!-- 👉 Table Body -->
+            <!-- 👉 table body -->
             <tbody>
-              <tr
-                v-for="user in users"
-                :key="user.id"
-                style="height: 3.75rem;"
-              >
-                <!-- 👉 Id -->
-                <td>
-                  #{{ user.id }}
-                </td>
+              <tr 
+                v-for="communityCouncil in communityCouncils"
+                :key="communityCouncil.id"
+                style="height: 3.75rem;">
 
-                <!-- 👉 name -->
-                <td>
+                <td> {{communityCouncil.id }} </td>
+                <td class="text-base font-weight-medium mb-0"> {{communityCouncil.name }} </td>
+                <td class="text-uppercase"> {{communityCouncil.parish.municipality.state.name }} </td>
+                <td class="text-wrap"> 
                   <div class="d-flex align-center">
-                    <VBadge
-                      dot
-                      location="bottom right"
-                      offset-x="3"
-                      offset-y="3"
-                      bordered
-                      :color="online(user.id)"
-                    >
-                      <VAvatar
-                        variant="tonal"
-                        size="38"
-                      >
-                        <VImg
-                          v-if="user.avatar"
-                          style="border-radius: 50%;"
-                          :src="themeConfig.settings.urlStorage + user.avatar"
-                        />
-                        <span v-else>{{ avatarText(user.name) }}</span>
-                      </VAvatar>
-                    </VBadge>
-                    <div class="ml-3 d-flex flex-column">
-                      {{ user.name }}  {{ user.last_name ?? '' }}
+                    <div class="d-flex flex-column">
+                      <h6 class="text-base font-weight-medium mb-0">
+                        {{communityCouncil.parish.municipality.name }}
+                      </h6>
+                      <span class="text-disabled text-sm">{{communityCouncil.parish.name }}</span>
                     </div>
                   </div>
                 </td>
-
-                <!-- 👉 correo -->
-                <td>
-                  {{ user.email }}
-                </td>
-
-                <!-- 👉 roles -->
-                <td>
-                  <ul>
-                    <li v-for="(value,key) in user.roles">
-                      {{ value.name }}
-                    </li>
-                  </ul>
-                </td>
-
-                <!-- 👉 state -->
-                <td>
-                  {{ user.user_detail.parish.municipality.state.name }}
-                </td>
-
-                <!-- 👉 phone -->
-                  <td>
-                  {{ user.user_detail.phone ?? '----' }}
-                </td>
-                <!-- 👉 acciones -->
-                <td style="width: 8rem;">
+                <!-- 👉 Acciones -->
+                <td class="text-center" style="width: 5rem;" v-if="$can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">      
                   <VBtn
-                    v-if="$can('ver','usuarios')"
+                    v-if="$can('editar','consejos-comunales')"
                     icon
-                    variant="text"
-                    color="default"
                     size="x-small"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Ver
-                    </VTooltip>
+                    color="default"
+                    variant="text"
+                    @click="editCommunityCouncil(communityCouncil)">
+                              
                     <VIcon
-                      icon="tabler-eye"
-                      
-                      :size="22"
-                      @click="showUserDetailDialog(user)"
-                    />
+                        size="22"
+                        icon="tabler-edit" />
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('editar','usuarios')"
+                    v-if="$can('eliminar','consejos-comunales')"
                     icon
-                    variant="text"
-                    color="default"
                     size="x-small"
-                    @click="showUserPasswordDialog(user)"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Cambiar contraseña
-                    </VTooltip>
-                    <VIcon
-                      :size="22"
-                      icon="tabler-key"
-                    />
-                  </VBtn>
-
-                  <VBtn
-                    v-if="$can('editar','usuarios')"
-                    icon
-                    variant="text"
                     color="default"
-                    size="x-small"
-                    @click="showUserEditDialog(user)"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Editar
-                    </VTooltip>
-                    <VIcon
-                      :size="22"
-                      icon="tabler-edit"
-                    />
-                  </VBtn>
-
-                  <VBtn
-                    v-if="$can('eliminar','usuarios')"
-                    icon
                     variant="text"
-                    color="default"
-                    size="x-small"
-                    @click="showUserDeleteDialog(user)"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Eliminar
-                    </VTooltip>
+                    @click="showDeleteDialog(communityCouncil)">
+                              
                     <VIcon
-                      :size="22"
-                      icon="tabler-trash"
-                    />
+                      size="22"
+                      icon="tabler-trash" />
                   </VBtn>
                 </td>
               </tr>
             </tbody>
-
             <!-- 👉 table footer  -->
-            <tfoot v-show="!users.length">
+            <tfoot v-show="!communityCouncils.length">
               <tr>
                 <td
-                  colspan="8"
-                  class="text-center text-body-1"
-                >
-                  No existen usuarios
+                  colspan="7"
+                  class="text-center">
+                  Datos no disponibles
                 </td>
               </tr>
             </tfoot>
-          </VTable>
-          <!-- !SECTION -->
+          </v-table>
+        
+          <v-divider />
 
-          <VDivider />
-
-          <!-- SECTION Pagination -->
-          <VCardText class="d-flex align-center flex-wrap gap-4 py-3">
-            <!-- 👉 Pagination meta -->
+          <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5">
             <span class="text-sm text-disabled">
               {{ paginationData }}
             </span>
 
-            <VSpacer />
-
-            <!-- 👉 Pagination -->
             <VPagination
               v-model="currentPage"
               size="small"
               :total-visible="5"
-              :length="totalPages"
-              @next="selectedRows = []"
-              @prev="selectedRows = []"
-            />
+              :length="totalPages"/>
+          
           </VCardText>
-
-          <show
-            v-if="listGenders.length > 0" 
-            v-model:isDrawerOpen="isUserDetailDialog"
-            :rolesList="rolesList"
-            :user="selectedUser"
-            :states="listStates"
-            :cities="listCities"
-            :municipalities="listMunicipalities"
-            :parishes="listParishes"
-            :genders="listGenders"
-            @close="roleUsers = []"/>
-
-          <password
-            v-model:isDrawerOpen="isUserPasswordDialog"
-            :user="selectedUser"
-            @alert="showAlert"/>
-
-          <edit 
-            v-if="listGenders.length > 0" 
-            v-model:isDrawerOpen="isUserEditDialog"
-            :rolesList="rolesList"
-            :user="selectedUser"
-            :states="listStates"
-            :cities="listCities"
-            :municipalities="listMunicipalities"
-            :parishes="listParishes"
-            :genders="listGenders"
-            @data="fetchData"
-            @close="roleUsers = []"
-            @alert="showAlert"/>
-
-          <destroy 
-            v-model:isDrawerOpen="isUserDeleteDialog"
-            :user="selectedUser"
-            @data="fetchData"
-            @alert="showAlert"/>
-
-        </VCard>
+        </v-card>
       </v-col>
     </v-row>
+
+    <!-- 👉 Add New Community Council -->
+    <!-- <AddNewCommunityCouncilDrawer
+      v-model:isDrawerOpen="isAddNewCommunityCouncilDrawerVisible"
+      :communityCouncil="selectedCommunityCouncil"
+      @community-council-data="submitForm"/> -->
+
+    <!-- 👉 Confirm Delete -->
+    <VDialog
+      v-model="isConfirmDeleteDialogVisible"
+      persistent
+      class="v-dialog-sm" >
+      <!-- Dialog close btn -->
+        
+      <DialogCloseBtn @click="isConfirmDeleteDialogVisible = !isConfirmDeleteDialogVisible" />
+
+      <!-- Dialog Content -->
+      <VCard title="Eliminar Consejo Comunal">
+        <VCardText>
+          Está seguro de eliminar el consejo comunal <strong>{{ selectedCommunityCouncil.name }}</strong>?.
+        </VCardText>
+
+        <VCardText class="d-flex justify-end gap-3 flex-wrap">
+          <VBtn
+            color="secondary"
+            variant="tonal"
+            @click="isConfirmDeleteDialogVisible = false">
+              Cancelar
+          </VBtn>
+          <VBtn @click="removeCommunityCouncil">
+              Aceptar
+          </VBtn>
+        </VCardText>
+      </VCard>
+    </VDialog>
+    <!-- MENSAJE COPIADO -->
+    <VSnackbar
+      v-model="alert.show"
+      location="center"
+      :timeout="1000"
+    >
+      {{ alert.message }}
+    </VSnackbar>
+    <!-- !SECTION -->
   </section>
 </template>
-
-<style lang="scss">
-  #rol-list {
-    .rol-list-actions {
-      inline-size: 8rem;
-    }
-
-    .rol-list-filter {
-      inline-size: 12rem;
-    }
-  }
-
-  .v-dialog {
-    z-index: 1999 !important;
-  }
-
-  .search {
-    width: 100%;
-  }
-
-  @media(min-width: 991px){
-    .search {
-      width: 30rem;
-    }
-  }
-</style>
 
 <route lang="yaml">
   meta:
     action: ver
-    subject: usuarios
+    subject: consejos-comunales
 </route>
