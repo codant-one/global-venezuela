@@ -15,6 +15,5 @@ class CommunityCouncilSeeder extends Seeder
     public function run(): void
     {
         CommunityCouncil::factory()->count(50)->create();
-
     }
 }

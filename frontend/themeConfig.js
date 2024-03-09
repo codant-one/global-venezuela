@@ -14,7 +14,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
     title: 'VENEZUELA GLOBAL',
     logo: h('div', { innerHTML: logo, style: 'line-height:0; color: rgb(var(--v-global-theme-primary))' }),
-    logoFull: h('img', { src: logoFull, style: 'width: 45px' }),
+    logoFull: h('img', { src: logoFull, style: 'width: 40px' }),
     logoSlogan: h('img', { src: logoSlogan, style: 'width: 100%' }),
     logoWhite: h('img', { src: logoWhite, style: 'width: 40px' }),
     contentWidth: ContentWidth.Boxed,

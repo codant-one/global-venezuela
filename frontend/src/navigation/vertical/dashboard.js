@@ -1,8 +1,8 @@
 export default [
     { heading: 'Dashboard' },
     {
-        title: 'Dashboard', 
-        icon: { icon: 'tabler-home-hand' },
+        title: 'Inicio', 
+        icon: { icon: 'tabler-home' },
         to: 'dashboard-panel', 
         action: 'ver' , 
         subject: 'dashboard'

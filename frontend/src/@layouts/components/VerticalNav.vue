@@ -108,17 +108,17 @@ const closeAll = () =>{
               v-show="!hideTitleAndIcon"
               class="app-title font-weight-bold leading-normal"
             >
-            VENEZUELA <br> GLOBAL
+            VENEZUELA GLOBAL
             </h4>
           </Transition>
         </RouterLink>
         <!-- Show toggle collapsible in >md and close button in <md -->
-        <VIcon
+        <!-- <VIcon
           icon="tabler-arrows-minimize"
           size="small"
           class="me-2"
           @click="closeAll"
-        />
+        /> -->
         
         <!-- 👉 Vertical nav actions -->
         <!-- Show toggle collapsible in >md and close button in <md -->
