@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('circuits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('parish_id');
+            $table->unsignedBigInteger('city_id')->nullable();
             $table->string('name');
             $table->timestamps();
 
             $table->foreign('parish_id')->references('id')->on('parishes')->onDelete('cascade');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
         });
     }
 

@@ -16,13 +16,13 @@ class CircuitController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = Circuit::with(['parish.municipality.state'])
+            $query = Circuit::with(['parish.municipality.state', 'city'])
                         ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',
                                 'orderBy',
-                                'role'
+                                'state_id'
                             ])
                         );
 
@@ -30,7 +30,8 @@ class CircuitController extends Controller
                                 $request->only([
                                     'search',
                                     'orderByField',
-                                    'orderBy'
+                                    'orderBy',
+                                    'state_id'
                                 ])
                             )->count();
 
@@ -39,8 +40,8 @@ class CircuitController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuitsCouncils' => $circuits,
-                    'circuitsCouncilsTotalCount' => $count
+                    'circuits' => $circuits,
+                    'circuitsTotalCount' => $count
                 ]
             ], 200);
     }
@@ -56,7 +57,7 @@ class CircuitController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuit' => Circuit::find($circuits->id)
+                    'circuit' => Circuit::with(['parish.municipality.state', 'city'])->find($circuit->id)
                 ]
             ]);
 
@@ -111,12 +112,12 @@ class CircuitController extends Controller
                     'message' => 'Circuito no encontrado'
                 ], 404);
 
-            $circuit = $circuit->updateCircuit($request, $council);
+            $circuit = $circuit->updateCircuit($request, $circuit);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'circuit' => Circuit::find($circuit->id)
+                    'circuit' => Circuit::with(['parish.municipality.state', 'city'])->find($circuit->id)
                 ]
             ]);
 

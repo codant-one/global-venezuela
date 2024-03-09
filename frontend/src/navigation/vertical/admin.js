@@ -15,6 +15,13 @@ export default [
     subject: 'usuarios'
   },
   { 
+    title: 'Circuitos', 
+    icon: { icon: 'mdi-home-group' },
+    to: 'dashboard-admin-circuits', 
+    action: 'ver', 
+    subject: 'usuarios'
+  },
+  { 
     title: 'Consejos Comunales', 
     icon: { icon: 'mdi-home-account' },
     to: 'dashboard-admin-community-councils', 

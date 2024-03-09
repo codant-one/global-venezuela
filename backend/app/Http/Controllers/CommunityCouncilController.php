@@ -20,8 +20,7 @@ class CommunityCouncilController extends Controller
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy',
-                                'role'
+                                'orderBy'
                             ])
                         );
 

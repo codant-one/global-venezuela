@@ -122,7 +122,6 @@ const downloadCSV = async () => {
 
   rolesStores.getRoles.forEach(element => {
     let data = {
-      ID: element.id,
       ROL: element.name
     }
         
