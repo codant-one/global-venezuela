@@ -76,7 +76,7 @@ const timeSpendingChartConfig = {
             label: 'Total',
             color: 'rgba(var(--v-theme-on-background), var(--v-disabled-opacity))',
             formatter() {
-              return '231h'
+              return '12000'
             },
           },
         },
@@ -123,15 +123,15 @@ async function fetchData() {
             class="mb-7 text-wrap"
             style="max-inline-size: 800px;"
           >
-            Tu progreso es impresionante. ¡Sigamos así y obtengamos muchas ventas!
+            En este panel encontraras información relevante sobre el registro de migrantes a través de Venezuela Global
           </div>
 
           <div class="d-flex justify-space-between flex-wrap gap-4 flex-column flex-md-row">
             <div
               v-for="{ title, value, icon, color } in [
-                { title: 'Horas vendidas', value: '34h', icon: 'mdi-laptop', color: 'primary' },
-                { title: 'Servicios prestados', value: '82%', icon: 'mdi-lightbulb', color: 'success' },
-                { title: 'Servicios completados', value: '14', icon: 'mdi-check-decagram-outline', color: 'error' },
+                { title: 'Migrantes registrados', value: '28.000', icon: 'mdi-laptop', color: 'primary' },
+                { title: 'Indocumentados', value: '12000', icon: 'mdi-lightbulb', color: 'success' },
+                { title: 'Estados reportados', value: '14', icon: 'mdi-check-decagram-outline', color: 'error' },
               ]"
               :key="title"
             >
@@ -166,11 +166,11 @@ async function fetchData() {
         <div class="d-flex justify-space-between align-center">
           <div class="d-flex flex-column ps-3">
             <h5 class="text-h5 text-high-emphasis mb-2 text-no-wrap">
-              Tiempo en Servicios
+              Registros por origen
             </h5>
-            <span class="mb-7">Reporte Semanal</span>
+            <span class="mb-7">Reporte por país</span>
             <div class="text-h3 mb-2">
-              231<span class="text-h4 text-medium-emphasis">h</span> 14<span class="text-h4 text-medium-emphasis">m</span>
+              12000
             </div>
             <div>
               <VChip

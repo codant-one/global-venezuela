@@ -25,6 +25,13 @@ const router = createRouter({
       },
     },
     {
+      path: '/volunteer-register',
+      redirect: to => {     
+        
+        return { name: 'volunteer-register', query: to.query }
+      },
+    },
+    {
       path: '/register-confirm',
       redirect: to => {     
         
