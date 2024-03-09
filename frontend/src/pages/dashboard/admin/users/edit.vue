@@ -2,8 +2,6 @@
 
 import { requiredValidator, phoneValidator } from '@/@core/utils/validators'
 import { useUsersStores } from '@/stores/useUsers'
-import { useCountriesStores } from '@/stores/useCountries'
-import { useProvincesStores } from '@/stores/useProvinces'
 
 const props = defineProps({
   isDrawerOpen: {
@@ -15,6 +13,26 @@ const props = defineProps({
     required: true
   },
   rolesList: {
+    type: Object,
+    required: true
+  },
+  states: {
+    type: Object,
+    required: true
+  },
+  cities: {
+    type: Object,
+    required: true
+  },
+  municipalities: {
+    type: Object,
+    required: true
+  },
+  parishes: {
+    type: Object,
+    required: true
+  },
+  genders: {
     type: Object,
     required: true
   }
@@ -29,10 +47,18 @@ const emit = defineEmits([
 ])
 
 const usersStores = useUsersStores()
-const countriesStores = useCountriesStores()
-const provincesStores = useProvincesStores()
 
 const refFormEdit = ref()
+
+const listStates = ref(props.states)
+const listCities = ref(props.cities)
+const listMunicipalities = ref(props.municipalities)
+const listParishes = ref(props.parishes)
+const listGenders = ref(props.genders)
+
+const listCitiesByStates = ref([])
+const listMunicipalitiesByStates = ref([])
+const listParishesByMunicipalities = ref([])
 
 const id = ref('')
 const email = ref('')
@@ -40,14 +66,17 @@ const name = ref('')
 const last_name = ref('')
 const phone = ref('')
 const address = ref('')
-const username = ref('')
 const document = ref('')
-const provinceOld_id = ref('')
-const province_id = ref('')
-const province = ref('')
-const country_id = ref('')
-const countryOld_id = ref('')
-const country = ref('')
+const gender_id = ref('')
+const genderOld_id = ref('')
+const state_id = ref('')
+const stateOld_id = ref('')
+const city_id = ref('')
+const cityOld_id = ref('')
+const municipality_id = ref('')
+const municipalityOld_id = ref('')
+const parish_id = ref('')
+const parishOld_id = ref('')
 const assignedRoles = ref([])
 
 const advisor = ref({
@@ -56,73 +85,93 @@ const advisor = ref({
   show: false
 })
 
-const listCountries = ref([])
-const listProvinces = ref([])
-const listProvincesByCountry = ref([])
-
-const getProvinces = computed(() => {
-  return listProvincesByCountry.value.map((province) => {
+const getCities = computed(() => {
+  return listCitiesByStates.value.map((state) => {
     return {
-      title: province.name,
-      value: province.id,
+      title: state.name,
+      value: state.id,
     }
   })
 })
 
-const loadCountries = () => {
-  listCountries.value = countriesStores.getCountries
-}
+const getMunicipalities = computed(() => {
+  return listMunicipalitiesByStates.value.map((state) => {
+    return {
+      title: state.name,
+      value: state.id,
+    }
+  })
+})
 
-const loadProvinces = () => {
-  listProvinces.value = provincesStores.getProvinces
-}
+const getParishes = computed(() => {
+  return listParishesByMunicipalities.value.map((municipality) => {
+    return {
+      title: municipality.name,
+      value: municipality.id,
+    }
+  })
+})
 
-const selectCountry = country => {
-  if (country) {
-    let _country = listCountries.value.find(item => item.name === country)
-    country_id.value = _country.name
+const selectState = state => {
+  if (state) {
+    let _state = listStates.value.find(item => item.name === state)
+    state_id.value = _state.name
  
-    province_id.value = ''
-    
-    listProvincesByCountry.value = listProvinces.value.filter(item => item.country_id === _country.id)
+    city_id.value = ''
+    municipality_id.value = ''
+
+    listCitiesByStates.value = listCities.value.filter(item => item.state_id === _state.id)
+    listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
+  }
+}
+
+const selectMunicipalities = municipality => {
+  if (municipality) {
+    let _municipality = listMunicipalities.value.find(item => item.id === municipality)
+    municipality_id.value = _municipality.name
+ 
+    parish_id.value = ''
+
+    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
+
   }
 }
 
 onMounted(async () => {
-
-    await countriesStores.fetchCountries();
-    await provincesStores.fetchProvinces();
-
-    loadCountries()
-    loadProvinces()
-    selectCountry(countryOld_id.value)
-    fetchData()
+  fetchData()
 })
 
 watchEffect(fetchData)
 
 async function fetchData() {
-    if (props.isDrawerOpen) {
+  if (props.isDrawerOpen) {
+    if (!(Object.entries(props.user).length === 0) && props.user.constructor === Object) {
+      id.value = props.user.id
+      email.value = props.user.email
+      name.value = props.user.name
+      last_name.value = props.user.last_name
+      phone.value = props.user.user_detail?.phone
+      address.value = props.user.user_detail?.address
+      document.value = props.user.user_detail?.document
+           
+      genderOld_id.value = props.user.user_detail?.gender?.id
+      gender_id.value = props.user.user_detail?.gender?.name
 
-        if (!(Object.entries(props.user).length === 0) && props.user.constructor === Object) {
-            id.value = props.user.id
-            email.value = props.user.email
-            name.value = props.user.name
-            last_name.value = props.user.last_name
-            phone.value = props.user.user_detail?.phone
-            address.value = props.user.user_detail?.address
-            username.value = props.user.username
-            document.value = props.user.user_detail?.document
-            province_id.value = props.user.user_detail?.province.name
-            provinceOld_id.value = props.user.user_detail?.province_id
-            countryOld_id.value = props.user.user_detail?.province.country.name
-            country_id.value = props.user.user_detail?.province.country.name
-            province.value = props.user.user_detail?.province.name
-            country.value = props.user.user_detail?.province.country.name
+      stateOld_id.value = props.user.user_detail?.parish.municipality.state.id
+      state_id.value = props.user.user_detail?.parish.municipality.state.name
 
-            assignedRoles.value = props.user.assignedRoles
+      cityOld_id.value = props.user.user_detail?.city.id
+      city_id.value = props.user.user_detail?.city.name
 
-      }
+      municipalityOld_id.value = props.user.user_detail?.parish.municipality.id
+      municipality_id.value = props.user.user_detail?.parish.municipality.name
+
+      parishOld_id.value = props.user.user_detail?.parish.id
+      parish_id.value = props.user.user_detail?.parish.name
+
+      assignedRoles.value = props.user.assignedRoles
+
+    }
   }
 }
 
@@ -141,9 +190,10 @@ const onSubmitEdit = () =>{
           last_name: last_name.value,
           phone: phone.value,
           address: address.value,
-          username: username.value,
           document: document.value,
-          province_id: (Number.isInteger(province_id.value)) ? province_id.value : provinceOld_id.value,
+          gender_id: (Number.isInteger(gender_id.value)) ? gender_id.value : genderOld_id.value,
+          parish_id:(Number.isInteger(parish_id.value)) ? parish_id.value : parishOld_id.value,
+          city_id: (Number.isInteger(city_id.value)) ? city_id.value : cityOld_id.value,
           roles: assignedRoles.value
         }
 
@@ -200,17 +250,6 @@ const onSubmitEdit = () =>{
   })
 }
 
-const getFlagCountry = country => {
-  let val = listCountries.value.find(item => {
-    return item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === country.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-  })
-
-  if(val)
-    return 'https://hatscripts.github.io/circle-flags/flags/'+val.iso.toLowerCase()+'.svg'
-  else
-    return ''
-}
-
 </script>
 
 <template>
@@ -253,43 +292,32 @@ const getFlagCountry = country => {
                         </VCol>
                         <VCol
                           cols="12"
-                          md="6"
+                          md="12"
                         >
                           <VTextField
                             v-model="email"
                             label="E-mail"
-                            readonly
+                            disabled
                           />
                         </VCol>
-                        <VCol
-                          md="6"
-                          cols="12"
-                        >
+                        <VCol md="6" cols="12">
                           <VTextField
-                            v-model="username"
-                            label="Username"
-                            :rules="[requiredValidator]"
+                            v-model="phone"
+                            type="password"
+                            label="Contraseña"
+                            disabled
                           />
-                        </VCol>
+                        </VCol> 
                         <VCol
-                          cols="12"
                           md="6"
+                          cols="12"
                         >
                           <VTextField
                             v-model="phone"
-                            label="Telefono"
+                            type="tel"
+                            label="Teléfono"
                             placeholder="+(XX) XXXXXXXXX"
-                            :rules="[requiredValidator, phoneValidator]"
-                          />
-                        </VCol>
-                        <VCol
-                          cols="12"
-                          md="6"
-                        >
-                          <VTextField
-                            v-model="address"
-                            label="Direccion"
-                            :rules="[requiredValidator]"
+                            :rules="[phoneValidator, requiredValidator]"
                           />
                         </VCol>
                         <VCol
@@ -297,65 +325,104 @@ const getFlagCountry = country => {
                           md="6"
                         >
                           <VAutocomplete
-                            v-model="country_id"
-                            label="País"
+                            v-model="gender_id"
+                            label="Género"
                             :rules="[requiredValidator]"
-                            :items="listCountries"
+                            :items="listGenders"
                             item-title="name"
-                            item-value="name"
+                            item-value="id"
                             :menu-props="{ maxHeight: '200px' }"
-                            @update:model-value="selectCountry"
-                          >
-                          <template
-                            v-if="country_id"
-                            #prepend
-                            >
-                            <VAvatar
-                              start
-                              style="margin-top: -8px;"
-                              size="36"
-                              :image="getFlagCountry(country_id)"
-                            />
-                          </template>
-                        </VAutocomplete>
-                        </VCol>
-                        <VCol
-                          cols="12"
-                          md="6"
-                        >
-                          <v-autocomplete
-                              v-model="province_id"
-                              label="Estado"
-                              :rules="[requiredValidator]"
-                              :items="getProvinces"
-                              :menu-props="{ maxHeight: '200px' }"
-                            />
+                          />
                         </VCol>
                         <VCol
                           cols="12"
                           md="6"
                         >
                           <VTextField
-                            type="tel"
                             v-model="document"
+                            type="tel"
                             label="Cédula"
+                            :rules="[requiredValidator, phoneValidator]"
                           />
-                        </VCol>                     
+                        </VCol>
+                        <VCol
+                          cols="12"
+                          md="6"
+                        >
+                          <VAutocomplete
+                            v-model="state_id"
+                            label="Estado"
+                            :rules="[requiredValidator]"
+                            :items="listStates"
+                            item-title="name"
+                            item-value="name"
+                            :menu-props="{ maxHeight: '200px' }"
+                            @update:model-value="selectState"
+                          />
+                        </VCol>
+                        <VCol
+                          cols="12"
+                          md="6"
+                        >
+                          <VAutocomplete
+                            v-model="city_id"
+                            label="Ciudad"
+                            :rules="[requiredValidator]"
+                            :items="getCities"
+                            :menu-props="{ maxHeight: '200px' }"
+                          />
+                        </VCol>
+                        <VCol
+                          cols="12"
+                          md="6"
+                        >
+                          <VAutocomplete
+                            v-model="municipality_id"
+                            label="Municipio"
+                            :rules="[requiredValidator]"
+                            :items="getMunicipalities"
+                            :menu-props="{ maxHeight: '200px' }"
+                            @update:model-value="selectMunicipalities"
+                          />
+                        </VCol>
+                        <VCol
+                          cols="12"
+                          md="6"
+                        >
+                          <VAutocomplete
+                            v-model="parish_id"
+                            label="Parroquia"
+                            :rules="[requiredValidator]"
+                            :items="getParishes"
+                            :menu-props="{ maxHeight: '200px' }"
+                          />
+                        </VCol>
+                        <VCol
+                          cols="12"
+                          md="12"
+                        >
+                          <VTextarea
+                            v-model="address"
+                            rows="3"
+                            label="Dirección"
+                            :rules="[requiredValidator]"
+                          />
+                        </VCol>                
                         <VCol cols="12">
-                            <VCombobox
-                                v-model="assignedRoles"
-                                chips
-                                clearable
-                                multiple
-                                closable-chips
-                                clear-icon="tabler-circle-x"
-                                :items="rolesList"
-                                label="Roles asignados al usuario"
-                                :rules="[requiredValidator]"
-                            />
+                          <VCombobox
+                            v-model="assignedRoles"
+                            chips
+                            clearable
+                            multiple
+                            closable-chips
+                            clear-icon="tabler-circle-x"
+                            :items="rolesList"
+                            label="Roles asignados al usuario"
+                            :rules="[requiredValidator]"
+                          />
                         </VCol>
                     </VRow>
-                    <VCardText class="d-flex justify-end gap-3 flex-wrap">
+                    <VCardText class="d-flex justify-end gap-3 flex-wrap px-0">
                         <VBtn
                             color="secondary"
                             variant="tonal"

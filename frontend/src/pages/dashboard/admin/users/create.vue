@@ -2,14 +2,29 @@
 
 import { emailValidator, requiredValidator } from '@/@core/utils/validators'
 import { useUsersStores } from '@/stores/useUsers'
-import { useStatesStores } from '@/stores/useStates'
-import { useCitiesStores } from '@/stores/useCities'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
-import { useGendersStores } from '@/stores/useGenders'
 
 const props = defineProps({
   rolesList: {
+    type: Object,
+    required: true
+  },
+  states: {
+    type: Object,
+    required: true
+  },
+  cities: {
+    type: Object,
+    required: true
+  },
+  municipalities: {
+    type: Object,
+    required: true
+  },
+  parishes: {
+    type: Object,
+    required: true
+  },
+  genders: {
     type: Object,
     required: true
   }
@@ -23,17 +38,12 @@ const emit = defineEmits([
 ])
 
 const usersStores = useUsersStores()
-const statesStores = useStatesStores()
-const citiesStores = useCitiesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
-const gendersStores = useGendersStores()
 
-const listStates = ref([])
-const listCities = ref([])
-const listMunicipalities = ref([])
-const listParishes = ref([])
-const listGenders = ref([])
+const listStates = ref(props.states)
+const listCities = ref(props.cities)
+const listMunicipalities = ref(props.municipalities)
+const listParishes = ref(props.parishes)
+const listGenders = ref(props.genders)
 
 const listCitiesByStates = ref([])
 const listMunicipalitiesByStates = ref([])
@@ -51,7 +61,6 @@ const phone = ref('----')
 const address = ref('----')
 const document = ref('----')
 const gender_id = ref('Masculino')
-const genderOld_id = ref(1)
 const state_id = ref('')
 const city_id = ref('')
 const municipality_id = ref('')
@@ -90,43 +99,6 @@ const getParishes = computed(() => {
     }
   })
 })
-
-onMounted(async () => {
-
-  await statesStores.fetchStates();
-  await citiesStores.fetchCities();
-  await municipalitiesStores.fetchMunicipalities();
-  await parishesStores.fetchParishes();
-  await gendersStores.fetchGenders();
-  
-  loadStates()
-  loadCities()
-  loadMunicipalities()
-  loadParishes()
-  loadGenders()
-
-})
-
-
-const loadStates = () => {
-  listStates.value = statesStores.getStates
-}
-
-const loadCities = () => {
-  listCities.value = citiesStores.getCities
-}
-
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
-}
-
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
-}
-
-const loadGenders = () => {
-  listGenders.value = gendersStores.getGenders
-}
 
 const selectState = state => {
   if (state) {

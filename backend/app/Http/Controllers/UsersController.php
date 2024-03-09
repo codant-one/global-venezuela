@@ -46,7 +46,8 @@ class UsersController extends Controller
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy'
+                                'orderBy',
+                                'role'
                             ])
                         );
 
@@ -151,7 +152,7 @@ class UsersController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'user' => $user
+                    'user' => User::with(['roles', 'userDetail.parish.municipality.state', 'userDetail.city', 'userDetail.gender'])->find($user->id)
                 ]
             ], 200);
 
