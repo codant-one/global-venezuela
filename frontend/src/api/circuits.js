@@ -10,8 +10,8 @@ class Circuits {
         return axios.post('/circuits', data)
     }
 
-    show(id) {
-        return axios.get(`/circuits/${id}`)
+    show(params, id) {
+        return axios.get(`/circuits/${id}`, {params})
     }
 
     update(data, id) {

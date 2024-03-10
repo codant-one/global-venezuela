@@ -15,7 +15,7 @@ class CommunityCouncilController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
+        $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -25,24 +25,24 @@ class CommunityCouncilController extends Controller
                             ])
                         );
 
-            $count = $query->applyFilters(
-                                $request->only([
-                                    'search',
-                                    'orderByField',
-                                    'orderBy',
-                                    'state_id'
-                                ])
-                            )->count();
+        $count = $query->applyFilters(
+                            $request->only([
+                                'search',
+                                'orderByField',
+                                'orderBy',
+                                'state_id'
+                            ])
+                        )->count();
 
-            $communityCouncils = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+        $communityCouncils = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
-            return response()->json([
-                'success' => true,
-                'data' => [ 
-                    'communityCouncils' => $communityCouncils,
-                    'communityCouncilsTotalCount' => $count
-                ]
-            ], 200);
+        return response()->json([
+            'success' => true,
+            'data' => [ 
+                'communityCouncils' => $communityCouncils,
+                'communityCouncilsTotalCount' => $count
+            ]
+        ], 200);
     }
 
 
@@ -73,7 +73,7 @@ class CommunityCouncilController extends Controller
     {
         try {
 
-            $communityCouncil = CommunityCouncil::find($id);
+            $communityCouncil = CommunityCouncil::with(['inmigrants'])->find($id);
 
             if (!$communityCouncil)
                 return response()->json([
@@ -85,7 +85,7 @@ class CommunityCouncilController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'Community Council' => $communityCouncil
+                    'communityCouncil' => $communityCouncil
                 ]
             ]);
 

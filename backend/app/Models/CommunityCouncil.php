@@ -19,6 +19,10 @@ class CommunityCouncil extends Model
         return $this->belongsTo(Circuit::class, 'circuit_id', 'id');
     }
 
+    public function inmigrants() {
+        return $this->hasMany(Inmigrant::class, 'community_council_id', 'id');
+    }
+
     /**** Scopes ****/
     public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {

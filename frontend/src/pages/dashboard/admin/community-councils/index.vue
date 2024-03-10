@@ -116,42 +116,6 @@ const loadCircuits = () => {
   listCircuits.value = circuitsStores.getCircuits
 }
 
-// 👉 dialog close
-const closeNavigationDrawer = () => {
-  nextTick(() => {
-    refForm.value?.reset()
-    refForm.value?.resetValidation()
-
-    isDialogVisible.value = false
-    message.value = ''
-    success.value = false
-  })
-}
-
-const onSubmit = () => {
-  refForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-     
-        let data = {
-            id: selectedCommunityCouncil.value.id,
-        }
-
-        communityCouncilsStores.showCommunityCouncil(data)
-            .then((res) => {
-                message.value = res.data.message
-                success.value = res.data.success
-            })
-            .catch((err) => {
-                advisor.value = {
-                    type: 'error',
-                    message: err,
-                    show: true
-                }
-            })
-    }
-  })
-}
-
 const submitForm = async (communityCouncil, method) => {
   isRequestOngoing.value = true
 

@@ -4,13 +4,19 @@ import Circuits from '@/api/circuits'
 export const useCircuitsStores = defineStore('circuits', {
     state: () => ({
         circuits: {},
+        communityCouncils: {},
         loading: false,
         last_page: 1,
-        circuitsTotalCount: 6
+        community_last_page: 1,
+        circuitsTotalCount: 6,
+        communityCouncilsTotalCount: 6
     }),
     getters:{
         getCircuits(){
             return this.circuits
+        },
+        getCommunityCouncils(){
+            return this.communityCouncils
         }
     },
     actions: {
@@ -46,11 +52,15 @@ export const useCircuitsStores = defineStore('circuits', {
                 })
             
         },
-        showCircuit(id) {
+        showCircuit(params, id) {
             this.setLoading(true)
 
-            return Circuits.show(id)
+            return Circuits.show(params, id)
                 .then((response) => {
+                    this.communityCouncils = response.data.data.communityCouncils.data
+                    this.community_last_page = response.data.data.communityCouncils.last_page
+                    this.communityCouncilsTotalCount = response.data.data.communityCouncilsTotalCount
+
                     if(response.data.success)
                         return Promise.resolve(response.data.data.circuit)
                 })

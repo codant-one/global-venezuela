@@ -1,13 +1,13 @@
 <script setup>
 
 import { ref } from "vue"
-import { useCircuitsStores } from '@/stores/useCircuits'
+import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import router from '@/router'
 
 const route = useRoute()
-const circuitsStores = useCircuitsStores()
+const communityCouncilsStores = useCommunityCouncilsStores()
 
-const circuit = ref([])
+const communityCouncil = ref([])
 const title = ref(null)
 const isRequestOngoing = ref(true)
 
@@ -18,16 +18,16 @@ async function fetchData() {
     isRequestOngoing.value = true
 
     if(Number(route.params.id)) {
-        circuit.value = await circuitsStores.showCircuit(Number(route.params.id))
-        title.value = "Consejos Comunales de " + circuit.value.name
+        communityCouncil.value = await communityCouncilsStores.showCommunityCouncil(Number(route.params.id))
+        title.value = "Inmigrantes en " + communityCouncil.value.name
 
     }
 
     isRequestOngoing.value = false
 }
 
-const seeCommunityCouncil = communityCouncilData => {
-  router.push({ name : 'dashboard-admin-community-councils-id', params: { id: communityCouncilData.id } })
+const seeInmigrant = inmigrantData => {
+  router.push({ name : 'dashboard-admin-inmigrants-id', params: { id: inmigrantData.id } })
 }
 
 
@@ -68,12 +68,12 @@ const seeCommunityCouncil = communityCouncilData => {
                 <!-- 👉 table body -->
                 <tbody>
                     <tr 
-                        v-for="communityCouncil in circuit.community_councils"
-                        :key="communityCouncil.id"
+                        v-for="inmigrant in communityCouncil.inmigrants"
+                        :key="inmigrant.id"
                         style="height: 3.75rem;">
 
-                        <td> {{communityCouncil.id }} </td>
-                        <td class="text-base font-weight-medium mb-0"> {{communityCouncil.name }} </td>
+                        <td> {{inmigrant.id }} </td>
+                        <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }} </td>
                         <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos')">      
                             <VBtn
                                 v-if="$can('ver','circuitos')"
@@ -81,7 +81,7 @@ const seeCommunityCouncil = communityCouncilData => {
                                 size="x-small"
                                 color="default"
                                 variant="text"
-                                @click="seeCommunityCouncil(communityCouncil)">
+                                @click="seeInmigrant(inmigrant)">
                                         
                                 <VIcon
                                     size="22"
@@ -91,7 +91,7 @@ const seeCommunityCouncil = communityCouncilData => {
                     </tr>
                 </tbody>
                 <!-- 👉 table footer  -->
-                <tfoot v-show="!circuit.community_councils.length === 0">
+                <tfoot v-show="!communityCouncil.inmigrants.length === 0">
                     <tr>
                         <td
                             colspan="7"
