@@ -23,7 +23,8 @@ use App\Http\Controllers\{
     GenderController,
     ProxyController,
     CommunityCouncilController,
-    CircuitController
+    CircuitController,
+    InmigrantController
 };
 
 /*
@@ -66,6 +67,7 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
     Route::apiResource('permissions', PermissionController::class);
     Route::apiResource('circuits', CircuitController::class);
     Route::apiResource('community-councils', CommunityCouncilController::class);
+    Route::apiResource('inmigrants', InmigrantController::class);
 
     //Users
     Route::group(['prefix' => 'users'], function () {

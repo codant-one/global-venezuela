@@ -5,23 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-use App\Models\Circuit;
-use App\Models\CommunityCouncil;
+use App\Models\Inmigrant;
 
-class CircuitController extends Controller
+class InmigrantController extends Controller
 {
 
     public function index(Request $request): JsonResponse
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Circuit::with(['parish.municipality.state', 'city'])
+        $query = Inmigrant::with([''])
                         ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy',
-                                'state_id'
+                                'orderBy'
                             ])
                         );
 
@@ -29,18 +27,17 @@ class CircuitController extends Controller
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy',
-                                'state_id'
+                                'orderBy'
                             ])
                         )->count();
 
-        $circuits = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+        $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
         return response()->json([
             'success' => true,
             'data' => [ 
-                'circuits' => $circuits,
-                'circuitsTotalCount' => $count
+                'inmigrants' => $inmigrants,
+                'inmigrantsTotalCount' => $count
             ]
         ], 200);
     }
@@ -51,12 +48,12 @@ class CircuitController extends Controller
     {
         try {
 
-            $circuit = Circuit::createCircuit($request);
+            $inmigrant = Inmigrant::createInmigrant($request);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuit' => Circuit::with(['parish.municipality.state', 'city'])->find($circuit->id)
+                    'inmigrant' => Inmigrant::with(['parish.municipality.state', 'city'])->find($inmigrant->id)
                 ]
             ]);
 
@@ -73,50 +70,21 @@ class CircuitController extends Controller
     {
         try {
 
-            $circuit = Circuit::with(['community_councils'])->find($id);
+            $inmigrant = Inmigrant::with(['community_councils'])->find($id);
         
-            if (!$circuit)
+            if (!$inmigrant)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
-                    'message' => 'Circuito no encontrado'
+                    'message' => 'Inmigrante no encontrado'
                 ], 404);
-
-            $limit = $request->has('limit') ? $request->limit : 10;
-
-            $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
-                            ->where('circuit_id', $id)
-                            ->applyFilters(
-                                $request->only([
-                                    'search',
-                                    'orderByField',
-                                    'orderBy',
-                                    'state_id'
-                                ])
-                            );
-
-            $count = $query->where('circuit_id', $id)
-                           ->applyFilters(
-                                $request->only([
-                                    'search',
-                                    'orderByField',
-                                    'orderBy',
-                                    'state_id'
-                                ])
-                           )->count();
-
-            $communityCouncils = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuit' => $circuit,
-                    'communityCouncils' => $communityCouncils,
-                    'communityCouncilsTotalCount' => $count
+                    'inmigrant' => $inmigrant
                 ]
             ], 200);
-
-            
 
         } catch(\Illuminate\Database\QueryException $ex) {
             return response()->json([
@@ -131,21 +99,21 @@ class CircuitController extends Controller
     {
         try {
 
-            $circuit = Circuit::find($id);
+            $inmigrant = Inmigrant::find($id);
         
-            if (!$circuit)
+            if (!$inmigrant)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
-                    'message' => 'Circuito no encontrado'
+                    'message' => 'Inmigrante no encontrado'
                 ], 404);
 
-            $circuit = $circuit->updateCircuit($request, $circuit);
+            $inmigrant = $inmigrant->updateInmigrant($request, $inmigrant);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'circuit' => Circuit::with(['parish.municipality.state', 'city'])->find($circuit->id)
+                    'inmigrant' => Inmigrant::with(['parish.municipality.state', 'city'])->find($inmigrant->id)
                 ]
             ]);
 
@@ -162,21 +130,21 @@ class CircuitController extends Controller
     {
         try {
 
-            $circuit = Circuit::find($id);
+            $inmigrant = Inmigrant::find($id);
         
-            if (!$circuit)
+            if (!$inmigrant)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
-                    'message' => 'Circuito no encontrado'
+                    'message' => 'Inmigrante no encontrado'
                 ], 404);
 
-            $circuit->deleteCircuit($id);
+            $inmigrant->deleteInmigrant($id);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuit' => $circuit
+                    'inmigrant' => $inmigrant
                 ]
             ], 200);
             

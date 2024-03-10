@@ -1,59 +1,41 @@
 <script setup>
 
-import create from './create.vue' 
-import show from './show.vue' 
-import password from './password.vue' 
-import edit from './edit.vue'
-import destroy from './destroy.vue'
-
-import { avatarText } from '@/@core/utils/formatters'
-
-import { useUsersStores } from '@/stores/useUsers'
-import { useRolesStores } from '@/stores/useRoles'
+import AddNewCircuitDrawer from './AddNewCircuitDrawer.vue' 
+import router from '@/router'
+import { ref } from "vue"
+import { excelParser } from '@/plugins/csv/excelParser'
+import { useCircuitsStores } from '@/stores/useCircuits'
 import { useStatesStores } from '@/stores/useStates'
 import { useCitiesStores } from '@/stores/useCities'
 import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
 import { useParishesStores } from '@/stores/useParishes'
-import { useGendersStores } from '@/stores/useGenders'
-import { themeConfig } from '@themeConfig'
-import { excelParser } from '@/plugins/csv/excelParser'
 
-const usersStores = useUsersStores()
-const rolesStores = useRolesStores()
+const circuitsStores = useCircuitsStores()
 const statesStores = useStatesStores()
 const citiesStores = useCitiesStores()
 const municipalitiesStores = useMunicipalitiesStores()
 const parishesStores = useParishesStores()
-const gendersStores = useGendersStores()
 
-const users = ref([])
+const circuits = ref([])
 const searchQuery = ref('')
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPages = ref(1)
-const totalUsers = ref(0)
-
-const selectedRows = ref([])
-
-const isUserDeleteDialog = ref(false)
-const isUserDetailDialog = ref(false)
-const isUserEditDialog = ref(false)
-const isUserPasswordDialog = ref(false)
-
-const selectedUser = ref({})
-const rolesList = ref([])
-const roleUsers = ref([]) 
-
-const IdsUserOnline = ref([])
-const userOnline = ref([])
-
+const totalCircuits = ref(0)
 const isRequestOngoing = ref(true)
+const isAddNewCircuitDrawerVisible = ref(false)
+const isConfirmDeleteDialogVisible = ref(false)
+const selectedCircuit = ref({})
+const isDialogVisible = ref(false)
+const refForm = ref()
+const message = ref('')
+const success = ref(false)
 
+const state_id = ref(null)
 const listStates = ref([])
 const listCities = ref([])
 const listMunicipalities = ref([])
 const listParishes = ref([])
-const listGenders = ref([])
 
 const advisor = ref({
   type: '',
@@ -61,7 +43,62 @@ const advisor = ref({
   show: false
 })
 
-let interval = null
+const alert = ref({
+  show: false,
+  message: ''
+})
+
+// 👉 Computing pagination data
+const paginationData = computed(() => {
+  const firstIndex = circuits.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = circuits.value.length + (currentPage.value - 1) * rowPerPage.value
+
+  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalCircuits.value } registros`
+})
+
+// 👉 watching current page
+watchEffect(() => {
+  if (currentPage.value > totalPages.value)
+    currentPage.value = totalPages.value
+
+  if (!isAddNewCircuitDrawerVisible.value)
+    selectedCircuit.value = {}
+})
+
+watchEffect(fetchData)
+
+async function fetchData() {
+
+  let data = {
+    search: searchQuery.value,
+    orderByField: 'id',
+    orderBy: 'desc',
+    limit: rowPerPage.value,
+    page: currentPage.value,
+    state_id: state_id.value
+  }
+
+  isRequestOngoing.value = true
+
+  await circuitsStores.fetchCircuits(data)
+  circuits.value = circuitsStores.getCircuits
+  totalPages.value = circuitsStores.last_page
+  totalCircuits.value = circuitsStores.circuitsTotalCount
+
+  if(listParishes.value.length === 0) {
+    await statesStores.fetchStates();
+    await citiesStores.fetchCities();
+    await municipalitiesStores.fetchMunicipalities();
+    await parishesStores.fetchParishes();
+
+    loadStates()
+    loadCities()
+    loadMunicipalities()
+    loadParishes()
+  }
+
+  isRequestOngoing.value = false
+}
 
 const loadStates = () => {
   listStates.value = statesStores.getStates
@@ -79,194 +116,149 @@ const loadParishes = () => {
   listParishes.value = parishesStores.getParishes
 }
 
-const loadGenders = () => {
-  listGenders.value = gendersStores.getGenders
+const seeCircuit = circuitData => {
+  router.push({ name : 'dashboard-admin-circuits-id', params: { id: circuitData.id } })
 }
 
-
-const onlineList = () => {
-  return new Promise((resolve, reject) => {
-
-    let params = {
-      ids: IdsUserOnline.value.join(',')
-    }
-
-    usersStores.getUsersOnline(params)
-      .then(response => {
-        userOnline.value = response
-        resolve()
-      }).catch(error => {})
-
-  })
-}
-
-const searchRoles =() => {
-  rolesStores.allRoles().then(response => {
-    const index = response.roles.indexOf('SuperAdmin')
-    
-    if (index !== -1)
-      response.roles.splice(index, 1);
-
-    rolesList.value = response.roles
-  }).catch(error => { })
-}
-
-// 👉 Computing pagination data
-const paginationData = computed(() => {
-  const firstIndex = users.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = users.value.length + (currentPage.value - 1) * rowPerPage.value
-  
-  return `Mostrando ${ firstIndex } al ${ lastIndex } de ${ totalUsers.value } usuarios`
-})
-
-
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPages.value)
-    currentPage.value = totalPages.value
-})
-
-watchEffect(fetchData)
-
-// 👉 Fetch usuarios
-async function fetchData() {
+const submitForm = async (circuit, method) => {
   isRequestOngoing.value = true
 
-  let data = {
-    search: searchQuery.value,
-    orderByField: 'id',
-    orderBy: 'asc',
-    limit: rowPerPage.value,
-    page: currentPage.value
+  if (method === 'update') {
+    submitUpdate(circuit)
+    return
   }
 
-  await usersStores.fetchUsers(data)
+  submitCreate(circuit.data)
+}
 
-  users.value = usersStores.getUsers
-  totalPages.value = usersStores.last_page
-  totalUsers.value = usersStores.usersTotalCount
+const submitCreate = circuitData => {
 
-  IdsUserOnline.value = []
-    
-  users.value.forEach(element => {
-    IdsUserOnline.value.push(element.id)
+  circuitsStores.addCircuit(circuitData)
+    .then((res) => {
+      if (res.data.success) {
+        advisor.value = {
+          type: 'success',
+          message: 'Circuito creado con éxito',
+          show: true
+        }
+        fetchData()
+      }
+      isRequestOngoing.value = false
+    })
+    .catch((err) => {
+      advisor.value = {
+        type: 'error',
+        message: err,
+        show: true
+      }
+      isRequestOngoing.value = false
   })
 
-  searchRoles()
-  onlineList()
+  setTimeout(() => {
+    advisor.value = {
+      type: '',
+      message: '',
+      show: false
+    }
+  }, 3000)
+}
 
-  if(listGenders.value.length === 0) {
-    await statesStores.fetchStates();
-    await citiesStores.fetchCities();
-    await municipalitiesStores.fetchMunicipalities();
-    await parishesStores.fetchParishes();
-    await gendersStores.fetchGenders();
+const submitUpdate = circuitData => {
 
-    loadStates()
-    loadCities()
-    loadMunicipalities()
-    loadParishes()
-    loadGenders()
+  circuitsStores.updateCircuit(circuitData.data, circuitData.id)
+    .then((res) => {
+      if (res.data.success) {
+        advisor.value = {
+          type: 'success',
+          message: 'Circuito actualizado con éxito',
+          show: true
+        }
+        fetchData()
+      }
+      isRequestOngoing.value = false
+    })
+    .catch((err) => {
+      advisor.value = {
+        type: 'error',
+        message: err,
+        show: true
+      }
+      isRequestOngoing.value = false
+    })
+
+  setTimeout(() => {
+    advisor.value = {
+      type: '',
+      message: '',
+      show: false
+    }
+  }, 3000)
+}
+
+const editCircuit = circuitData => {
+    isAddNewCircuitDrawerVisible.value = true
+    selectedCircuit.value = { ...circuitData }
+}
+
+const showDeleteDialog = circuitData => {
+  isConfirmDeleteDialogVisible.value = true
+  selectedCircuit.value = { ...circuitData }
+}
+
+const removeCircuit = async () => {
+  isConfirmDeleteDialogVisible.value = false
+  let res = await circuitsStores.deleteCircuit(selectedCircuit.value.id)
+  selectedCircuit.value = {}
+
+  advisor.value = {
+    type: res.data.success ? 'success' : 'error',
+    message: res.data.success ? 'Circuito eliminado con éxito!' : res.data.message,
+    show: true
   }
 
-  isRequestOngoing.value = false
-}
+  await fetchData()
 
-// show dialogs
-const showUserDetailDialog = function(user){
-  isUserDetailDialog.value = true
-  selectedUser.value = { ...user }
-  
-  user.roles.forEach(function(ro) {
-    roleUsers.value.push(ro.name)
-  })
+  setTimeout(() => {
+    advisor.value = {
+      type: '',
+      message: '',
+      show: false
+    }
+  }, 3000)
 
-  selectedUser.value.assignedRoles = roleUsers
-}
-
-const showUserPasswordDialog = function(user){
-  isUserPasswordDialog.value = true
-  selectedUser.value.id = user.id
-  selectedUser.value.email = user.email
-}
-
-const showUserEditDialog = function(user){
-  isUserEditDialog.value = true
-  selectedUser.value = { ...user }
-
-  user.roles.forEach(function(ro) {
-    roleUsers.value.push(ro.name)
-  })
-
-  selectedUser.value.assignedRoles = roleUsers
-}
-
-const showUserDeleteDialog = function(user){
-  isUserDeleteDialog.value =true
-  selectedUser.value = { ...user }
-}
-
-const online = id =>{
-
-  let uo = userOnline.value.find(user => user.id == id )
-  let current = new Date()
-  let online = new Date(2000, 0, 1, 12, 0, 0)
-
-  if(uo && uo.online!=null)
-    online = new Date(uo.online)
-
-  let gapSeconds = Math.abs((online.getTime() - current.getTime()) / 1000)
-
-  if(gapSeconds>120) {
-    return 'error'
-  } else {
-    return 'success'
-  }  
-}
-
-onMounted(()=>{
-  interval = setInterval(()=>{
-    onlineList()
-  }, 60000)
-})
-
-onUnmounted(()=>{
-  clearInterval(interval)
-})
-
-const showAlert = function(alert) {
-  advisor.value.show = alert.value.show
-  advisor.value.type = alert.value.type
-  advisor.value.message = alert.value.message
+  return true
 }
 
 const downloadCSV = async () => {
 
   isRequestOngoing.value = true
 
-  let data = { limit: -1}
+  let data = {
+    state_id: state_id.value,
+    limit: -1
+  }
 
-  await usersStores.fetchUsers(data)
+  await circuitsStores.fetchCircuits(data)
 
-  let dataArray = []
+  let dataArray = [];
   
-  usersStores.getUsers.forEach(element => {
+  circuitsStores.getCircuits.forEach(element => {
     let data = {
-      ID: element.id,
-      NOMBRE: element.name + ' ' + (element.last_name ?? ''),
-      CORREO: element.email,
-      ROLES: element.roles.map(e => e['name']).join(','),
-      ESTADO: element.user_detail.parish.municipality.state.name,
-      TELÉFONO: element.user_detail.phone
+      NOMBRE: element.name,
+      ESTADO: element.parish.municipality.state.name,
+      MUNICIPIO: element.parish.municipality.name,
+      PARROQUIA: element.parish.name,
+      CIUDAD: element.city?.name
     }
-        
+
     dataArray.push(data)
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "usuarios", "csv")
+    .exportDataFromJSON(dataArray, "circuits", "csv");
 
   isRequestOngoing.value = false
+
 }
 
 </script>
@@ -299,21 +291,55 @@ const downloadCSV = async () => {
           v-if="advisor.show"
           :type="advisor.type"
           class="mb-6">
-            {{ advisor.message }}
+            
+          {{ advisor.message }}
         </v-alert>
 
-        <VCard v-if="users" id="rol-list" >
-          <VCardText class="d-flex align-center flex-wrap gap-4">
-            <!-- 👉 Rows per page -->
+        <VCard title="Filtros">
+          <VCardText>
+            <VRow>
+              <VCol
+                cols="12"
+                sm="4"
+              >
+                <VSelect
+                  v-model="state_id"
+                  label="Estados"
+                  :items="listStates"
+                  item-value="id"
+                  item-title="name"
+                  clearable
+                  clear-icon="tabler-x"
+                  no-data-text="No disponible"
+                />
+              </VCol>
+              <VCol cols="12" sm="2" />
+              <VCol
+                cols="12"
+                sm="6"
+              >
+                <VTextField
+                  v-model="searchQuery"
+                  label="Buscar"
+                  placeholder="Buscar"
+                  density="compact"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+
+          <VDivider />
+
+          <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div
-              class="d-flex align-center"
-              style="width: 135px;"
-            >
+              class="me-3"
+              style="width: 80px;">
+              
               <VSelect
                 v-model="rowPerPage"
                 density="compact"
-                :items="[10, 20, 30, 50]"
-              />
+                variant="outlined"
+                :items="[10, 20, 30, 50]"/>
             </div>
 
             <div class="d-flex align-center">
@@ -322,331 +348,186 @@ const downloadCSV = async () => {
                 color="secondary"
                 prepend-icon="tabler-file-export"
                 @click="downloadCSV">
-                  Exportar
+                Exportar
               </VBtn>
             </div>
 
-            <div class="me-3" v-if="listGenders.length > 0">
-              <create
-                :rolesList="rolesList"
-                :states="listStates"
-                :cities="listCities"
-                :municipalities="listMunicipalities"
-                :parishes="listParishes"
-                :genders="listGenders"
-                @close="roleUsers = []"
-                @data="fetchData"
-                @alert="showAlert"/>
-            </div>
-
-            <VSpacer />
+            <v-spacer />
 
             <div class="d-flex align-center flex-wrap gap-4">
-              <!-- 👉 Select status -->
-              <div class="invoice-list-filter"
-                style="width: 20rem;"
-              >
-                <VSelect
-                  v-model="searchQuery"
-                  label="Filtrar por rol"
-                  clearable
-                  clear-icon="tabler-x"
-                  single-line
-                  :items="rolesList"
-                />
-              </div>
-              
-              <!-- 👉 Search  -->
-              <div class="search rol-list-filter">
-                <VTextField
-                  v-model="searchQuery"
-                  placeholder="Buscar usuario"
-                  density="compact"
-                />
-              </div>
+              <!-- 👉 Add user button -->
+              <v-btn
+                v-if="$can('crear','circuitos')"
+                prepend-icon="tabler-plus"
+                @click="isAddNewCircuitDrawerVisible = true">
+                  Agregar Circuito
+              </v-btn>
             </div>
           </VCardText>
 
-          <VDivider />
+          <v-divider />
 
-          <!-- SECTION Table -->
-          <VTable class="text-no-wrap rol-list-table">
-            <!-- 👉 Table head -->
-            <thead class="text-uppercase">
+          <v-table class="text-no-wrap">
+            <!-- 👉 table head -->
+            <thead>
               <tr>
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
-                <th scope="col"> CORREO </th>
-                <th scope="col"> ROLES </th>
                 <th scope="col"> ESTADO </th>
-                <th scope="col"> TELÉFONO </th>
-                <th scope="col" v-if="$can('ver','usuarios') || $can('editar','usuarios') || $can('eliminar','usuarios')">
-                  Acciones 
+                <th scope="col"> UBICACIÓN </th>
+                <th scope="col"> CIUDAD </th>
+                <th scope="col" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">
+                  ACCIONES
                 </th>
               </tr>
             </thead>
-
-            <!-- 👉 Table Body -->
+            <!-- 👉 table body -->
             <tbody>
-              <tr
-                v-for="user in users"
-                :key="user.id"
-                style="height: 3.75rem;"
-              >
-                <!-- 👉 Id -->
-                <td>
-                  #{{ user.id }}
-                </td>
+              <tr 
+                v-for="circuit in circuits"
+                :key="circuit.id"
+                style="height: 3.75rem;">
 
-                <!-- 👉 name -->
-                <td>
+                <td> {{circuit.id }} </td>
+                <td class="text-base font-weight-medium mb-0"> {{circuit.name }} </td>
+                <td class="text-uppercase"> {{circuit.parish.municipality.state.name }} </td>
+                <td class="text-wrap"> 
                   <div class="d-flex align-center">
-                    <VBadge
-                      dot
-                      location="bottom right"
-                      offset-x="3"
-                      offset-y="3"
-                      bordered
-                      :color="online(user.id)"
-                    >
-                      <VAvatar
-                        variant="tonal"
-                        size="38"
-                      >
-                        <VImg
-                          v-if="user.avatar"
-                          style="border-radius: 50%;"
-                          :src="themeConfig.settings.urlStorage + user.avatar"
-                        />
-                        <span v-else>{{ avatarText(user.name) }}</span>
-                      </VAvatar>
-                    </VBadge>
-                    <div class="ml-3 d-flex flex-column">
-                      {{ user.name }}  {{ user.last_name ?? '' }}
+                    <div class="d-flex flex-column">
+                      <h6 class="text-base font-weight-medium mb-0">
+                        {{circuit.parish.municipality.name }}
+                      </h6>
+                      <span class="text-disabled text-sm"> {{circuit.parish.name }}</span>
                     </div>
                   </div>
                 </td>
-
-                <!-- 👉 correo -->
-                <td>
-                  {{ user.email }}
-                </td>
-
-                <!-- 👉 roles -->
-                <td>
-                  <ul>
-                    <li v-for="(value,key) in user.roles">
-                      {{ value.name }}
-                    </li>
-                  </ul>
-                </td>
-
-                <!-- 👉 state -->
-                <td>
-                  {{ user.user_detail.parish.municipality.state.name }}
-                </td>
-
-                <!-- 👉 phone -->
-                  <td>
-                  {{ user.user_detail.phone ?? '----' }}
-                </td>
-                <!-- 👉 acciones -->
-                <td style="width: 8rem;">
+                <td class="text-uppercase"> {{ circuit.city?.name }} </td>
+                <!-- 👉 Acciones -->
+                <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">      
                   <VBtn
-                    v-if="$can('ver','usuarios')"
+                    v-if="$can('ver','circuitos')"
                     icon
-                    variant="text"
-                    color="default"
                     size="x-small"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Ver
-                    </VTooltip>
+                    color="default"
+                    variant="text"
+                    @click="seeCircuit(circuit)">
+                              
                     <VIcon
-                      icon="tabler-eye"
-                      
-                      :size="22"
-                      @click="showUserDetailDialog(user)"
-                    />
+                        size="22"
+                        icon="tabler-eye" />
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('editar','usuarios')"
+                    v-if="$can('editar','circuitos')"
                     icon
-                    variant="text"
-                    color="default"
                     size="x-small"
-                    @click="showUserPasswordDialog(user)"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Cambiar contraseña
-                    </VTooltip>
+                    color="default"
+                    variant="text"
+                    @click="editCircuit(circuit)">
+                              
                     <VIcon
-                      :size="22"
-                      icon="tabler-key"
-                    />
+                        size="22"
+                        icon="tabler-edit" />
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('editar','usuarios')"
+                    v-if="$can('eliminar','circuitos')"
                     icon
-                    variant="text"
-                    color="default"
                     size="x-small"
-                    @click="showUserEditDialog(user)"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Editar
-                    </VTooltip>
-                    <VIcon
-                      :size="22"
-                      icon="tabler-edit"
-                    />
-                  </VBtn>
-
-                  <VBtn
-                    v-if="$can('eliminar','usuarios')"
-                    icon
-                    variant="text"
                     color="default"
-                    size="x-small"
-                    @click="showUserDeleteDialog(user)"
-                  >
-                    <VTooltip
-                      open-on-focus
-                      location="top"
-                      activator="parent"
-                    >
-                      Eliminar
-                    </VTooltip>
+                    variant="text"
+                    @click="showDeleteDialog(circuit)">
+                              
                     <VIcon
-                      :size="22"
-                      icon="tabler-trash"
-                    />
+                      size="22"
+                      icon="tabler-trash" />
                   </VBtn>
                 </td>
               </tr>
             </tbody>
-
             <!-- 👉 table footer  -->
-            <tfoot v-show="!users.length">
+            <tfoot v-show="!circuits.length">
               <tr>
                 <td
-                  colspan="8"
-                  class="text-center text-body-1"
-                >
-                  No existen usuarios
+                  colspan="7"
+                  class="text-center">
+                  Datos no disponibles
                 </td>
               </tr>
             </tfoot>
-          </VTable>
-          <!-- !SECTION -->
+          </v-table>
+        
+          <v-divider />
 
-          <VDivider />
-
-          <!-- SECTION Pagination -->
-          <VCardText class="d-flex align-center flex-wrap gap-4 py-3">
-            <!-- 👉 Pagination meta -->
+          <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5">
             <span class="text-sm text-disabled">
               {{ paginationData }}
             </span>
 
-            <VSpacer />
-
-            <!-- 👉 Pagination -->
             <VPagination
               v-model="currentPage"
               size="small"
               :total-visible="5"
-              :length="totalPages"
-              @next="selectedRows = []"
-              @prev="selectedRows = []"
-            />
+              :length="totalPages"/>
+          
           </VCardText>
-
-          <show
-            v-if="listGenders.length > 0" 
-            v-model:isDrawerOpen="isUserDetailDialog"
-            :rolesList="rolesList"
-            :user="selectedUser"
-            :states="listStates"
-            :cities="listCities"
-            :municipalities="listMunicipalities"
-            :parishes="listParishes"
-            :genders="listGenders"
-            @close="roleUsers = []"/>
-
-          <password
-            v-model:isDrawerOpen="isUserPasswordDialog"
-            :user="selectedUser"
-            @alert="showAlert"/>
-
-          <edit 
-            v-if="listGenders.length > 0" 
-            v-model:isDrawerOpen="isUserEditDialog"
-            :rolesList="rolesList"
-            :user="selectedUser"
-            :states="listStates"
-            :cities="listCities"
-            :municipalities="listMunicipalities"
-            :parishes="listParishes"
-            :genders="listGenders"
-            @data="fetchData"
-            @close="roleUsers = []"
-            @alert="showAlert"/>
-
-          <destroy 
-            v-model:isDrawerOpen="isUserDeleteDialog"
-            :user="selectedUser"
-            @data="fetchData"
-            @alert="showAlert"/>
-
         </VCard>
       </v-col>
     </v-row>
+
+    <!-- 👉 Add New Circuit -->
+    <AddNewCircuitDrawer
+      v-if="listParishes.length > 0"
+      v-model:isDrawerOpen="isAddNewCircuitDrawerVisible"
+      :circuit="selectedCircuit"
+      :states="listStates"
+      :cities="listCities"
+      :municipalities="listMunicipalities"
+      :parishes="listParishes"
+      @circuit-data="submitForm"/>
+
+    <!-- 👉 Confirm Delete -->
+    <VDialog
+      v-model="isConfirmDeleteDialogVisible"
+      persistent
+      class="v-dialog-sm" >
+      <!-- Dialog close btn -->
+        
+      <DialogCloseBtn @click="isConfirmDeleteDialogVisible = !isConfirmDeleteDialogVisible" />
+
+      <!-- Dialog Content -->
+      <VCard title="Eliminar Circuito">
+        <VCardText>
+          Está seguro de eliminar el circuito <strong>{{ selectedCircuit.name }}</strong>?.
+        </VCardText>
+
+        <VCardText class="d-flex justify-end gap-3 flex-wrap">
+          <VBtn
+            color="secondary"
+            variant="tonal"
+            @click="isConfirmDeleteDialogVisible = false">
+              Cancelar
+          </VBtn>
+          <VBtn @click="removeCircuit">
+              Aceptar
+          </VBtn>
+        </VCardText>
+      </VCard>
+    </VDialog>
+    <!-- MENSAJE COPIADO -->
+    <VSnackbar
+      v-model="alert.show"
+      location="center"
+      :timeout="1000"
+    >
+      {{ alert.message }}
+    </VSnackbar>
+    <!-- !SECTION -->
   </section>
 </template>
-
-<style lang="scss">
-  #rol-list {
-    .rol-list-actions {
-      inline-size: 8rem;
-    }
-
-    .rol-list-filter {
-      inline-size: 12rem;
-    }
-  }
-
-  .v-dialog {
-    z-index: 1999 !important;
-  }
-
-  .search {
-    width: 100%;
-  }
-
-  @media(min-width: 991px){
-    .search {
-      width: 30rem;
-    }
-  }
-</style>
 
 <route lang="yaml">
   meta:
     action: ver
-    subject: usuarios
+    subject: circuitos
 </route>
