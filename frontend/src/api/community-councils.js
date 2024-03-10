@@ -10,8 +10,8 @@ class CommunityCouncils {
         return axios.post('/community-councils', data)
     }
 
-    show(id) {
-        return axios.get(`/community-councils/${id}`)
+    show(params, id) {
+        return axios.get(`/community-councils/${id}`, {params})
     }
 
     update(data, id) {

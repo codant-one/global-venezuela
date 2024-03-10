@@ -361,6 +361,7 @@ const downloadCSV = async () => {
                   v-model="searchQuery"
                   placeholder="Buscar usuario"
                   density="compact"
+                  clearable
                 />
               </div>
             </div>

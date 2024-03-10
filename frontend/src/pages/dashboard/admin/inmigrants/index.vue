@@ -1,41 +1,22 @@
 <script setup>
 
-import AddNewCircuitDrawer from './AddNewCircuitDrawer.vue' 
 import router from '@/router'
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
-import { useCircuitsStores } from '@/stores/useCircuits'
-import { useStatesStores } from '@/stores/useStates'
-import { useCitiesStores } from '@/stores/useCities'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
+import { useInmigrantsStores } from '@/stores/useInmigrants'
 
-const circuitsStores = useCircuitsStores()
-const statesStores = useStatesStores()
-const citiesStores = useCitiesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
+const inmigrantsStores = useInmigrantsStores()
 
-const circuits = ref([])
+const inmigrants = ref([])
 const searchQuery = ref('')
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPages = ref(1)
-const totalCircuits = ref(0)
+const totalInmigrants = ref(0)
 const isRequestOngoing = ref(true)
-const isAddNewCircuitDrawerVisible = ref(false)
+const isAddNewInmigrantDrawerVisible = ref(false)
 const isConfirmDeleteDialogVisible = ref(false)
-const selectedCircuit = ref({})
-const isDialogVisible = ref(false)
-const refForm = ref()
-const message = ref('')
-const success = ref(false)
-
-const state_id = ref(null)
-const listStates = ref([])
-const listCities = ref([])
-const listMunicipalities = ref([])
-const listParishes = ref([])
+const selectedInmigrant = ref({})
 
 const advisor = ref({
   type: '',
@@ -50,19 +31,16 @@ const alert = ref({
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = circuits.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = circuits.value.length + (currentPage.value - 1) * rowPerPage.value
+  const firstIndex = inmigrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = inmigrants.value.length + (currentPage.value - 1) * rowPerPage.value
 
-  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalCircuits.value } registros`
+  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalInmigrants.value } registros`
 })
 
 // 👉 watching current page
 watchEffect(() => {
   if (currentPage.value > totalPages.value)
     currentPage.value = totalPages.value
-
-  if (!isAddNewCircuitDrawerVisible.value)
-    selectedCircuit.value = {}
 })
 
 watchEffect(fetchData)
@@ -74,145 +52,41 @@ async function fetchData() {
     orderByField: 'id',
     orderBy: 'desc',
     limit: rowPerPage.value,
-    page: currentPage.value,
-    state_id: state_id.value
+    page: currentPage.value
   }
 
   isRequestOngoing.value = true
 
-  await circuitsStores.fetchCircuits(data)
-  circuits.value = circuitsStores.getCircuits
-  totalPages.value = circuitsStores.last_page
-  totalCircuits.value = circuitsStores.circuitsTotalCount
-
-  if(listParishes.value.length === 0) {
-    await statesStores.fetchStates();
-    await citiesStores.fetchCities();
-    await municipalitiesStores.fetchMunicipalities();
-    await parishesStores.fetchParishes();
-
-    loadStates()
-    loadCities()
-    loadMunicipalities()
-    loadParishes()
-  }
+  await inmigrantsStores.fetchInmigrants(data)
+  inmigrants.value = inmigrantsStores.getInmigrants
+  totalPages.value = inmigrantsStores.last_page
+  totalInmigrants.value = inmigrantsStores.inmigrantsTotalCount
 
   isRequestOngoing.value = false
 }
 
-const loadStates = () => {
-  listStates.value = statesStores.getStates
+const seeInmigrant = inmigrantData => {
+  router.push({ name : 'dashboard-admin-inmigrants-id', params: { id: inmigrantData.id } })
 }
 
-const loadCities = () => {
-  listCities.value = citiesStores.getCities
+const editInmigrant = inmigrantData => {
+    isAddNewInmigrantDrawerVisible.value = true
+    selectedInmigrant.value = { ...inmigrantData }
 }
 
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
-}
-
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
-}
-
-const seeCircuit = circuitData => {
-  router.push({ name : 'dashboard-admin-circuits-id', params: { id: circuitData.id } })
-}
-
-const submitForm = async (circuit, method) => {
-  isRequestOngoing.value = true
-
-  if (method === 'update') {
-    submitUpdate(circuit)
-    return
-  }
-
-  submitCreate(circuit.data)
-}
-
-const submitCreate = circuitData => {
-
-  circuitsStores.addCircuit(circuitData)
-    .then((res) => {
-      if (res.data.success) {
-        advisor.value = {
-          type: 'success',
-          message: 'Circuito creado con éxito',
-          show: true
-        }
-        fetchData()
-      }
-      isRequestOngoing.value = false
-    })
-    .catch((err) => {
-      advisor.value = {
-        type: 'error',
-        message: err,
-        show: true
-      }
-      isRequestOngoing.value = false
-  })
-
-  setTimeout(() => {
-    advisor.value = {
-      type: '',
-      message: '',
-      show: false
-    }
-  }, 3000)
-}
-
-const submitUpdate = circuitData => {
-
-  circuitsStores.updateCircuit(circuitData.data, circuitData.id)
-    .then((res) => {
-      if (res.data.success) {
-        advisor.value = {
-          type: 'success',
-          message: 'Circuito actualizado con éxito',
-          show: true
-        }
-        fetchData()
-      }
-      isRequestOngoing.value = false
-    })
-    .catch((err) => {
-      advisor.value = {
-        type: 'error',
-        message: err,
-        show: true
-      }
-      isRequestOngoing.value = false
-    })
-
-  setTimeout(() => {
-    advisor.value = {
-      type: '',
-      message: '',
-      show: false
-    }
-  }, 3000)
-}
-
-const editCircuit = circuitData => {
-    isAddNewCircuitDrawerVisible.value = true
-    selectedCircuit.value = { ...circuitData }
-}
-
-const showDeleteDialog = circuitData => {
+const showDeleteDialog = inmigrantData => {
   isConfirmDeleteDialogVisible.value = true
-  selectedCircuit.value = { ...circuitData }
+  selectedInmigrant.value = { ...inmigrantData }
 }
 
-const removeCircuit = async () => {
+const removeInmigrant = async () => {
   isConfirmDeleteDialogVisible.value = false
-  let res = await circuitsStores.deleteCircuit(selectedCircuit.value.id)
-  selectedCircuit.value = {}
+  let res = await inmigrantsStores.deleteInmigrant(selectedInmigrant.value.id)
+  selectedInmigrant.value = {}
 
   advisor.value = {
     type: res.data.success ? 'success' : 'error',
-    message: res.data.success ? 'Circuito eliminado con éxito!' : res.data.message,
+    message: res.data.success ? 'Inmigrante eliminado con éxito!' : res.data.message,
     show: true
   }
 
@@ -234,28 +108,43 @@ const downloadCSV = async () => {
   isRequestOngoing.value = true
 
   let data = {
-    state_id: state_id.value,
     limit: -1
   }
 
-  await circuitsStores.fetchCircuits(data)
+  await inmigrantsStores.fetchInmigrants(data)
 
   let dataArray = [];
   
-  circuitsStores.getCircuits.forEach(element => {
+  inmigrantsStores.getInmigrants.forEach(element => {
+
     let data = {
       NOMBRE: element.name,
+      APELLIDO: element.last_name,
+      EMAIL: element.email,
+      FECHA_NACIMIENTO: element.birthdate,
+      PAÍS_INMIGRANTE: element.country.name,
+      GÉNERO: element.gender.name,
+      NÚMERO_PASAPORTE: element.passport_number,
+      TELÉFONO: element.phone,
+      DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
+      CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',
+      CÉDULA_RESIDENTE: element.resident ? 'SI' : 'NO',
+      AÑOS_EN_EL_PAÍS: element.years_in_country,
+      ANTECEDENTES_PENALES: element.antecedents ? 'SI' : 'NO',
+      CASADO_CON_UN_VENEZOLANO: element.isMarried ? 'SI' : 'NO',
+      HIJOS_VENEZOLANOS: element.has_children ? 'SI' : 'NO',
+      NÚMERO_HIJOS_VENEZOLANOS: element.children_number ?? '',
       ESTADO: element.parish.municipality.state.name,
       MUNICIPIO: element.parish.municipality.name,
       PARROQUIA: element.parish.name,
-      CIUDAD: element.city?.name
+      CONSEJO_COMUNAL: element.community_council?.name
     }
 
     dataArray.push(data)
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "circuits", "csv");
+    .exportDataFromJSON(dataArray, "inmigrants", "csv");
 
   isRequestOngoing.value = false
 
@@ -295,41 +184,7 @@ const downloadCSV = async () => {
           {{ advisor.message }}
         </v-alert>
 
-        <VCard title="Filtros">
-          <VCardText>
-            <VRow>
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <VSelect
-                  v-model="state_id"
-                  label="Estados"
-                  :items="listStates"
-                  item-value="id"
-                  item-title="name"
-                  clearable
-                  clear-icon="tabler-x"
-                  no-data-text="No disponible"
-                />
-              </VCol>
-              <VCol cols="12" sm="2" />
-              <VCol
-                cols="12"
-                sm="6"
-              >
-                <VTextField
-                  v-model="searchQuery"
-                  label="Buscar"
-                  placeholder="Buscar"
-                  density="compact"
-                />
-              </VCol>
-            </VRow>
-          </VCardText>
-
-          <VDivider />
-
+        <VCard title="">
           <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div
               class="me-3"
@@ -354,13 +209,23 @@ const downloadCSV = async () => {
 
             <v-spacer />
 
+            <div class="d-flex align-center" style="width: 20rem;">
+              <VTextField
+                v-model="searchQuery"
+                label="Buscar"
+                placeholder="Buscar"
+                density="compact"
+                clearable
+                />
+            </div>
+
             <div class="d-flex align-center flex-wrap gap-4">
               <!-- 👉 Add user button -->
               <v-btn
-                v-if="$can('crear','circuitos')"
+                v-if="$can('crear','inmigrantes')"
                 prepend-icon="tabler-plus"
-                @click="isAddNewCircuitDrawerVisible = true">
-                  Agregar Circuito
+                @click="isAddNewInmigrantDrawerVisible = true">
+                  Agregar Inmigrante
               </v-btn>
             </div>
           </VCardText>
@@ -373,10 +238,10 @@ const downloadCSV = async () => {
               <tr>
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
-                <th scope="col"> ESTADO </th>
-                <th scope="col"> UBICACIÓN </th>
-                <th scope="col"> CIUDAD </th>
-                <th scope="col" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">
+                <th scope="col"> TELÉFONO </th>
+                <th scope="col"> EMAIL </th>
+                <th scope="col"> DIRECCIÓN </th>
+                <th scope="col" v-if="$can('ver','inmigrantes') || $can('editar','inmigrantes') || $can('eliminar','inmigrantes')">
                   ACCIONES
                 </th>
               </tr>
@@ -384,33 +249,24 @@ const downloadCSV = async () => {
             <!-- 👉 table body -->
             <tbody>
               <tr 
-                v-for="circuit in circuits"
-                :key="circuit.id"
+                v-for="inmigrant in inmigrants"
+                :key="inmigrant.id"
                 style="height: 3.75rem;">
 
-                <td> {{circuit.id }} </td>
-                <td class="text-base font-weight-medium mb-0"> {{circuit.name }} </td>
-                <td class="text-uppercase"> {{circuit.parish.municipality.state.name }} </td>
-                <td class="text-wrap"> 
-                  <div class="d-flex align-center">
-                    <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0">
-                        {{circuit.parish.municipality.name }}
-                      </h6>
-                      <span class="text-disabled text-sm"> {{circuit.parish.name }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-uppercase"> {{ circuit.city?.name }} </td>
+                <td> {{inmigrant.id }} </td>
+                <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }} </td>
+                <td> {{inmigrant.phone }} </td>
+                <td> {{inmigrant.email }} </td>
+                <td> {{inmigrant.address }} </td>
                 <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">      
+                <td class="text-center" style="width: 5rem;" v-if="$can('ver','inmigrantes') || $can('editar','inmigrantes') || $can('eliminar','inmigrantes')">      
                   <VBtn
-                    v-if="$can('ver','circuitos')"
+                    v-if="$can('ver','inmigrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="seeCircuit(circuit)">
+                    @click="seeInmigrant(inmigrant)">
                               
                     <VIcon
                         size="22"
@@ -418,12 +274,12 @@ const downloadCSV = async () => {
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('editar','circuitos')"
+                    v-if="$can('editar','inmigrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="editCircuit(circuit)">
+                    @click="editInmigrant(inmigrant)">
                               
                     <VIcon
                         size="22"
@@ -431,12 +287,12 @@ const downloadCSV = async () => {
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('eliminar','circuitos')"
+                    v-if="$can('eliminar','inmigrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="showDeleteDialog(circuit)">
+                    @click="showDeleteDialog(inmigrant)">
                               
                     <VIcon
                       size="22"
@@ -446,7 +302,7 @@ const downloadCSV = async () => {
               </tr>
             </tbody>
             <!-- 👉 table footer  -->
-            <tfoot v-show="!circuits.length">
+            <tfoot v-show="!inmigrants.length">
               <tr>
                 <td
                   colspan="7"
@@ -475,17 +331,6 @@ const downloadCSV = async () => {
       </v-col>
     </v-row>
 
-    <!-- 👉 Add New Circuit -->
-    <AddNewCircuitDrawer
-      v-if="listParishes.length > 0"
-      v-model:isDrawerOpen="isAddNewCircuitDrawerVisible"
-      :circuit="selectedCircuit"
-      :states="listStates"
-      :cities="listCities"
-      :municipalities="listMunicipalities"
-      :parishes="listParishes"
-      @circuit-data="submitForm"/>
-
     <!-- 👉 Confirm Delete -->
     <VDialog
       v-model="isConfirmDeleteDialogVisible"
@@ -496,9 +341,9 @@ const downloadCSV = async () => {
       <DialogCloseBtn @click="isConfirmDeleteDialogVisible = !isConfirmDeleteDialogVisible" />
 
       <!-- Dialog Content -->
-      <VCard title="Eliminar Circuito">
+      <VCard title="Eliminar Inmigrante">
         <VCardText>
-          Está seguro de eliminar el circuito <strong>{{ selectedCircuit.name }}</strong>?.
+          Está seguro de eliminar el inmigrante <strong>{{ selectedInmigrant.name }}</strong>?.
         </VCardText>
 
         <VCardText class="d-flex justify-end gap-3 flex-wrap">
@@ -508,7 +353,7 @@ const downloadCSV = async () => {
             @click="isConfirmDeleteDialogVisible = false">
               Cancelar
           </VBtn>
-          <VBtn @click="removeCircuit">
+          <VBtn @click="removeInmigrant">
               Aceptar
           </VBtn>
         </VCardText>
@@ -529,5 +374,5 @@ const downloadCSV = async () => {
 <route lang="yaml">
   meta:
     action: ver
-    subject: circuitos
+    subject: inmigrantes
 </route>

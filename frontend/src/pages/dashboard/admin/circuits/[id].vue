@@ -78,22 +78,22 @@ const downloadCSV = async () => {
     let dataArray = [];
 
     circuitsStores.getCommunityCouncils.forEach(element => {
-    let data = {
-        NOMBRE: element.name,
-        CIRCUITO: element.circuit.name,
-        ESTADO: element.circuit.parish.municipality.state.name,
-        MUNICIPIO: element.circuit.parish.municipality.name,
-        PARROQUIA: element.circuit.parish.name,
-        CIUDAD: element.circuit.city?.name
-    }
+        let data = {
+            NOMBRE: element.name,
+            CIRCUITO: element.circuit.name,
+            ESTADO: element.circuit.parish.municipality.state.name,
+            MUNICIPIO: element.circuit.parish.municipality.name,
+            PARROQUIA: element.circuit.parish.name,
+            CIUDAD: element.circuit.city?.name
+        }
 
-    dataArray.push(data)
-})
+        dataArray.push(data)
+    })
 
-excelParser()
-  .exportDataFromJSON(dataArray, "community-councils", "csv");
+    excelParser()
+    .exportDataFromJSON(dataArray, "community-councils", "csv");
 
-isRequestOngoing.value = false
+    isRequestOngoing.value = false
 
 }
 

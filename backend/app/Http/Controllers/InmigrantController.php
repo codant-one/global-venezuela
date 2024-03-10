@@ -14,7 +14,8 @@ class InmigrantController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Inmigrant::with([''])
+        $query = Inmigrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
+                        ->where('user_id', auth()->user()->id)
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -23,7 +24,8 @@ class InmigrantController extends Controller
                             ])
                         );
 
-         $count = $query->applyFilters(
+         $count = $query->where('user_id', auth()->user()->id)
+                        ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',

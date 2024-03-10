@@ -26,10 +26,6 @@ const isRequestOngoing = ref(true)
 const isAddNewCommunityCouncilDrawerVisible = ref(false)
 const isConfirmDeleteDialogVisible = ref(false)
 const selectedCommunityCouncil = ref({})
-const isDialogVisible = ref(false)
-const refForm = ref()
-const message = ref('')
-const success = ref(false)
 
 const state_id = ref(null)
 const listStates = ref([])
@@ -329,6 +325,7 @@ const downloadCSV = async () => {
                   label="Buscar"
                   placeholder="Buscar"
                   density="compact"
+                  clearable
                 />
               </VCol>
             </VRow>

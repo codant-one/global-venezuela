@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 use App\Models\CommunityCouncil;
-use App\Models\Parish;
+use App\Models\Inmigrant;
 
 class CommunityCouncilController extends Controller
 {
@@ -69,7 +69,7 @@ class CommunityCouncilController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
 
@@ -82,12 +82,37 @@ class CommunityCouncilController extends Controller
                     'message' => 'Consejo Comunal no encontrado'
                 ], 404);
 
+            $limit = $request->has('limit') ? $request->limit : 10;
+
+            $query = Inmigrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
+                        ->where('community_council_id', $id)
+                        ->applyFilters(
+                            $request->only([
+                                'search',
+                                'orderByField',
+                                'orderBy'
+                            ])
+                        );
+
+            $count = $query->where('user_id', auth()->user()->id)
+                        ->applyFilters(
+                            $request->only([
+                                'search',
+                                'orderByField',
+                                'orderBy'
+                            ])
+                        )->count();
+
+            $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'communityCouncil' => $communityCouncil
+                    'communityCouncil' => $communityCouncil,
+                    'inmigrants' => $inmigrants,
+                    'inmigrantsTotalCount' => $count
                 ]
-            ]);
+            ], 200);
 
         } catch(\Illuminate\Database\QueryException $ex) {
             return response()->json([

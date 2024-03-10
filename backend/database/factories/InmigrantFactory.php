@@ -48,7 +48,9 @@ class InmigrantFactory extends Factory
             'antecedents' => rand(0, 1),
             'isMarried' => rand(0, 1),
             'has_children' => $has_children,
-            'children_number' => $has_children ? rand(1, 5) : 0,
+            'children_number' => $has_children ? rand(1, 5) : null,
+            'phone' => $this->faker->phoneNumber             ,
+            'address' => $this->faker->address,
             'created_at' => now(),
             'updated_at' => now()
         ];

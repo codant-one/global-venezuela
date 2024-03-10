@@ -1,31 +1,31 @@
 <script setup>
 
 import { ref } from "vue"
-import { useCircuitsStores } from '@/stores/useCircuits'
+import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { excelParser } from '@/plugins/csv/excelParser'
 import router from '@/router'
 
 const route = useRoute()
-const circuitsStores = useCircuitsStores()
+const communityCouncilsStores = useCommunityCouncilsStores()
 
-const circuit = ref([])
+const communityCouncil = ref([])
 const title = ref(null)
 
-const communityCouncils = ref([])
+const inmigrants = ref([])
 const searchQuery = ref('')
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPages = ref(1)
-const totalCommunityCouncils = ref(0)
+const totalInmigrants = ref(0)
 
 const isRequestOngoing = ref(true)
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = communityCouncils.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = communityCouncils.value.length + (currentPage.value - 1) * rowPerPage.value
+  const firstIndex = inmigrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = inmigrants.value.length + (currentPage.value - 1) * rowPerPage.value
 
-  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalCommunityCouncils.value } registros`
+  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalInmigrants.value } registros`
 })
 
 // 👉 watching current page
@@ -50,19 +50,20 @@ async function fetchData() {
             page: currentPage.value
         }
 
-        circuit.value = await circuitsStores.showCircuit(data, Number(route.params.id))
-        title.value = "Consejos Comunales de " + circuit.value.name
+        communityCouncil.value = await communityCouncilsStores.showCommunityCouncil(data, Number(route.params.id))
+        title.value = "Inmigrantes en " + communityCouncil.value.name
 
-        communityCouncils.value = circuitsStores.getCommunityCouncils
-        totalPages.value = circuitsStores.community_last_page
-        totalCommunityCouncils.value = circuitsStores.communityCouncilsTotalCount
+        inmigrants.value = communityCouncilsStores.getInmigrants
+        totalPages.value = communityCouncilsStores.inmigrant_last_page
+        totalInmigrants.value = communityCouncilsStores.inmigrantsTotalCount
+
     }
 
     isRequestOngoing.value = false
 }
 
-const seeCommunityCouncil = communityCouncilData => {
-  router.push({ name : 'dashboard-admin-community-councils-id', params: { id: communityCouncilData.id } })
+const seeInmigrant = inmigrantData => {
+  router.push({ name : 'dashboard-admin-inmigrants-id', params: { id: inmigrantData.id } })
 }
 
 const downloadCSV = async () => {
@@ -73,27 +74,42 @@ const downloadCSV = async () => {
         limit: -1
     }
 
-    await circuitsStores.showCircuit(data, Number(route.params.id))
+    await await communityCouncilsStores.showCommunityCouncil(data, Number(route.params.id))
 
     let dataArray = [];
 
-    circuitsStores.getCommunityCouncils.forEach(element => {
-    let data = {
-        NOMBRE: element.name,
-        CIRCUITO: element.circuit.name,
-        ESTADO: element.circuit.parish.municipality.state.name,
-        MUNICIPIO: element.circuit.parish.municipality.name,
-        PARROQUIA: element.circuit.parish.name,
-        CIUDAD: element.circuit.city?.name
-    }
+    communityCouncilsStores.getInmigrants.forEach(element => {
 
-    dataArray.push(data)
-})
+        let data = {
+            NOMBRE: element.name,
+            APELLIDO: element.last_name,
+            EMAIL: element.email,
+            FECHA_NACIMIENTO: element.birthdate,
+            PAÍS_INMIGRANTE: element.country.name,
+            GÉNERO: element.gender.name,
+            NÚMERO_PASAPORTE: element.passport_number,
+            TELÉFONO: element.phone,
+            DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
+            CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',
+            CÉDULA_RESIDENTE: element.resident ? 'SI' : 'NO',
+            AÑOS_EN_EL_PAÍS: element.years_in_country,
+            ANTECEDENTES_PENALES: element.antecedents ? 'SI' : 'NO',
+            CASADO_CON_UN_VENEZOLANO: element.isMarried ? 'SI' : 'NO',
+            HIJOS_VENEZOLANOS: element.has_children ? 'SI' : 'NO',
+            NÚMERO_HIJOS_VENEZOLANOS: element.children_number ?? '',
+            ESTADO: element.parish.municipality.state.name,
+            MUNICIPIO: element.parish.municipality.name,
+            PARROQUIA: element.parish.name,
+            CONSEJO_COMUNAL: element.community_council?.name
+        }
 
-excelParser()
-  .exportDataFromJSON(dataArray, "community-councils", "csv");
+        dataArray.push(data)
+    })
 
-isRequestOngoing.value = false
+    excelParser()
+        .exportDataFromJSON(dataArray, "inmigrants", "csv");
+
+    isRequestOngoing.value = false
 
 }
 
@@ -122,6 +138,7 @@ isRequestOngoing.value = false
         </VDialog>
   
         <VCard :title="title" v-if="title">
+
             <VCardText class="d-flex flex-wrap py-4 gap-4">
                 <div
                     class="me-3"
@@ -162,18 +179,24 @@ isRequestOngoing.value = false
                     <tr>
                         <th scope="col"> #ID </th>
                         <th scope="col"> NOMBRE </th>
+                        <th scope="col"> TELÉFONO </th>
+                        <th scope="col"> EMAIL </th>
+                        <th scope="col"> DIRECCIÓN </th>
                         <th scope="col"> ACCIONES </th>
                     </tr>
                 </thead>
                 <!-- 👉 table body -->
                 <tbody>
                     <tr 
-                        v-for="communityCouncil in communityCouncils"
-                        :key="communityCouncil.id"
+                        v-for="inmigrant in inmigrants"
+                        :key="inmigrant.id"
                         style="height: 3.75rem;">
 
-                        <td> {{communityCouncil.id }} </td>
-                        <td class="text-base font-weight-medium mb-0"> {{communityCouncil.name }} </td>
+                        <td> {{inmigrant.id }} </td>
+                        <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }} </td>
+                        <td> {{inmigrant.phone }} </td>
+                        <td> {{inmigrant.email }} </td>
+                        <td> {{inmigrant.address }} </td>
                         <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos')">      
                             <VBtn
                                 v-if="$can('ver','circuitos')"
@@ -181,7 +204,7 @@ isRequestOngoing.value = false
                                 size="x-small"
                                 color="default"
                                 variant="text"
-                                @click="seeCommunityCouncil(communityCouncil)">
+                                @click="seeInmigrant(inmigrant)">
                                         
                                 <VIcon
                                     size="22"
@@ -191,7 +214,7 @@ isRequestOngoing.value = false
                     </tr>
                 </tbody>
                 <!-- 👉 table footer  -->
-                <tfoot v-show="!circuit.community_councils.length === 0">
+                <tfoot v-show="!inmigrants.length === 0">
                     <tr>
                         <td
                             colspan="7"
@@ -216,6 +239,7 @@ isRequestOngoing.value = false
                     :length="totalPages"/>
 
             </VCardText>
+
         </VCard>
   </section>
 </template>
@@ -223,5 +247,5 @@ isRequestOngoing.value = false
 <route lang="yaml">
   meta:
     action: ver
-    subject: circuitos
+    subject: inmigrantes
 </route>

@@ -1,20 +1,15 @@
 import { defineStore } from 'pinia'
-import CommunityCouncils from '@/api/community-councils'
+import Inmigrants from '@/api/inmigrants'
 
-export const useCommunityCouncilsStores = defineStore('community-councils', {
+export const useInmigrantsStores = defineStore('inmigrants', {
     state: () => ({
-        communityCouncils: {},
         inmigrants: {},
+        communityCouncils: {},
         loading: false,
         last_page: 1,
-        inmigrant_last_page: 1,
         inmigrantsTotalCount: 6,
-        communityCouncilsTotalCount: 6
     }),
     getters:{
-        getCommunityCouncils(){
-            return this.communityCouncils
-        },
         getInmigrants(){
             return this.inmigrants
         }
@@ -23,14 +18,14 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
         setLoading(payload){
             this.loading = payload
         },
-        fetchCommunityCouncils(params) {
+        fetchInmigrants(params) {
             this.setLoading(true)
             
-            return CommunityCouncils.get(params)
+            return Inmigrants.get(params)
                 .then((response) => {
-                    this.communityCouncils = response.data.data.communityCouncils.data
-                    this.last_page = response.data.data.communityCouncils.last_page
-                    this.communityCouncilsTotalCount = response.data.data.communityCouncilsTotalCount
+                    this.inmigrants = response.data.data.inmigrants.data
+                    this.last_page = response.data.data.inmigrants.last_page
+                    this.inmigrantsTotalCount = response.data.data.inmigrantsTotalCount
                 })
                 .catch(error => console.log(error))
                 .finally(() => {
@@ -38,12 +33,12 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
                 })
             
         },
-        addCommunityCouncil(data) {
+        addInmigrant(data) {
             this.setLoading(true)
 
-            return CommunityCouncils.create(data)
+            return Inmigrants.create(data)
                 .then((response) => {
-                    this.communityCouncils.push(response.data.data.communityCouncil)
+                    this.inmigrants.push(response.data.data.inmigrant)
                     return Promise.resolve(response)
                 })
                 .catch(error => Promise.reject(error))
@@ -52,18 +47,13 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
                 })
             
         },
-        showCommunityCouncil(params, id) {
+        showInmigrant(id) {
             this.setLoading(true)
 
-            return CommunityCouncils.show(params, id)
+            return Inmigrants.show(id)
                 .then((response) => {
-
-                    this.inmigrants = response.data.data.inmigrants.data
-                    this.inmigrant_last_page = response.data.data.inmigrants.last_page
-                    this.inmigrantsTotalCount = response.data.data.inmigrantsTotalCount
-
                     if(response.data.success)
-                        return Promise.resolve(response.data.data.communityCouncil)
+                        return Promise.resolve(response.data.data.inmigrant)
                 })
                 .catch(error => Promise.reject(error))
                 .finally(() => {
@@ -71,13 +61,13 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
                 })
             
         },
-        updateCommunityCouncil(data, id) {
+        updateInmigrant(data, id) {
             this.setLoading(true)
             
-            return CommunityCouncils.update(data, id)
+            return Inmigrants.update(data, id)
                 .then((response) => {
-                    let pos = this.communityCouncils.findIndex((item) => item.id === response.data.data.communityCouncil.id)
-                    this.communityCouncils[pos] = response.data.data.communityCouncil
+                    let pos = this.inmigrants.findIndex((item) => item.id === response.data.data.inmigrant.id)
+                    this.inmigrants[pos] = response.data.data.inmigrant
                     return Promise.resolve(response)
                 })
                 .catch(error => Promise.reject(error))
@@ -86,13 +76,13 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
                 })
          
         },
-        deleteCommunityCouncil(id) {
+        deleteInmigrant(id) {
             this.setLoading(true)
 
-            return CommunityCouncils.delete(id)
+            return Inmigrants.delete(id)
                 .then((response) => {
-                    let index = this.communityCouncils.findIndex((item) => item.id === id)
-                    this.communityCouncils.splice(index, 1)
+                    let index = this.inmigrants.findIndex((item) => item.id === id)
+                    this.inmigrants.splice(index, 1)
                     return Promise.resolve(response)
                 })
                 .catch(error => Promise.reject(error))
