@@ -24,7 +24,8 @@ use App\Http\Controllers\{
     ProxyController,
     CommunityCouncilController,
     CircuitController,
-    InmigrantController
+    InmigrantController,
+    VolunteerController
 };
 
 /*
@@ -113,6 +114,7 @@ Route::apiResource('genders', GenderController::class);
 Route::apiResource('municipalities', MunicipalityController::class);
 Route::apiResource('parishes', ParishController::class);
 Route::apiResource('states', StateController::class);
+Route::apiResource('volunteers', VolunteerController::class);
 
 //PROXY
 Route::get('/proxy-image',[ProxyController::class, 'getImage']);
