@@ -46,6 +46,20 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
                 })
             
         },
+        showCommunityCouncil(id) {
+            this.setLoading(true)
+
+            return CommunityCouncils.show(id)
+                .then((response) => {
+                    if(response.data.success)
+                        return Promise.resolve(response.data.data.communityCouncil)
+                })
+                .catch(error => Promise.reject(error))
+                .finally(() => {
+                    this.setLoading(false)
+                })
+            
+        },
         updateCommunityCouncil(data, id) {
             this.setLoading(true)
             

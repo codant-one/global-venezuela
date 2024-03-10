@@ -10,6 +10,10 @@ class CommunityCouncils {
         return axios.post('/community-councils', data)
     }
 
+    show(id) {
+        return axios.get(`/community-councils/${id}`)
+    }
+
     update(data, id) {
         return axios.put(`/community-councils/${id}`, data)
     }

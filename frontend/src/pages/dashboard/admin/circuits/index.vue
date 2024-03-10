@@ -68,6 +68,7 @@ watchEffect(() => {
 watchEffect(fetchData)
 
 async function fetchData() {
+
   let data = {
     search: searchQuery.value,
     orderByField: 'id',
@@ -113,42 +114,6 @@ const loadMunicipalities = () => {
 
 const loadParishes = () => {
   listParishes.value = parishesStores.getParishes
-}
-
-// 👉 dialog close
-const closeNavigationDrawer = () => {
-  nextTick(() => {
-    refForm.value?.reset()
-    refForm.value?.resetValidation()
-
-    isDialogVisible.value = false
-    message.value = ''
-    success.value = false
-  })
-}
-
-const onSubmit = () => {
-  refForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-     
-        let data = {
-            id: selectedCircuit.value.id,
-        }
-
-        circuitsStores.showCircuit(data)
-            .then((res) => {
-                message.value = res.data.message
-                success.value = res.data.success
-            })
-            .catch((err) => {
-                advisor.value = {
-                    type: 'error',
-                    message: err,
-                    show: true
-                }
-            })
-    }
-  })
 }
 
 const seeCircuit = circuitData => {
@@ -230,7 +195,6 @@ const submitUpdate = circuitData => {
   }, 3000)
 }
 
-
 const editCircuit = circuitData => {
     isAddNewCircuitDrawerVisible.value = true
     selectedCircuit.value = { ...circuitData }
@@ -243,7 +207,7 @@ const showDeleteDialog = circuitData => {
 
 const removeCircuit = async () => {
   isConfirmDeleteDialogVisible.value = false
-  let res = await circuitsStores.deleteCircuit({ ids: [selectedCircuit.value.id] })
+  let res = await circuitsStores.deleteCircuit(selectedCircuit.value.id)
   selectedCircuit.value = {}
 
   advisor.value = {

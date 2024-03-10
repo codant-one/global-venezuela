@@ -19,15 +19,27 @@ class CommunityCouncil extends Model
         return $this->belongsTo(Circuit::class, 'circuit_id', 'id');
     }
 
+    public function inmigrants() {
+        return $this->hasMany(Inmigrant::class, 'community_council_id', 'id');
+    }
+
     /**** Scopes ****/
     public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {
-            $query->whereHas('roles', function ($q) use ($term) {
-                $q->where('name', 'LIKE', '%' . $term . '%');
-            })
-            ->orWhere('name', 'LIKE', '%' . $term . '%')
-            ->orWhere('email', 'LIKE', '%' . $term . '%');
+            $query->where('name', 'LIKE', '%' . $term . '%');
         }
+    }
+
+    public function scopeWhereState($query, $search) {
+        $query->whereHas('circuit', function ($q) use ($search) {
+            $q->whereHas('parish', function ($q) use ($search) {
+                $q->whereHas('municipality', function ($q) use ($search) {
+                    $q->whereHas('state', function ($q) use ($search) {
+                        $q->where('id', $search);
+                    });
+                });
+            });
+        });
     }
 
     public function scopeWhereOrder($query, $orderByField, $orderBy) {
@@ -39,6 +51,10 @@ class CommunityCouncil extends Model
 
         if ($filters->get('search')) {
             $query->whereSearch($filters->get('search'));
+        }
+
+        if ($filters->get('state_id')) {
+            $query->whereState($filters->get('state_id'));
         }
 
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
@@ -59,7 +75,7 @@ class CommunityCouncil extends Model
     /**** Public methods ****/
     public static function createCommunityCouncil($request) {
         $council = self::create([
-            'parish_id' => $request->parish_id,
+            'circuit_id' => $request->circuit_id,
             'name' => $request->name
         ]);
 
@@ -68,7 +84,7 @@ class CommunityCouncil extends Model
 
     public static function updateCommunityCouncil($request, $council) {
         $council->update([
-            'parish_id' => $request->parish_id,
+            'circuit_id' => $request->circuit_id,
             'name' => $request->name
         ]);
 

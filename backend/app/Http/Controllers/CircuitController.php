@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 
 use App\Models\Circuit;
 use App\Models\Parish;
-
+use App\Models\CommunityCouncil;
 
 class CircuitController extends Controller
 {
@@ -16,7 +16,7 @@ class CircuitController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = Circuit::with(['parish.municipality.state', 'city'])
+        $query = Circuit::with(['parish.municipality.state', 'city'])
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -26,24 +26,24 @@ class CircuitController extends Controller
                             ])
                         );
 
-            $count = $query->applyFilters(
-                                $request->only([
-                                    'search',
-                                    'orderByField',
-                                    'orderBy',
-                                    'state_id'
-                                ])
-                            )->count();
+         $count = $query->applyFilters(
+                            $request->only([
+                                'search',
+                                'orderByField',
+                                'orderBy',
+                                'state_id'
+                            ])
+                        )->count();
 
-            $circuits = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+        $circuits = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
-            return response()->json([
-                'success' => true,
-                'data' => [ 
-                    'circuits' => $circuits,
-                    'circuitsTotalCount' => $count
-                ]
-            ], 200);
+        return response()->json([
+            'success' => true,
+            'data' => [ 
+                'circuits' => $circuits,
+                'circuitsTotalCount' => $count
+            ]
+        ], 200);
     }
 
 
@@ -70,25 +70,54 @@ class CircuitController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
 
             $circuit = Circuit::with(['community_councils'])->find($id);
-
+        
             if (!$circuit)
                 return response()->json([
-                    'sucess' => false,
+                    'success' => false,
                     'feedback' => 'not_found',
                     'message' => 'Circuito no encontrado'
                 ], 404);
 
+            $limit = $request->has('limit') ? $request->limit : 10;
+
+            $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
+                            ->where('circuit_id', $id)
+                            ->applyFilters(
+                                $request->only([
+                                    'search',
+                                    'orderByField',
+                                    'orderBy',
+                                    'state_id'
+                                ])
+                            );
+
+            $count = $query->where('circuit_id', $id)
+                           ->applyFilters(
+                                $request->only([
+                                    'search',
+                                    'orderByField',
+                                    'orderBy',
+                                    'state_id'
+                                ])
+                           )->count();
+
+            $communityCouncils = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuit' => $circuit
+                    'circuit' => $circuit,
+                    'communityCouncils' => $communityCouncils,
+                    'communityCouncilsTotalCount' => $count
                 ]
-            ]);
+            ], 200);
+
+            
 
         } catch(\Illuminate\Database\QueryException $ex) {
             return response()->json([
