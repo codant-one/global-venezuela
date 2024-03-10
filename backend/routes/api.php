@@ -23,7 +23,8 @@ use App\Http\Controllers\{
     GenderController,
     ProxyController,
     CommunityCouncilController,
-    CircuitController
+    CircuitController,
+    VolunteerController
 };
 
 /*
@@ -56,6 +57,14 @@ Route::group([
         Route::get('generateQR', [AuthController::class , 'generateQR'])->name('generateQR');
     });
 });
+
+Route::group([
+    'middleware'=> 'cors'
+], function(){
+
+    Route::apiResource('volunteers', VolunteerController::class);
+
+    });
 
 //Private Endpoints
 Route::group(['middleware' => ['cors','jwt'] ], function(){
