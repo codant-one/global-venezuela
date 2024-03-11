@@ -1,28 +1,28 @@
 <script setup>
 const statistics = [
   {
-    title: 'Ventas',
-    stats: '$2300.00',
-    icon: 'tabler-chart-pie-2',
-    color: 'primary',
+    title: 'Residentes',
+    stats: '20.000',
+    icon: 'tabler-home-check',
+    color: 'success',
   },
   {
-    title: 'Clientes',
+    title: 'Casados',
     stats: '8.549',
-    icon: 'tabler-users',
-    color: 'info',
-  },
-  {
-    title: 'Productos',
-    stats: '1.423',
-    icon: 'tabler-shopping-cart',
+    icon: 'tabler-hearts',
     color: 'error',
   },
   {
-    title: 'Ganancias',
-    stats: '$9745.00',
-    icon: 'tabler-currency-dollar',
-    color: 'success',
+    title: 'Con hijos',
+    stats: '1.423',
+    icon: 'tabler-users-group',
+    color: 'info',
+  },
+  {
+    title: 'Transeúntes',
+    stats: '9.700',
+    icon: 'tabler-user-up',
+    color: 'info',
   },
 ]
 </script>

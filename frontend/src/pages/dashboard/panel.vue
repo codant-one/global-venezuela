@@ -12,12 +12,12 @@ const name = ref('')
 
 const donutChartColors = {
   donut: {
-    series1: '#FF0090',
-    series2: '#ff66b8',
-    series3: '#ff80c4',
-    series4: '#ff99cf',
-    series5: '#ffbde0',
-    series6: '#ffdbee',
+    series1: '#F9A01B',
+    series2: '#FAD847',
+    series3: '#FCE07D',
+    series4: '#FDE7B2',
+    series5: '#FEF0E8',
+    series6: '#FFF8FD',
   },
 }
 
@@ -130,8 +130,8 @@ async function fetchData() {
             <div
               v-for="{ title, value, icon, color } in [
                 { title: 'Migrantes registrados', value: '28.000', icon: 'mdi-laptop', color: 'primary' },
-                { title: 'Indocumentados', value: '12000', icon: 'mdi-lightbulb', color: 'success' },
-                { title: 'Estados reportados', value: '14', icon: 'mdi-check-decagram-outline', color: 'error' },
+                { title: 'Indocumentados', value: '12000', icon: 'mdi-account-alert-outline', color: 'error' },
+                { title: 'Estados reportados', value: '14', icon: 'mdi-check-decagram-outline', color: 'success' },
               ]"
               :key="title"
             >
@@ -212,7 +212,7 @@ async function fetchData() {
       </VCol>
     </VRow>
 
-    <VRow class="px-md-6 px-2">
+   <!-- <VRow class="px-md-6 px-2">
       <VCol
         cols="12"
         sm="6"
@@ -236,7 +236,7 @@ async function fetchData() {
       >
         <Orders />
       </VCol>
-    </VRow>
+    </VRow>-->
 
   </section>
 </template>
