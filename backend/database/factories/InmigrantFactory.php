@@ -42,6 +42,7 @@ class InmigrantFactory extends Factory
             'email' => $this->faker->email,
             'birthdate' => $this->faker->date,
             'passport_number' => strval(rand(1,22999999)),
+            'passport_status'=> rand(0,1),
             'transient' => rand(0, 1),
             'resident' => rand(0, 1),
             'years_in_country' => rand(0, 80),

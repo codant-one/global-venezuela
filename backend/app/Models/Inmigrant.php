@@ -43,6 +43,18 @@ class Inmigrant extends Model
         }
     }
 
+    public function scopeWhereState($query, $search) {
+        $query->whereHas('parish.municipality.state', function ($q) use ($search) {
+            $q->where('state_id', $search);
+        });
+    }
+
+    public function scopeWhereMunicipality($query, $search) {
+        $query->whereHas('parish.municipality', function ($q) use ($search) {
+            $q->where('state_id', $search);
+        });
+    }
+
     public function scopeWhereOrder($query, $orderByField, $orderBy) {
         $query->orderBy($orderByField, $orderBy);
     }
@@ -54,11 +66,53 @@ class Inmigrant extends Model
             $query->whereSearch($filters->get('search'));
         }
 
+        if ($filters->get('country_id') !== null) {
+            $query->where('country_id', $filters->get('country_id'));
+        }
+
+        if($filters->get('state_id')!==null){
+            $query->whereState($filters->get('state_id'));
+        }
+
+        if($filters->get('municipality_id')!==null){
+            $query->whereMunicipality($filters->get('municipality_id'));
+        }
+
+        if($filters->get('parish_id')!==null){
+            $query->where('parish_id',$filters->get('parish_id'));
+        }
+
+        if($filters->get('passport_status')!=null)
+        {
+            $query->where('passport_status', $filters->get('passport_status'));
+        }
+
+        if($filters->get('antecedents')!=null)
+        {
+            $query->where('antecedents', $filters->get('antecedents'));
+        }
+
+        if($filters->get('transient')!=null)
+        {
+            $query->where('transient', $filters->get('transient'));
+        }
+
+        if($filters->get('resident')!=null)
+        {
+            $query->where('resident', $filters->get('resident'));
+        }
+
+
+
+
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
             $field = $filters->get('orderByField') ? $filters->get('orderByField') : 'created_at';
             $orderBy = $filters->get('orderBy') ? $filters->get('orderBy') : 'asc';
             $query->whereOrder($field, $orderBy);
         }
+
+        
+      
     }
 
     public function scopePaginateData($query, $limit) {

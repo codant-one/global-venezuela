@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('email');
             $table->date('birthdate');
             $table->string('passport_number');
+            $table->tinyInteger('passport_status')->default(0);
             $table->tinyInteger('transient')->default(0);
             $table->tinyInteger('resident')->default(0);
             $table->integer('years_in_country')->nullable();
