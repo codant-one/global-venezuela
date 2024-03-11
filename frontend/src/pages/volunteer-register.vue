@@ -80,7 +80,7 @@ const radioContent = [
          icon: 'mdi-crosshairs-gps',
          size: '100',
       },
-      title: 'Por Circuitos',
+      title: 'Por Circuitos Comunales',
       value: '3'
   }
 ]
@@ -92,7 +92,7 @@ const items = [
     icon: 'tabler-heart-handshake',
   },
   {
-    title: 'Temas',
+    title: 'Transformación',
     subtitle: 'Selecciona el tema',
     icon: 'tabler-book',
   },
@@ -312,12 +312,12 @@ const onSubmit = () => {
                <CustomRadiosWithIcon
                   v-model:selected-radio="form.type"
                   :radio-content="radioContent"
-                  :grid-column="{ sm: '6', cols: '12' }"
+                  :grid-column="{ sm: '6', cols: '6' }"
                />
             </VWindowItem>
             <VWindowItem>
               <h5 class="text-h5 mb-1">
-                Temas
+               Transformación
               </h5>
               <p class="text-sm">
                 Selecciona el tema
@@ -378,7 +378,7 @@ const onSubmit = () => {
                 >
                   <VAutocomplete
                      v-model="circuit_id"
-                     label="Circuito"
+                     label="Circuito Comunal"
                      :rules="[requiredValidator]"
                      :items="getCircuits"
                      :menu-props="{ maxHeight: '200px' }"
