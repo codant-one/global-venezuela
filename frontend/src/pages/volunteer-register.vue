@@ -1,5 +1,6 @@
 <script setup>
 
+import { requiredValidator } from '@validators'
 import { useThemesStores } from '@/stores/useThemes'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useCircuitsStores } from '@/stores/useCircuits'
@@ -30,11 +31,24 @@ const isRequestOngoing = ref(true)
 const listThemes = ref([])
 const theme_id = ref(null)
 
-const state_id = ref(null)
 const listStates = ref([])
 const listMunicipalities = ref([])
 const listParishes = ref([])
 const listCircuits = ref([])
+
+const listMunicipalitiesByStates = ref([])
+const listParishesByMunicipalities = ref([])
+const listCircuitsByParishes = ref([])
+
+const state_id = ref('')
+const stateOld_id = ref('')
+const municipality_id = ref('')
+const municipalityOld_id = ref('')
+const parish_id = ref('')
+const parishOld_id = ref('')
+const circuit_id = ref('')
+const circuitOld_id = ref('')
+const isEdit = ref(false)
 
 const radioContent = [
   {
@@ -154,10 +168,72 @@ async function fetchData() {
    isRequestOngoing.value = false
 }
 
+const getMunicipalities = computed(() => {
+  return listMunicipalitiesByStates.value.map((state) => {
+    return {
+      title: state.name,
+      value: state.id,
+    }
+  })
+})
+
+const getParishes = computed(() => {
+  return listParishesByMunicipalities.value.map((municipality) => {
+    return {
+      title: municipality.name,
+      value: municipality.id,
+    }
+  })
+})
+
+const getCircuits = computed(() => {
+  return listCircuitsByParishes.value.map((parish) => {
+    return {
+      title: parish.name,
+      value: parish.id,
+    }
+  })
+})
+
+const selectState = state => {
+  if (state) {
+    let _state = listStates.value.find(item => item.name === state)
+    state_id.value = _state.name
+ 
+    municipality_id.value = ''
+
+    listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
+  }
+}
+
+const selectMunicipalities = municipality => {
+  if (municipality) {
+    let _municipality = listMunicipalities.value.find(item => item.id === municipality)
+    municipality_id.value = _municipality.name
+ 
+    parish_id.value = ''
+
+    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
+
+  }
+}
+
+const selectParishes = parish => {
+  if (parish) {
+    let _parish = listParishes.value.find(item => item.id === parish)
+    parish_id.value = _parish.name
+ 
+    circuit_id.value = ''
+
+    listCircuitsByParishes.value = listCircuits.value.filter(item => item.parish_id === _parish.id)
+
+  }
+}
+
 const onSubmit = () => {
 
   // eslint-disable-next-line no-alert
-  alert('Submitted..!!')
+  alert('Voluntario Registrado..!!')
 }
 </script>
 
@@ -241,69 +317,83 @@ const onSubmit = () => {
             </VWindowItem>
             <VWindowItem>
               <h5 class="text-h5 mb-1">
-                Voluntariados
+                Temas
               </h5>
               <p class="text-sm">
-                Selecciona el tipo de voluntariado
+                Selecciona el tema
               </p>
 
               <VRow>
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="Number(form.type) >= 1"
                 >
-                  <AppTextField
-                    v-model="form.username"
-                    label="Username"
-                    placeholder="Johndoe"
+                  <VAutocomplete
+                     v-model="state_id"
+                     label="Estado"
+                     :rules="[requiredValidator]"
+                     :items="listStates"
+                     item-title="name"
+                     item-value="name"
+                     :menu-props="{ maxHeight: '200px' }"
+                     @update:model-value="selectState"
                   />
                 </VCol>
 
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="Number(form.type) >= 2"
                 >
-                  <AppTextField
-                    v-model="form.email"
-                    label="Email"
-                    placeholder="johndoe@email.com"
+                  <VAutocomplete
+                     v-model="municipality_id"
+                     label="Municipio"
+                     :rules="[requiredValidator]"
+                     :items="getMunicipalities"
+                     :menu-props="{ maxHeight: '200px' }"
+                     @update:model-value="selectMunicipalities"
                   />
                 </VCol>
 
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="Number(form.type) > 2"
                 >
-                  <AppTextField
-                    v-model="form.password"
-                    label="Password"
-                    placeholder="············"
-                    :type="isPasswordVisible ? 'text' : 'password'"
-                    :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  <VAutocomplete
+                     v-model="parish_id"
+                     label="Parroquia"
+                     :rules="[requiredValidator]"
+                     :items="getParishes"
+                     :menu-props="{ maxHeight: '200px' }"
+                     @update:model-value="selectParishes"
                   />
                 </VCol>
 
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="Number(form.type) === 3"
                 >
-                  <AppTextField
-                    v-model="form.confirmPassword"
-                    label="Confirm Password"
-                    placeholder="············"
-                    :type="isConfirmPasswordVisible ? 'text' : 'password'"
-                    :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                    @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                  <VAutocomplete
+                     v-model="circuit_id"
+                     label="Circuito"
+                     :rules="[requiredValidator]"
+                     :items="getCircuits"
+                     :menu-props="{ maxHeight: '200px' }"
                   />
                 </VCol>
 
                 <VCol cols="12">
-                  <AppTextField
-                    v-model="form.link"
-                    label="Profile Link"
-                    placeholder="https://profile.com/johndoe"
-                    type="url"
+                  <VAutocomplete
+                     v-model="theme_id"
+                     label="Temas"
+                     :rules="[requiredValidator]"
+                     :items="listThemes"
+                     item-title="name"
+                     item-value="name"
+                     :menu-props="{ maxHeight: '200px' }"
                   />
                 </VCol>
               </VRow>
@@ -311,11 +401,12 @@ const onSubmit = () => {
 
             <VWindowItem>
               <h5 class="text-h5 mb-1">
-                Personal Information
+               Información Personal
               </h5>
               <p class="text-sm">
-                Enter Your Personal Information
+               Ingrese su información personal
               </p>
+
 
               <VRow>
                 <VCol
@@ -324,8 +415,8 @@ const onSubmit = () => {
                 >
                   <AppTextField
                     v-model="form.firstName"
-                    label="First Name"
-                    placeholder="John"
+                    label="Nombre"
+                    placeholder="Nombre"
                   />
                 </VCol>
 
@@ -335,8 +426,8 @@ const onSubmit = () => {
                 >
                   <AppTextField
                     v-model="form.lastName"
-                    label="Last Name"
-                    placeholder="Doe"
+                    label="Apellido"
+                    placeholder="Apellido"
                   />
                 </VCol>
 
@@ -347,59 +438,18 @@ const onSubmit = () => {
                   <AppTextField
                     v-model="form.mobile"
                     type="number"
-                    label="Mobile"
-                    placeholder="+1 123 456 7890"
+                    label="Documento"
+                    placeholder="Documento"
                   />
                 </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppTextField
-                    v-model="form.pincode"
-                    type="number"
-                    label="Pincode"
-                    placeholder="123456"
-                  />
-                </VCol>
-
-                <VCol cols="12">
-                  <AppTextField
-                    v-model="form.address"
-                    label="Address"
-                    placeholder="1234 Main St, New York, NY 10001, USA"
-                  />
-                </VCol>
-
-                <VCol cols="12">
-                  <AppTextField
-                    v-model="form.landmark"
-                    label="Landmark"
-                    placeholder="Near Central Park"
-                  />
-                </VCol>
-
                 <VCol
                   cols="12"
                   md="6"
                 >
                   <AppTextField
                     v-model="form.city"
-                    label="City"
-                    placeholder="New York"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppSelect
-                    v-model="form.state"
-                    label="State"
-                    placeholder="Select State"
-                    :items="['New York', 'California', 'Florida', 'Washington', 'Texas']"
+                    label="E-mail"
+                    placeholder="E-mail"
                   />
                 </VCol>
               </VRow>
@@ -426,7 +476,7 @@ const onSubmit = () => {
           <VSpacer />
           <VBtn
             v-if="items.length - 1 === currentStep"
-            color="success"
+            color="primary"
             append-icon="tabler-check"
             @click="onSubmit"
           >
