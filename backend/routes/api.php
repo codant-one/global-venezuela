@@ -107,6 +107,11 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
 
     //Reports
     Route::get('/report',[ReportController::class, 'Report_one']);
+    //Inmigrants
+    Route::group(['prefix' => 'inmigrants'], function () {
+        Route::post('delete', [InmigrantController::class, 'delete']);
+    });
+
 
 });
 

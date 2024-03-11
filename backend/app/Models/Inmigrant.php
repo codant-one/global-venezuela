@@ -130,7 +130,7 @@ class Inmigrant extends Model
             'user_id' => auth()->user()->id,
             'gender_id' => $request->gender_id,
             'parish_id' => $request->parish_id,
-            'community_council_id' => $request->community_council_id,
+            'community_council_id' => ($request->community_council_id === '0') ? null : $request->community_council_id,
             'name' => $request->name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -142,9 +142,9 @@ class Inmigrant extends Model
             'antecedents' => $request->antecedents,
             'isMarried' => $request->isMarried,
             'has_children' => $request->has_children,
-            'children_number' => $request->children_number,
+            'children_number' => ($request->children_number === '0') ? null : $request->children_number,
             'phone' => $request->phone,
-            'address' => $request->address,
+            'address' => $request->address
         ]);
 
         return $inmigrant;
@@ -153,10 +153,9 @@ class Inmigrant extends Model
     public static function updateInmigrant($request, $inmigrant) {
         $inmigrant->update([
             'country_id' => $request->country_id,
-            'user_id' => $request->user_id,
             'gender_id' => $request->gender_id,
             'parish_id' => $request->parish_id,
-            'community_council_id' => $request->community_council_id,
+            'community_council_id' => ($request->community_council_id === '0') ? null : $request->community_council_id,
             'name' => $request->name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -168,7 +167,7 @@ class Inmigrant extends Model
             'antecedents' => $request->antecedents,
             'isMarried' => $request->isMarried,
             'has_children' => $request->has_children,
-            'children_number' => $request->children_number,
+            'children_number' => ($request->children_number === '0') ? null : $request->children_number,
             'phone' => $request->phone,
             'address' => $request->address,
         ]);
@@ -176,14 +175,13 @@ class Inmigrant extends Model
         return $inmigrant;
     }
 
-    public static function deleteInmigrant($id) {
-        self::deleteInmigrants(array($id));
-    }
-
     public static function deleteInmigrants($ids) {
         foreach ($ids as $id) {
             $inmigrant = self::find($id);
             $inmigrant->delete();
+
+            if($inmigrant->file_document)
+                deleteFile($inmigrant->file_document);
         }
     }
 
