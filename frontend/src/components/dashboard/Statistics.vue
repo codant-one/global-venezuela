@@ -1,26 +1,58 @@
 <script setup>
+
+const props = defineProps({
+  resident: {
+    type: Number,
+    required: true
+  },
+
+  isMarried: {
+    type: Number,
+    required: true
+  },
+
+  has_children: {
+    type: Number,
+    required: true
+  },
+
+  transient: {
+    type: Number,
+    required: true
+  },
+})
+
+const cant_resident = ref(props.resident)
+
+const cant_isMarried = ref(props.isMarried)
+
+const cant_haschildren = ref(props.has_children)
+
+const cant_transient = ref(props.transient)
+
+
 const statistics = [
   {
     title: 'Residentes',
-    stats: '20.000',
+    stats: cant_resident.value,
     icon: 'tabler-home-check',
     color: 'success',
   },
   {
     title: 'Casados',
-    stats: '8.549',
+    stats: cant_isMarried.value,
     icon: 'tabler-hearts',
     color: 'error',
   },
   {
     title: 'Con hijos',
-    stats: '1.423',
+    stats: cant_haschildren.value,
     icon: 'tabler-users-group',
     color: 'info',
   },
   {
     title: 'Transeúntes',
-    stats: '9.700',
+    stats: cant_transient.value,
     icon: 'tabler-user-up',
     color: 'info',
   },

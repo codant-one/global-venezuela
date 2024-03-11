@@ -1,10 +1,16 @@
 <script setup>
 
 import congoImg from '@images/illustrations/congo-illustration.png'
+const props = defineProps({
+  inmigrant_byuser: {
+    type: Number,
+    required: true
+  },
+})
 
 const userDataJ = ref('')
 const name = ref('')
-
+const cant_inmigrant = ref(props.inmigrant_byuser)
 watchEffect(fetchData)
 
 async function fetchData() {
@@ -29,7 +35,7 @@ async function fetchData() {
             Registros realizados
           </p>
           <h4 class="text-h4 font-weight-medium text-primary mb-1">
-            5000
+            {{cant_inmigrant}}
           </h4>
           <VBtn>Ver registros</VBtn>
         </VCardText>
