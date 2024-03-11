@@ -25,7 +25,8 @@ use App\Http\Controllers\{
     CommunityCouncilController,
     CircuitController,
     InmigrantController,
-    VolunteerController
+    VolunteerController,
+    ReportController
 };
 
 /*
@@ -104,6 +105,8 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
        Route::post('/changePhone', [ClientController::class, 'changePhone']);       
     });
 
+    //Reports
+    Route::get('/report',[ReportController::class, 'Report_one']);
     //Inmigrants
     Route::group(['prefix' => 'inmigrants'], function () {
         Route::post('delete', [InmigrantController::class, 'delete']);
