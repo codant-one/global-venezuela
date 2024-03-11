@@ -52,10 +52,23 @@ class InmigrantController extends Controller
 
             $inmigrant = Inmigrant::createInmigrant($request);
 
+            
+            if ($request->hasFile('file_document')) {
+                $document = $request->file('file_document');
+
+                $path = 'inmigrants/';
+
+                $file_data = uploadFile($document, $path);
+
+                $inmigrant->file_document = $file_data['filePath'];
+                $inmigrant->update();
+            } 
+
+
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'inmigrant' => Inmigrant::with(['parish.municipality.state', 'city'])->find($inmigrant->id)
+                    'inmigrant' => Inmigrant::with(['parish.municipality.state'])->find($inmigrant->id)
                 ]
             ]);
 
@@ -112,10 +125,21 @@ class InmigrantController extends Controller
 
             $inmigrant = $inmigrant->updateInmigrant($request, $inmigrant);
 
+            if ($request->hasFile('file_document')) {
+                $document = $request->file('file_document');
+
+                $path = 'inmigrants/';
+
+                $file_data = uploadFile($document, $path, $inmigrant->file_document);
+
+                $inmigrant->file_document = $file_data['filePath'];
+                $inmigrant->update();
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'inmigrant' => Inmigrant::with(['parish.municipality.state', 'city'])->find($inmigrant->id)
+                    'inmigrant' => Inmigrant::with(['parish.municipality.state'])->find($inmigrant->id)
                 ]
             ]);
 
