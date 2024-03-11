@@ -147,7 +147,7 @@ async function fetchData() {
             class="mb-7 text-wrap"
             style="max-inline-size: 800px;"
           >
-            En este panel encontraras información relevante sobre el registro de migrantes a través de Venezuela Global
+            En este panel encontraras información relevante sobre el registro de migrantes a través de Venezuela Global.
           </div>
 
           <div class="d-flex justify-space-between flex-wrap gap-4 flex-column flex-md-row">
