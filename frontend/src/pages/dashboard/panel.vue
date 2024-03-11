@@ -3,13 +3,22 @@
 import VueApexCharts from 'vue3-apexcharts'
 import Congratulations from "@/components/dashboard/Congratulations.vue";
 import Statistics from "@/components/dashboard/Statistics.vue";
-import Earning from "@/components/dashboard/Earning.vue";
-import Products from "@/components/dashboard/Products.vue";
-import Orders from "@/components/dashboard/Orders.vue";
+import { useStatisticsStores } from '@/stores/useStatistics'
+
+const statisticsStores = useStatisticsStores()
+
 
 const userDataJ = ref('')
 const name = ref('')
-
+const total_inmigrant = ref('')
+const undocumented = ref('')
+const states = ref('')
+const resident = ref(null)
+const isMarried = ref(null)
+const has_children = ref(null)
+const transient = ref(null)
+const inmigrant_byuser = ref(null)
+const listStatistics = ref([])
 const donutChartColors = {
   donut: {
     series1: '#F9A01B',
@@ -94,6 +103,10 @@ const timeSpendingChartSeries = [
   23,
 ]
 
+const loadStatistics = () => {
+  listStatistics.value = statisticsStores.getStatistics
+}
+
 watchEffect(fetchData)
 
 async function fetchData() {
@@ -102,6 +115,17 @@ async function fetchData() {
     
     userDataJ.value = JSON.parse(userData)
     name.value = userDataJ.value.name + " " + userDataJ.value.last_name
+
+    await statisticsStores.fetchStatistics();
+    loadStatistics()
+    total_inmigrant.value = listStatistics.value.total_inmigrant
+    undocumented.value = listStatistics.value.undocumented
+    states.value = listStatistics.value.states
+    resident.value = listStatistics.value.resident
+    isMarried.value = listStatistics.value.isMarried
+    has_children.value = listStatistics.value.has_children
+    transient.value = listStatistics.value.transient
+    inmigrant_byuser.value = listStatistics.value.inmigrant_by_user
 }
 
 </script>
@@ -129,9 +153,9 @@ async function fetchData() {
           <div class="d-flex justify-space-between flex-wrap gap-4 flex-column flex-md-row">
             <div
               v-for="{ title, value, icon, color } in [
-                { title: 'Migrantes registrados', value: '28.000', icon: 'mdi-laptop', color: 'primary' },
-                { title: 'Indocumentados', value: '12000', icon: 'mdi-account-alert-outline', color: 'error' },
-                { title: 'Estados reportados', value: '14', icon: 'mdi-check-decagram-outline', color: 'success' },
+                { title: 'Migrantes registrados', value: total_inmigrant, icon: 'mdi-laptop', color: 'primary' },
+                { title: 'Indocumentados', value: undocumented, icon: 'mdi-account-alert-outline', color: 'error' },
+                { title: 'Estados reportados', value: states, icon: 'mdi-check-decagram-outline', color: 'success' },
               ]"
               :key="title"
             >
@@ -199,8 +223,14 @@ async function fetchData() {
         cols="12"
         md="7"
         lg="8"
+        v-if="resident"
       >
-        <Statistics class="h-100" />
+        <Statistics 
+          :resident = "resident" 
+          :isMarried = "isMarried"
+          :has_children = "has_children"
+          :transient = "transient"
+          class = "h-100" />
       </VCol>
 
       <VCol
@@ -208,7 +238,7 @@ async function fetchData() {
         md="5"
         lg="4"
       >
-        <Congratulations />
+        <Congratulations :inmigrant_byuser="inmigrant_byuser"/>
       </VCol>
     </VRow>
 
