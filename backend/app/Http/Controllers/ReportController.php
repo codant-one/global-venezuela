@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Illuminate\Http\Request;
 
 use App\Models\Inmigrant;
@@ -18,7 +19,6 @@ class ReportController extends Controller
         $limit = $request->has('limit') ? $request->limit : 10;
 
         $query = Inmigrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])
-                        ->where('user_id', auth()->user()->id)
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -35,8 +35,7 @@ class ReportController extends Controller
                             ])
                         );
 
-        $count = $query->where('user_id', auth()->user()->id)
-                        ->applyFilters(
+        $count = $query->applyFilters(
                             $request->only([
                                 'search',
                                 'country_id',

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Spatie\Permission\Middlewares\PermissionMiddleware;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
