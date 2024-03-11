@@ -88,6 +88,7 @@ const downloadCSV = async () => {
             PAÍS_INMIGRANTE: element.country.name,
             GÉNERO: element.gender.name,
             NÚMERO_PASAPORTE: element.passport_number,
+            PASAPORTE_VIGENTE: element.passport_status ? 'SI' : 'NO',
             TELÉFONO: element.phone,
             DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
             CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',

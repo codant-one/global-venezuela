@@ -163,6 +163,7 @@ const uploadInfo = async (infoDetail) => {
   formData.append('antecedents', Number(infoDetail.antecedents))
   formData.append('isMarried', Number(infoDetail.isMarried))
   formData.append('has_children', Number(infoDetail.has_children))
+  formData.append('passport_status', Number(infoDetail.passport_status))
   formData.append('children_number', Number(infoDetail.has_children) ? infoDetail.children_number : 0)
 
   inmigrantsStores.addInmigrant(formData)
