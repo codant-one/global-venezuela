@@ -202,6 +202,108 @@ const closeRoleDetailDialog = function(){
                                 :readonly="readonly"
                             />
                         </div>
+                        <VLabel style="font-weight: bold;">
+                            Circuitos
+                        </VLabel>
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="permissions"
+                                label="ver circuitos"
+                                value="ver circuitos"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="crear circuitos"
+                                value="crear circuitos"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="editar circuitos"
+                                value="editar circuitos"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="eliminar circuitos"
+                                value="eliminar circuitos"
+                                :readonly="readonly"
+                            />
+                        </div>
+                        <VLabel style="font-weight: bold;">
+                            Consejos Comunales
+                        </VLabel>
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="permissions"
+                                label="ver consejos-comunales"
+                                value="ver consejos-comunales"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="crear consejos-comunales"
+                                value="crear consejos-comunales"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="editar consejos-comunales"
+                                value="editar consejos-comunales"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="eliminar consejos-comunales"
+                                value="eliminar consejos-comunales"
+                                :readonly="readonly"
+                            />
+                        </div>
+                        <VLabel style="font-weight: bold;">
+                            Inmigrantes
+                        </VLabel>
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="permissions"
+                                label="ver inmigrantes"
+                                value="ver inmigrantes"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="crear inmigrantes"
+                                value="crear inmigrantes"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="editar inmigrantes"
+                                value="editar inmigrantes"
+                                :readonly="readonly"
+                            />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="eliminar inmigrantes"
+                                value="eliminar inmigrantes"
+                                :readonly="readonly"
+                            />
+                        </div>
+                    </div>
+                </VCardText>
+                <VCardTitle>
+                    Reportes  
+                </VCardTitle>
+                <VCardText>
+                    <div class="ml-5">
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="permissions"
+                                label="ver reportes"
+                                value="ver reportes"
+                                :readonly="readonly"
+                            />
+                        </div>
                     </div>
                 </VCardText>
             </VCardText>

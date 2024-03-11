@@ -11,6 +11,14 @@ use App\Models\CommunityCouncil;
 class CircuitController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(PermissionMiddleware::class . ':ver circuitos|administrador')->only(['index']);
+        $this->middleware(PermissionMiddleware::class . ':crear circuitos|administrador')->only(['store']);
+        $this->middleware(PermissionMiddleware::class . ':editar circuitos|administrador')->only(['update','updatePasswordUser']);
+        $this->middleware(PermissionMiddleware::class . ':eliminar circuitos|administrador')->only(['destroy']);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $limit = $request->has('limit') ? $request->limit : 10;

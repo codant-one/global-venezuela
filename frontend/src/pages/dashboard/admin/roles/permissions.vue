@@ -135,6 +135,95 @@ const closeModal = function(){
                                 value="eliminar usuarios"
                             />
                         </div>
+                        <VLabel style="font-weight: bold;">
+                            Circuitos
+                        </VLabel>
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="ver circuitos"
+                                value="ver circuitos"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="crear circuitos"
+                                value="crear circuitos"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="editar circuitos"
+                                value="editar circuitos"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="eliminar circuitos"
+                                value="eliminar circuitos"
+                            />
+                        </div>
+                        <VLabel style="font-weight: bold;">
+                            Consejos Comunales
+                        </VLabel>
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="ver consejos-comunales"
+                                value="ver consejos-comunales"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="crear consejos-comunales"
+                                value="crear consejos-comunales"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="editar consejos-comunales"
+                                value="editar consejos-comunales"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="eliminar consejos-comunales"
+                                value="eliminar consejos-comunales"
+                            />
+                        </div>
+                        <VLabel style="font-weight: bold;">
+                            Inmigrantes
+                        </VLabel>
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="ver inmigrantes"
+                                value="ver inmigrantes"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="crear inmigrantes"
+                                value="crear inmigrantes"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="editar inmigrantes"
+                                value="editar inmigrantes"
+                            />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="eliminar inmigrantes"
+                                value="eliminar inmigrantes"
+                            />
+                        </div>
+                    </div>
+                </VCardText>
+                <VCardTitle>
+                    Reportes  
+                </VCardTitle>
+                <VCardText>
+                    <div class="ml-5">
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="ver reportes"
+                                value="ver reportes"
+                            />
+                        </div>
                     </div>
                 </VCardText>
             </VCardText>

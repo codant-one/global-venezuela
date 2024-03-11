@@ -54,7 +54,6 @@ watchEffect(fetchData)
 
 async function fetchData() {
 
-  console.log('infoDetail.value', infoDetail.value)
   let data = {
     search: searchQuery.value,
     orderByField: 'id',

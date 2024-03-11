@@ -26,7 +26,9 @@ class DatabaseSeeder extends Seeder
             CircuitSeeder::class,
             CommunityCouncilSeeder::class,
             InmigrantSeeder::class,
-            ThemeSeeder::class
+            ThemeSeeder::class,
+
+            OtherPermissionsSeeder::class
 
         ]);
 

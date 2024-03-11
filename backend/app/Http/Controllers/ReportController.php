@@ -8,6 +8,11 @@ use App\Models\Inmigrant;
 
 class ReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(PermissionMiddleware::class . ':ver reportes|administrador')->only(['index']);
+        }
+
     public function reports(Request $request)
     {
         $limit = $request->has('limit') ? $request->limit : 10;

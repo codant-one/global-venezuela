@@ -11,6 +11,14 @@ use App\Models\Inmigrant;
 class CommunityCouncilController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(PermissionMiddleware::class . ':ver consejos-comunales|administrador')->only(['index']);
+        $this->middleware(PermissionMiddleware::class . ':crear consejos-comunales|administrador')->only(['store']);
+        $this->middleware(PermissionMiddleware::class . ':editar consejos-comunales|administrador')->only(['update','updatePasswordUser']);
+        $this->middleware(PermissionMiddleware::class . ':eliminar consejos-comunales|administrador')->only(['destroy']);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $limit = $request->has('limit') ? $request->limit : 10;
