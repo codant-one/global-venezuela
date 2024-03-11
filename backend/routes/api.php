@@ -104,6 +104,11 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
        Route::post('/changePhone', [ClientController::class, 'changePhone']);       
     });
 
+    //Inmigrants
+    Route::group(['prefix' => 'inmigrants'], function () {
+        Route::post('delete', [InmigrantController::class, 'delete']);
+    });
+
 
 });
 

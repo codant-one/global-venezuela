@@ -40,7 +40,7 @@ async function fetchData() {
 
   if(props.inmigrant) {
 
-    infoDetail.value.country_id = props.inmigrant.country.name
+    infoDetail.value.country_id = props.inmigrant.country.id
     infoDetail.value.transient = props.inmigrant.transient.toString()
     infoDetail.value.resident = props.inmigrant.resident.toString()
     infoDetail.value.years_in_country = props.inmigrant.years_in_country
@@ -49,6 +49,7 @@ async function fetchData() {
     infoDetail.value.has_children = props.inmigrant.has_children.toString()
     infoDetail.value.children_number = props.inmigrant.children_number
 
+    country_id.value = props.inmigrant.country.name
     countryOld_id.value = props.inmigrant.country_id
   }
 }
@@ -242,7 +243,7 @@ const onSubmit = () => {
         Atrás
       </VBtn>
       <VBtn type="submit" color="primary">
-        Agregar
+        {{ inmigrant ? 'Actualizar' : 'Agregar' }}
       </VBtn>
     </div>
   </VForm>

@@ -1,6 +1,7 @@
 <script setup>
 
 import { ref } from "vue"
+import { useInmigrantsStores } from '@/stores/useInmigrants'
 import { useStatesStores } from '@/stores/useStates'
 import { useCitiesStores } from '@/stores/useCities'
 import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
@@ -13,7 +14,9 @@ import SettingsGeneral from '@/views/apps/inmigrants/settings/SettingsGeneral.vu
 import SettingsDocument from '@/views/apps/inmigrants/settings/SettingsDocument.vue'
 import SettingsLocation from '@/views/apps/inmigrants/settings/SettingsLocation.vue'
 import SettingsInfoInmigrant from '@/views/apps/inmigrants/settings/SettingsInfoInmigrant.vue'
+import router from '@/router'
 
+const inmigrantsStores = useInmigrantsStores()
 const statesStores = useStatesStores()
 const citiesStores = useCitiesStores()
 const municipalitiesStores = useMunicipalitiesStores()
@@ -22,6 +25,8 @@ const gendersStores = useGendersStores()
 const circuitsStores = useCircuitsStores()
 const communityCouncilsStores = useCommunityCouncilsStores()
 const countriesStores = useCountriesStores()
+
+const emitter = inject("emitter")
 
 const listStates = ref([])
 const listCities = ref([])
@@ -149,16 +154,49 @@ const uploadInfo = async (infoDetail) => {
   formData.append('passport_number', documentDetail.value.passport_number)
   formData.append('file_document', documentDetail.value.file_document[0])
   formData.append('parish_id', locationDetail.value.parish_id)
-  formData.append('community_council_id', locationDetail.value.community_council_id)
+  formData.append('community_council_id', locationDetail.value.community_council_id ?? 0)
   formData.append('address', locationDetail.value.address)
-  formData.append('country_id', locationDetail.value.country_id)
-  formData.append('transient', Number(locationDetail.value.transient))
-  formData.append('resident', Number(locationDetail.value.resident))
-  formData.append('years_in_country', locationDetail.value.years_in_country)
-  formData.append('antecedents', Number(locationDetail.value.antecedents))
-  formData.append('isMarried', Number(locationDetail.value.isMarried))
-  formData.append('has_children', Number(locationDetail.value.has_children))
-  formData.append('children_number', Number(locationDetail.value.name) ? infoDetail.children_number : null)
+  formData.append('country_id', infoDetail.country_id)
+  formData.append('transient', Number(infoDetail.transient))
+  formData.append('resident', Number(infoDetail.resident))
+  formData.append('years_in_country', infoDetail.years_in_country)
+  formData.append('antecedents', Number(infoDetail.antecedents))
+  formData.append('isMarried', Number(infoDetail.isMarried))
+  formData.append('has_children', Number(infoDetail.has_children))
+  formData.append('children_number', Number(infoDetail.has_children) ? infoDetail.children_number : 0)
+
+  inmigrantsStores.addInmigrant(formData)
+    .then((res) => {
+      if (res.data.success) {
+
+          let data = {
+            message: 'Inmigrante Creado!',
+            error: false
+          }
+
+          router.push({ name : 'dashboard-admin-inmigrants'})
+          emitter.emit('toast', data)
+
+      } else {
+
+        let data = {
+          message: 'ERROR',
+          error: true
+        }
+
+        router.push({ name : 'dashboard-admin-inmigrants'})
+        emitter.emit('toast', data)
+      }
+  })
+  .catch((err) => {
+      let data = {
+        message: err,
+        error: true
+      }
+
+      router.push({ name : 'dashboard-admin-inmigrants'})
+      emitter.emit('toast', data)
+    })
 
 }
 

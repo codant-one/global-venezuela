@@ -38,7 +38,6 @@ export const useInmigrantsStores = defineStore('inmigrants', {
 
             return Inmigrants.create(data)
                 .then((response) => {
-                    this.inmigrants.push(response.data.data.inmigrant)
                     return Promise.resolve(response)
                 })
                 .catch(error => Promise.reject(error))
@@ -61,13 +60,11 @@ export const useInmigrantsStores = defineStore('inmigrants', {
                 })
             
         },
-        updateInmigrant(data, id) {
+        updateInmigrant(data) {
             this.setLoading(true)
             
-            return Inmigrants.update(data, id)
+            return Inmigrants.update(data)
                 .then((response) => {
-                    let pos = this.inmigrants.findIndex((item) => item.id === response.data.data.inmigrant.id)
-                    this.inmigrants[pos] = response.data.data.inmigrant
                     return Promise.resolve(response)
                 })
                 .catch(error => Promise.reject(error))

@@ -1,6 +1,7 @@
 <script setup>
 
 import router from '@/router'
+import Toaster from "@/components/common/Toaster.vue";
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 import { useInmigrantsStores } from '@/stores/useInmigrants'
@@ -79,7 +80,7 @@ const showDeleteDialog = inmigrantData => {
 
 const removeInmigrant = async () => {
   isConfirmDeleteDialogVisible.value = false
-  let res = await inmigrantsStores.deleteInmigrant(selectedInmigrant.value.id)
+  let res = await inmigrantsStores.deleteInmigrant({ ids: [selectedInmigrant.value.id] })
   selectedInmigrant.value = {}
 
   advisor.value = {
@@ -174,6 +175,7 @@ const downloadCSV = async () => {
       </VDialog>
 
       <v-col cols="12">
+        <Toaster />
         <v-alert
           v-if="advisor.show"
           :type="advisor.type"
@@ -252,7 +254,7 @@ const downloadCSV = async () => {
                 style="height: 3.75rem;">
 
                 <td> {{inmigrant.id }} </td>
-                <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }} </td>
+                <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }}  {{inmigrant.last_name }} </td>
                 <td> {{inmigrant.phone }} </td>
                 <td> {{inmigrant.email }} </td>
                 <td> {{inmigrant.address }} </td>
@@ -341,7 +343,7 @@ const downloadCSV = async () => {
       <!-- Dialog Content -->
       <VCard title="Eliminar Inmigrante">
         <VCardText>
-          Está seguro de eliminar el inmigrante <strong>{{ selectedInmigrant.name }}</strong>?.
+          Está seguro de eliminar el inmigrante <strong>{{ selectedInmigrant.name }} {{ selectedInmigrant.last_name }}</strong>?.
         </VCardText>
 
         <VCardText class="d-flex justify-end gap-3 flex-wrap">

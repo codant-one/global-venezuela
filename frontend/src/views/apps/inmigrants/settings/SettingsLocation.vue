@@ -64,32 +64,6 @@ const locationDetail = ref({
   address: ''
 })
 
-watchEffect(fetchData)
-
-async function fetchData() {
-
-  if(props.inmigrant) {
-    locationDetail.value.parish_id = props.inmigrant.parish_id
-    locationDetail.value.community_council_id = props.inmigrant.community_council.name
-    locationDetail.value.address = props.inmigrant.address
-
-
-    stateOld_id.value = props.inmigrant.parish.municipality.state.id
-    state_id.value = props.inmigrant.parish.municipality.state.name
-
-    municipalityOld_id.value = props.inmigrant.parish.municipality.id
-    municipality_id.value = props.inmigrant.parish.municipality.name
-
-    parishOld_id.value = props.inmigrant.parish.id
-    parish_id.value = props.inmigrant.parish.name
-    
-    circuitOld_id.value = props.inmigrant.community_council.circuit.id
-    circuit_id.value = props.inmigrant.community_council.circuit.name
-
-    community_council_id.value = props.inmigrant.community_council_id
-  }
-}
-
 const getMunicipalities = computed(() => {
   return listMunicipalitiesByStates.value.map((state) => {
     return {
@@ -169,6 +143,37 @@ const selectCircuit = circuit => {
     locationDetail.value.community_council_id = ''
     listCommunityCouncilsByCircuits.value = listCommunityCouncils.value.filter(item => item.circuit_id === _circuit.id)
 
+  }
+}
+
+watchEffect(fetchData)
+
+async function fetchData() {
+
+  if(props.inmigrant) {
+
+    selectState(props.inmigrant.parish.municipality.state.name)
+    selectMunicipalities(props.inmigrant.parish.municipality.id)
+    selectParishes(props.inmigrant.parish.id)
+    selectCircuit(props.inmigrant.community_council?.circuit.id)
+
+    locationDetail.value.parish_id = props.inmigrant.parish_id
+    locationDetail.value.community_council_id = props.inmigrant.community_council?.name
+    locationDetail.value.address = props.inmigrant.address
+
+    stateOld_id.value = props.inmigrant.parish.municipality.state.id
+    state_id.value = props.inmigrant.parish.municipality.state.name
+
+    municipalityOld_id.value = props.inmigrant.parish.municipality.id
+    municipality_id.value = props.inmigrant.parish.municipality.name
+
+    parishOld_id.value = props.inmigrant.parish.id
+    parish_id.value = props.inmigrant.parish.name
+
+    circuitOld_id.value = props.inmigrant.community_council?.circuit.id
+    circuit_id.value = props.inmigrant.community_council?.circuit.name
+
+    community_council_id.value = props.inmigrant.community_council_id
   }
 }
 

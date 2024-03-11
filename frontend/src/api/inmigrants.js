@@ -14,12 +14,12 @@ class Inmigrants {
         return axios.get(`/inmigrants/${id}`)
     }
 
-    update(data, id) {
-        return axios.put(`/inmigrants/${id}`, data)
+    update(data) {
+        return axios.post(`/inmigrants/${data.id}`, data.data)
     }
 
     delete(id){
-        return axios.delete(`/inmigrants/${id}`)
+        return axios.post(`/inmigrants/delete`, id)
     }
     
 }

@@ -14,6 +14,7 @@ import SettingsGeneral from '@/views/apps/inmigrants/settings/SettingsGeneral.vu
 import SettingsDocument from '@/views/apps/inmigrants/settings/SettingsDocument.vue'
 import SettingsLocation from '@/views/apps/inmigrants/settings/SettingsLocation.vue'
 import SettingsInfoInmigrant from '@/views/apps/inmigrants/settings/SettingsInfoInmigrant.vue'
+import router from '@/router'
 
 const inmigrantsStores = useInmigrantsStores()
 const statesStores = useStatesStores()
@@ -25,6 +26,8 @@ const circuitsStores = useCircuitsStores()
 const communityCouncilsStores = useCommunityCouncilsStores()
 const countriesStores = useCountriesStores()
 const route = useRoute()
+
+const emitter = inject("emitter")
 
 const listStates = ref([])
 const listCities = ref([])
@@ -144,27 +147,66 @@ const uploadLocation = async (data) => {
 
 const uploadInfo = async (infoDetail) => {
 
-  let formData = new FormData()
+    let formData = new FormData()
 
-  formData.append('name', userDetail.value.name)
-  formData.append('last_name', userDetail.value.last_name)
-  formData.append('email', userDetail.value.email)
-  formData.append('phone', userDetail.value.phone)
-  formData.append('gender_id', userDetail.value.gender_id)
-  formData.append('birthdate', userDetail.value.birthdate)
-  formData.append('passport_number', documentDetail.value.passport_number)
-  formData.append('file_document', documentDetail.value.file_document[0])
-  formData.append('parish_id', locationDetail.value.parish_id)
-  formData.append('community_council_id', locationDetail.value.community_council_id)
-  formData.append('address', locationDetail.value.address)
-  formData.append('country_id', locationDetail.value.country_id)
-  formData.append('transient', Number(locationDetail.value.transient))
-  formData.append('resident', Number(locationDetail.value.resident))
-  formData.append('years_in_country', locationDetail.value.years_in_country)
-  formData.append('antecedents', Number(locationDetail.value.antecedents))
-  formData.append('isMarried', Number(locationDetail.value.isMarried))
-  formData.append('has_children', Number(locationDetail.value.has_children))
-  formData.append('children_number', Number(locationDetail.value.name) ? infoDetail.children_number : null)
+    formData.append('name', userDetail.value.name)
+    formData.append('last_name', userDetail.value.last_name)
+    formData.append('email', userDetail.value.email)
+    formData.append('phone', userDetail.value.phone)
+    formData.append('gender_id', userDetail.value.gender_id)
+    formData.append('birthdate', userDetail.value.birthdate)
+    formData.append('passport_number', documentDetail.value.passport_number)
+    formData.append('file_document', documentDetail.value.file_document[0] ?? null)
+    formData.append('parish_id', locationDetail.value.parish_id)
+    formData.append('community_council_id', locationDetail.value.community_council_id ?? 0)
+    formData.append('address', locationDetail.value.address)
+    formData.append('country_id', infoDetail.country_id)
+    formData.append('transient', Number(infoDetail.transient))
+    formData.append('resident', Number(infoDetail.resident))
+    formData.append('years_in_country', infoDetail.years_in_country)
+    formData.append('antecedents', Number(infoDetail.antecedents))
+    formData.append('isMarried', Number(infoDetail.isMarried))
+    formData.append('has_children', Number(infoDetail.has_children))
+    formData.append('children_number', Number(infoDetail.has_children) ? infoDetail.children_number : 0)
+    formData.append('_method', 'PUT')
+
+    let data = {
+        data: formData, 
+        id: Number(route.params.id)
+    }
+
+    inmigrantsStores.updateInmigrant(data)
+        .then((res) => {
+            if (res.data.success) {
+
+                let data = {
+                message: 'Inmigrante Actualizado!',
+                error: false
+                }
+
+                router.push({ name : 'dashboard-admin-inmigrants'})
+                emitter.emit('toast', data)
+
+            } else {
+
+                let data = {
+                    message: 'ERROR',
+                    error: true
+                }
+
+                router.push({ name : 'dashboard-admin-inmigrants'})
+                emitter.emit('toast', data)
+            }
+        })
+        .catch((err) => {
+            let data = {
+                message: err,
+                error: true
+            }
+
+            router.push({ name : 'dashboard-admin-inmigrants'})
+            emitter.emit('toast', data)
+        })
 
 }
 

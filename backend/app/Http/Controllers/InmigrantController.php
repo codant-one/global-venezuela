@@ -110,11 +110,14 @@ class InmigrantController extends Controller
         }
     }
 
-    public function update(Request $request, $id): JsonResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Inmigrant $inmigrant): JsonResponse
     {
         try {
 
-            $inmigrant = Inmigrant::find($id);
+            $inmigrant = Inmigrant::find($inmigrant->id);
         
             if (!$inmigrant)
                 return response()->json([
@@ -152,11 +155,11 @@ class InmigrantController extends Controller
         }
     }
 
-    public function destroy($id): JsonResponse
+    public function delete(Request $request): JsonResponse
     {
         try {
 
-            $inmigrant = Inmigrant::find($id);
+            $inmigrant = Inmigrant::find($request->ids);
         
             if (!$inmigrant)
                 return response()->json([
@@ -165,14 +168,11 @@ class InmigrantController extends Controller
                     'message' => 'Inmigrante no encontrado'
                 ], 404);
 
-            $inmigrant->deleteInmigrant($id);
+            Inmigrant::deleteInmigrants($request->ids);
 
             return response()->json([
-                'success' => true,
-                'data' => [ 
-                    'inmigrant' => $inmigrant
-                ]
-            ], 200);
+                'success' => true
+            ]);
             
         } catch(\Illuminate\Database\QueryException $ex) {
             return response()->json([
