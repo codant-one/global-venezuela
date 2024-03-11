@@ -72,9 +72,25 @@ class Inmigrant extends Model
     /**** Public methods ****/
     public static function createInmigrant($request) {
         $inmigrant = self::create([
+            'country_id' => $request->country_id,
+            'user_id' => auth()->user()->id,
+            'gender_id' => $request->gender_id,
             'parish_id' => $request->parish_id,
-            'city_id' => $request->city_id,
-            'name' => $request->name
+            'community_council_id' => $request->community_council_id,
+            'name' => $request->name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'birthdate' => $request->birthdate,
+            'passport_number' => $request->passport_number,
+            'transient' => $request->transient,
+            'resident' => $request->resident,
+            'years_in_country' => $request->years_in_country,
+            'antecedents' => $request->antecedents,
+            'isMarried' => $request->isMarried,
+            'has_children' => $request->has_children,
+            'children_number' => $request->children_number,
+            'phone' => $request->phone,
+            'address' => $request->address,
         ]);
 
         return $inmigrant;
@@ -82,9 +98,25 @@ class Inmigrant extends Model
 
     public static function updateInmigrant($request, $inmigrant) {
         $inmigrant->update([
+            'country_id' => $request->country_id,
+            'user_id' => $request->user_id,
+            'gender_id' => $request->gender_id,
             'parish_id' => $request->parish_id,
-            'city_id' => $request->city_id,
-            'name' => $request->name
+            'community_council_id' => $request->community_council_id,
+            'name' => $request->name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'birthdate' => $request->birthdate,
+            'passport_number' => $request->passport_number,
+            'transient' => $request->transient,
+            'resident' => $request->resident,
+            'years_in_country' => $request->years_in_country,
+            'antecedents' => $request->antecedents,
+            'isMarried' => $request->isMarried,
+            'has_children' => $request->has_children,
+            'children_number' => $request->children_number,
+            'phone' => $request->phone,
+            'address' => $request->address,
         ]);
 
         return $inmigrant;
