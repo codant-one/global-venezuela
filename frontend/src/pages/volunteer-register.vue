@@ -93,7 +93,7 @@ const items = [
   },
   {
     title: 'Transformación',
-    subtitle: 'Selecciona el tema',
+    subtitle: 'Selecciona la transformación',
     icon: 'tabler-book',
   },
   {
@@ -320,7 +320,7 @@ const onSubmit = () => {
                Transformación
               </h5>
               <p class="text-sm">
-                Selecciona el tema
+                Selecciona la transformación
               </p>
 
               <VRow>
@@ -388,7 +388,7 @@ const onSubmit = () => {
                 <VCol cols="12">
                   <VAutocomplete
                      v-model="theme_id"
-                     label="Tema"
+                     label="Transformación"
                      :rules="[requiredValidator]"
                      :items="listThemes"
                      item-title="name"
