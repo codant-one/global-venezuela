@@ -437,14 +437,25 @@ const onSubmit = () => {
                 >
                   <AppTextField
                     v-model="form.mobile"
-                    type="number"
+                    type="text"
+                    label="Teléfono"
+                    placeholder="Teléfono"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                >
+                  <AppTextField
+                    v-model="form.cardNumber"
+                    type="text"
                     label="Documento"
                     placeholder="Documento"
                   />
                 </VCol>
                 <VCol
                   cols="12"
-                  md="6"
+                  md="12"
                 >
                   <AppTextField
                     v-model="form.city"
