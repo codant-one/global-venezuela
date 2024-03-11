@@ -14,20 +14,37 @@ const registerMultistepIllustration = useGenerateImageVariant(registerMultistepI
 
 const radioContent = [
   {
-    title: 'Starter',
-    desc: 'A simple start for everyone.',
-    value: '0',
+      icon: {
+         icon: 'mdi-cash-multiple',
+         size: '40',
+      },
+      title: 'Nacional',
+      value: '0'
   },
   {
-    title: 'Standard',
-    desc: 'For small to medium businesses.',
-    value: '99',
+      icon: {
+         icon: 'mdi-cash-multiple',
+         size: '40',
+      },
+      title: 'Estatal',
+      value: '99'
   },
   {
-    title: 'Enterprise',
-    desc: 'Solution for big organizations.',
-    value: '499',
+      icon: {
+         icon: 'mdi-cash-multiple',
+         size: '40',
+      },
+      title: 'Municipal',
+      value: '499'
   },
+  {
+      icon: {
+         icon: 'mdi-cash-multiple',
+         size: '40',
+      },
+      title: 'Por Circuitos',
+      value: '499'
+  }
 ]
 
 const items = [
@@ -83,7 +100,7 @@ const onSubmit = () => {
   >
     <VCol
       md="4"
-      class="d-none d-md-flex bg-secondary"
+      class="d-none d-md-flex bg-gray"
     >
       <!-- here your illustration -->
       <div class="d-flex justify-center align-center w-100 position-relative">
@@ -123,11 +140,25 @@ const onSubmit = () => {
         >
           <VForm>
             <VWindowItem>
+               <h5 class="text-h5 mb-1">
+                  Voluntariados
+               </h5>
+               <p class="text-sm">
+                  Selecciona el tipo de voluntariado
+               </p>
+
+               <CustomRadiosWithIcon
+                  v-model:selected-radio="form.selectedPlan"
+                  :radio-content="radioContent"
+                  :grid-column="{ sm: '6', cols: '12' }"
+               />
+            </VWindowItem>
+            <VWindowItem>
               <h5 class="text-h5 mb-1">
-                Account Information
+                Voluntariados
               </h5>
               <p class="text-sm">
-                Enter Your Account Details
+                Selecciona el tipo de voluntariado
               </p>
 
               <VRow>
@@ -287,97 +318,12 @@ const onSubmit = () => {
                 </VCol>
               </VRow>
             </VWindowItem>
-
-            <VWindowItem>
-              <h5 class="text-h5">
-                Select Plan
-              </h5>
-              <p class="text-sm">
-                Select plan as per your requirement
-              </p>
-
-              <CustomRadiosWithIcon
-                v-model:selected-radio="form.selectedPlan"
-                :radio-content="radioContent"
-                :grid-column="{ sm: '4', cols: '12' }"
-              >
-                <template #default="{ item }">
-                  <div class="text-center">
-                    <h5 class="text-h5">
-                      {{ item.title }}
-                    </h5>
-                    <p class="clamp-text">
-                      {{ item.desc }}
-                    </p>
-
-                    <div class="d-flex align-center justify-center">
-                      <span class="text-primary mb-2">$</span>
-                      <span class="text-h4 text-primary">
-                        {{ item.value }}
-                      </span>
-                      <span class="mt-2">/month</span>
-                    </div>
-                  </div>
-                </template>
-              </CustomRadiosWithIcon>
-
-              <h5 class="text-h5 mt-10">
-                Payment Information
-              </h5>
-              <p class="text-sm">
-                Enter your card information
-              </p>
-
-              <VRow>
-                <VCol cols="12">
-                  <AppTextField
-                    v-model="form.cardNumber"
-                    type="number"
-                    label="Card Number"
-                    placeholder="1234 1234 1234 1234"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppTextField
-                    v-model="form.cardName"
-                    label="Name on Card"
-                    placeholder="John Doe"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="6"
-                  md="3"
-                >
-                  <AppTextField
-                    v-model="form.expiryDate"
-                    label="Expiry"
-                    placeholder="MM/YY"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="6"
-                  md="3"
-                >
-                  <AppTextField
-                    v-model="form.cvv"
-                    type="number"
-                    label="CVV"
-                    placeholder="123"
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
           </VForm>
         </VWindow>
 
         <div class="d-flex flex-wrap justify-sm-space-between justify-center gap-x-4 gap-y-2 mt-8">
           <VBtn
+            v-if="currentStep > 0"
             color="secondary"
             :disabled="currentStep === 0"
             variant="tonal"
@@ -388,23 +334,24 @@ const onSubmit = () => {
               start
               class="flip-in-rtl"
             />
-            Previous
+            Atrás
           </VBtn>
 
+          <VSpacer />
           <VBtn
             v-if="items.length - 1 === currentStep"
             color="success"
             append-icon="tabler-check"
             @click="onSubmit"
           >
-            submit
+            Enviar
           </VBtn>
 
           <VBtn
             v-else
             @click="currentStep++"
           >
-            Next
+            Siguiente
 
             <VIcon
               icon="tabler-arrow-right"
@@ -419,16 +366,20 @@ const onSubmit = () => {
 </template>
 
 <style lang="scss">
-@use "@core/scss/template/pages/page-auth.scss";
+   @use "@core/scss/template/pages/page-auth.scss";
 
-.illustration-image {
-  block-size: 550px;
-  inline-size: 248px;
-}
+   .illustration-image {
+      block-size: 550px;
+      inline-size: 248px;
+   }
 
-.bg-image {
-  inset-block-end: 0;
-}
+   .bg-image {
+      inset-block-end: 0;
+   }
+
+   .bg-gray {
+      background-color: #fafafa;
+   }
 </style>
 <route lang="yaml">
     meta:
