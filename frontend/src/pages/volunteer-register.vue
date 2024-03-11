@@ -388,7 +388,7 @@ const onSubmit = () => {
                 <VCol cols="12">
                   <VAutocomplete
                      v-model="theme_id"
-                     label="Temas"
+                     label="Tema"
                      :rules="[requiredValidator]"
                      :items="listThemes"
                      item-title="name"
