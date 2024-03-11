@@ -1,247 +1,182 @@
 <script setup>
 
-import { ref } from "vue"
-import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
-import { excelParser } from '@/plugins/csv/excelParser'
-import router from '@/router'
+import { useInmigrantsStores } from '@/stores/useInmigrants'
+import { themeConfig } from '@themeConfig'
+import axios from 'axios';
+import CustomerBioPanel from '@/views/apps/ecommerce/customer/view/CustomerBioPanel.vue'
+import CustomerTabDocuments from '@/views/apps/ecommerce/customer/view/CustomerTabDocuments.vue'
+import CustomerTabLocation from '@/views/apps/ecommerce/customer/view/CustomerTabLocation.vue'
+import CustomerTabInfo from '@/views/apps/ecommerce/customer/view/CustomerTabInfo.vue'
 
 const route = useRoute()
-const communityCouncilsStores = useCommunityCouncilsStores()
+const inmigrantsStores = useInmigrantsStores()
 
-const communityCouncil = ref([])
-const title = ref(null)
-
-const inmigrants = ref([])
-const searchQuery = ref('')
-const rowPerPage = ref(10)
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalInmigrants = ref(0)
-
+const userTab = ref(null)
+const inmigrant = ref(null)
 const isRequestOngoing = ref(true)
 
-// 👉 Computing pagination data
-const paginationData = computed(() => {
-  const firstIndex = inmigrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = inmigrants.value.length + (currentPage.value - 1) * rowPerPage.value
+const tabs = [
+  { title: 'Documentos' },
+  { title: 'Ubicación' },
+  { title: 'Información del inmigrante' }
+]
 
-  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalInmigrants.value } registros`
-})
-
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPages.value)
-    currentPage.value = totalPages.value
+const advisor = ref({
+  type: '',
+  message: '',
+  show: false
 })
 
 watchEffect(fetchData)
 
 async function fetchData() {
 
-    isRequestOngoing.value = true
+  isRequestOngoing.value = true
 
-    if(Number(route.params.id)) {
+  if(Number(route.params.id)) {
+    inmigrant.value = await inmigrantsStores.showInmigrant(Number(route.params.id))
+  }
 
-        let data = {
-            search: searchQuery.value,
-            orderByField: 'id',
-            orderBy: 'desc',
-            limit: rowPerPage.value,
-            page: currentPage.value
+  isRequestOngoing.value = false
+}
+
+
+const closeAdvisor = () => {
+    setTimeout(() => {
+        advisor.value = {
+        type: '',
+        message: '',
+        show: false
         }
+    }, 3000)
+}
 
-        communityCouncil.value = await communityCouncilsStores.showCommunityCouncil(data, Number(route.params.id))
-        title.value = "Inmigrantes en " + communityCouncil.value.name
+const download = async (img) => {
 
-        inmigrants.value = communityCouncilsStores.getInmigrants
-        totalPages.value = communityCouncilsStores.inmigrant_last_page
-        totalInmigrants.value = communityCouncilsStores.inmigrantsTotalCount
+    try {
 
+        const response = await axios({
+            url: themeConfig.settings.urlbase + 'proxy-document?file=' + img, // Asegúrate de cambiar esto por tu URL real
+            method: 'GET',
+            responseType: 'blob', // Importante para manejar la respuesta como un archivo binario
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', img);
+        document.body.appendChild(link);
+        link.click();
+
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+  
+        advisor.value.type = 'success'
+        advisor.value.show = true
+        advisor.value.message = 'Descarga Exitosa!'
+
+    } catch (error) {
+
+        advisor.value.type = 'error'
+        advisor.value.show = true
+        advisor.value.message = 'Error al descargar la imagen:' + error
     }
 
-    isRequestOngoing.value = false
+    closeAdvisor()
 }
-
-const seeInmigrant = inmigrantData => {
-  router.push({ name : 'dashboard-admin-inmigrants-id', params: { id: inmigrantData.id } })
-}
-
-const downloadCSV = async () => {
-
-    isRequestOngoing.value = true
-
-    let data = {
-        limit: -1
-    }
-
-    await await communityCouncilsStores.showCommunityCouncil(data, Number(route.params.id))
-
-    let dataArray = [];
-
-    communityCouncilsStores.getInmigrants.forEach(element => {
-
-        let data = {
-            NOMBRE: element.name,
-            APELLIDO: element.last_name,
-            EMAIL: element.email,
-            FECHA_NACIMIENTO: element.birthdate,
-            PAÍS_INMIGRANTE: element.country.name,
-            GÉNERO: element.gender.name,
-            NÚMERO_PASAPORTE: element.passport_number,
-            TELÉFONO: element.phone,
-            DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
-            CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',
-            CÉDULA_RESIDENTE: element.resident ? 'SI' : 'NO',
-            AÑOS_EN_EL_PAÍS: element.years_in_country,
-            ANTECEDENTES_PENALES: element.antecedents ? 'SI' : 'NO',
-            CASADO_CON_UN_VENEZOLANO: element.isMarried ? 'SI' : 'NO',
-            HIJOS_VENEZOLANOS: element.has_children ? 'SI' : 'NO',
-            NÚMERO_HIJOS_VENEZOLANOS: element.children_number ?? '',
-            ESTADO: element.parish.municipality.state.name,
-            MUNICIPIO: element.parish.municipality.name,
-            PARROQUIA: element.parish.name,
-            CONSEJO_COMUNAL: element.community_council?.name
-        }
-
-        dataArray.push(data)
-    })
-
-    excelParser()
-        .exportDataFromJSON(dataArray, "inmigrants", "csv");
-
-    isRequestOngoing.value = false
-
-}
-
 </script>
 
 <template>
-  <section>
-        <VDialog
-            v-model="isRequestOngoing"
-            width="300"
-            persistent>
-            
-            <VCard
-                color="primary"
-                width="300">
+  <div>
+    <VAlert
+      v-if="advisor.show"
+      :type="advisor.type"
+      class="mb-6">  
+      {{ advisor.message }}
+    </VAlert>
+
+    <VDialog
+        v-model="isRequestOngoing"
+        width="300"
+        persistent>
                     
-                <VCardText class="pt-3">
-                    Cargando
+        <VCard
+            color="primary"
+            width="300">
+                        
+            <VCardText class="pt-3">
+                Cargando
 
-                    <VProgressLinear
-                        indeterminate
-                        color="white"
-                        class="mb-0"/>
-                </VCardText>
-            </VCard>
-        </VDialog>
-  
-        <VCard :title="title" v-if="title">
-
-            <VCardText class="d-flex flex-wrap py-4 gap-4">
-                <div
-                    class="me-3"
-                    style="width: 80px;">
-                
-                    <VSelect
-                        v-model="rowPerPage"
-                        density="compact"
-                        variant="outlined"
-                        :items="[10, 20, 30, 50]"/>
-                    </div>
-
-                <div class="d-flex align-center">
-                    <VBtn
-                        variant="tonal"
-                        color="secondary"
-                        prepend-icon="tabler-file-export"
-                        @click="downloadCSV">
-                        Exportar
-                    </VBtn>
-                </div>
-
-                <v-spacer />
-
-                <VTextField
-                    v-model="searchQuery"
-                    label="Buscar"
-                    placeholder="Buscar"
-                    density="compact"
-                />
+                <VProgressLinear
+                    indeterminate
+                    color="white"
+                    class="mb-0"/>
             </VCardText>
-
-            <v-divider />
-
-            <v-table class="text-no-wrap">
-                <!-- 👉 table head -->
-                <thead>
-                    <tr>
-                        <th scope="col"> #ID </th>
-                        <th scope="col"> NOMBRE </th>
-                        <th scope="col"> TELÉFONO </th>
-                        <th scope="col"> EMAIL </th>
-                        <th scope="col"> DIRECCIÓN </th>
-                        <th scope="col"> ACCIONES </th>
-                    </tr>
-                </thead>
-                <!-- 👉 table body -->
-                <tbody>
-                    <tr 
-                        v-for="inmigrant in inmigrants"
-                        :key="inmigrant.id"
-                        style="height: 3.75rem;">
-
-                        <td> {{inmigrant.id }} </td>
-                        <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }} </td>
-                        <td> {{inmigrant.phone }} </td>
-                        <td> {{inmigrant.email }} </td>
-                        <td> {{inmigrant.address }} </td>
-                        <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos')">      
-                            <VBtn
-                                v-if="$can('ver','circuitos')"
-                                icon
-                                size="x-small"
-                                color="default"
-                                variant="text"
-                                @click="seeInmigrant(inmigrant)">
-                                        
-                                <VIcon
-                                    size="22"
-                                    icon="tabler-eye" />
-                            </VBtn>
-                        </td>
-                    </tr>
-                </tbody>
-                <!-- 👉 table footer  -->
-                <tfoot v-show="!inmigrants.length === 0">
-                    <tr>
-                        <td
-                            colspan="7"
-                            class="text-center">
-                            Datos no disponibles
-                        </td>
-                    </tr>
-                </tfoot>
-            </v-table>
-
-            <v-divider />
-
-            <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5">
-                <span class="text-sm text-disabled">
-                    {{ paginationData }}
-                </span>
-
-                <VPagination
-                    v-model="currentPage"
-                    size="small"
-                    :total-visible="5"
-                    :length="totalPages"/>
-
-            </VCardText>
-
         </VCard>
-  </section>
+    </VDialog>
+
+    <!-- 👉 Header  -->
+    <div v-if="inmigrant" class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+        <div>
+            <div class="d-flex gap-2 align-center mb-2 flex-wrap">
+                <h4 class="text-h4 font-weight-medium">
+                    Inmigrante ID #{{ route.params.id }}
+                </h4>
+            </div>
+        </div>
+        <div class="d-flex gap-4">
+            <VBtn
+                variant="tonal"
+                color="secondary"
+                class="mb-2"
+                :to="{ name: 'dashboard-admin-inmigrants' }"
+                >
+                Regresar
+            </VBtn>
+        </div>
+    </div>
+    <!-- 👉 Customer Profile  -->
+    <VRow v-if="inmigrant">
+        <VCol
+            cols="12"
+            md="5"
+            lg="4"
+        >
+            <CustomerBioPanel :customer-data="inmigrant" />
+        </VCol>
+        <VCol
+            cols="12"
+            md="7"
+            lg="8">
+            <VTabs
+                v-model="userTab"
+                class="v-tabs-pill mb-3 disable-tab-transition">
+                <VTab
+                    v-for="tab in tabs"
+                    :key="tab.title">
+                    <span>{{ tab.title }}</span>
+                </VTab>
+            </VTabs>
+            <VWindow
+                v-model="userTab"
+                class="disable-tab-transition"
+                :touch="false"
+            >
+                <VWindowItem>
+                    <CustomerTabDocuments 
+                        :customer-data="inmigrant"
+                        @download="download" />
+                </VWindowItem>
+                <VWindowItem>
+                    <CustomerTabLocation :customer-data="inmigrant" />
+                </VWindowItem>
+                <VWindowItem>
+                    <CustomerTabInfo :customer-data="inmigrant" />
+                </VWindowItem>
+            </VWindow>
+        </VCol>
+    </VRow>
+  </div>
 </template>
 
 <route lang="yaml">
