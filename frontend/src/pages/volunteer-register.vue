@@ -15,7 +15,7 @@ const registerMultistepIllustration = useGenerateImageVariant(registerMultistepI
 const radioContent = [
   {
       icon: {
-         icon: 'mdi-cash-multiple',
+         icon: 'mdi-flag-variant',
          size: '100',
       },
       title: 'Nacional',
@@ -23,7 +23,7 @@ const radioContent = [
   },
   {
       icon: {
-         icon: 'mdi-cash-multiple',
+         icon: 'mdi-map-marker-radius',
          size: '100',
       },
       title: 'Estatal',
@@ -31,7 +31,7 @@ const radioContent = [
   },
   {
       icon: {
-         icon: 'mdi-cash-multiple',
+         icon: 'mdi-city',
          size: '100',
       },
       title: 'Municipal',
@@ -39,7 +39,7 @@ const radioContent = [
   },
   {
       icon: {
-         icon: 'mdi-cash-multiple',
+         icon: 'mdi-crosshairs-gps',
          size: '100',
       },
       title: 'Por Circuitos',
