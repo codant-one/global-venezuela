@@ -7,24 +7,24 @@ use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-use App\Models\Inmigrant;
+use App\Models\Migrant;
 
-class InmigrantController extends Controller
+class MigrantController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware(PermissionMiddleware::class . ':ver inmigrantes|administrador')->only(['index']);
-        $this->middleware(PermissionMiddleware::class . ':crear inmigrantes|administrador')->only(['store']);
-        $this->middleware(PermissionMiddleware::class . ':editar inmigrantes|administrador')->only(['update','updatePasswordUser']);
-        $this->middleware(PermissionMiddleware::class . ':eliminar inmigrantes|administrador')->only(['destroy']);
+        $this->middleware(PermissionMiddleware::class . ':ver migrantes|administrador')->only(['index']);
+        $this->middleware(PermissionMiddleware::class . ':crear migrantes|administrador')->only(['store']);
+        $this->middleware(PermissionMiddleware::class . ':editar migrantes|administrador')->only(['update','updatePasswordUser']);
+        $this->middleware(PermissionMiddleware::class . ':eliminar migrantes|administrador')->only(['destroy']);
     }
 
     public function index(Request $request): JsonResponse
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Inmigrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
+        $query = Migrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -41,13 +41,13 @@ class InmigrantController extends Controller
                             ])
                         )->count();
 
-        $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+        $migrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
         return response()->json([
             'success' => true,
             'data' => [ 
-                'inmigrants' => $inmigrants,
-                'inmigrantsTotalCount' => $count
+                'migrants' => $migrants,
+                'migrantsTotalCount' => $count
             ]
         ], 200);
     }
@@ -58,25 +58,25 @@ class InmigrantController extends Controller
     {
         try {
 
-            $inmigrant = Inmigrant::createInmigrant($request);
+            $migrant = Migrant::createMigrant($request);
 
             
             if ($request->hasFile('file_document')) {
                 $document = $request->file('file_document');
 
-                $path = 'inmigrants/';
+                $path = 'migrants/';
 
                 $file_data = uploadFile($document, $path);
 
-                $inmigrant->file_document = $file_data['filePath'];
-                $inmigrant->update();
+                $migrant->file_document = $file_data['filePath'];
+                $migrant->update();
             } 
 
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'inmigrant' => Inmigrant::with(['parish.municipality.state'])->find($inmigrant->id)
+                    'migrant' => Migrant::with(['parish.municipality.state'])->find($migrant->id)
                 ]
             ]);
 
@@ -93,19 +93,19 @@ class InmigrantController extends Controller
     {
         try {
 
-            $inmigrant = Inmigrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])->find($id);
+            $migrant = Migrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])->find($id);
         
-            if (!$inmigrant)
+            if (!$migrant)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
-                    'message' => 'Inmigrante no encontrado'
+                    'message' => 'Migrante no encontrado'
                 ], 404);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'inmigrant' => $inmigrant
+                    'migrant' => $migrant
                 ]
             ], 200);
 
@@ -121,36 +121,36 @@ class InmigrantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Inmigrant $inmigrant): JsonResponse
+    public function update(Request $request, Migrant $migrant): JsonResponse
     {
         try {
 
-            $inmigrant = Inmigrant::find($inmigrant->id);
+            $migrant = Migrant::find($migrant->id);
         
-            if (!$inmigrant)
+            if (!$migrant)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
-                    'message' => 'Inmigrante no encontrado'
+                    'message' => 'Migrante no encontrado'
                 ], 404);
 
-            $inmigrant = $inmigrant->updateInmigrant($request, $inmigrant);
+            $migrant = $migrant->updateMigrant($request, $migrant);
 
             if ($request->hasFile('file_document')) {
                 $document = $request->file('file_document');
 
-                $path = 'inmigrants/';
+                $path = 'migrants/';
 
-                $file_data = uploadFile($document, $path, $inmigrant->file_document);
+                $file_data = uploadFile($document, $path, $migrant->file_document);
 
-                $inmigrant->file_document = $file_data['filePath'];
-                $inmigrant->update();
+                $migrant->file_document = $file_data['filePath'];
+                $migrant->update();
             }
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'inmigrant' => Inmigrant::with(['parish.municipality.state'])->find($inmigrant->id)
+                    'migrant' => Migrant::with(['parish.municipality.state'])->find($migrant->id)
                 ]
             ]);
 
@@ -167,16 +167,16 @@ class InmigrantController extends Controller
     {
         try {
 
-            $inmigrant = Inmigrant::find($request->ids);
+            $migrant = Migrant::find($request->ids);
         
-            if (!$inmigrant)
+            if (!$migrant)
                 return response()->json([
                     'success' => false,
                     'feedback' => 'not_found',
-                    'message' => 'Inmigrante no encontrado'
+                    'message' => 'Migrante no encontrado'
                 ], 404);
 
-            Inmigrant::deleteInmigrants($request->ids);
+            Migrant::deleteMigrants($request->ids);
 
             return response()->json([
                 'success' => true

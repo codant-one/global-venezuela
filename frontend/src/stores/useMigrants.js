@@ -1,31 +1,31 @@
 import { defineStore } from 'pinia'
-import Inmigrants from '@/api/inmigrants'
+import Migrants from '@/api/migrants'
 
-export const useInmigrantsStores = defineStore('inmigrants', {
+export const useMigrantsStores = defineStore('migrants', {
     state: () => ({
-        inmigrants: {},
+        migrants: {},
         communityCouncils: {},
         loading: false,
         last_page: 1,
-        inmigrantsTotalCount: 6,
+        migrantsTotalCount: 6,
     }),
     getters:{
-        getInmigrants(){
-            return this.inmigrants
+        getMigrants(){
+            return this.migrants
         }
     },
     actions: {
         setLoading(payload){
             this.loading = payload
         },
-        fetchInmigrants(params) {
+        fetchMigrants(params) {
             this.setLoading(true)
             
-            return Inmigrants.get(params)
+            return Migrants.get(params)
                 .then((response) => {
-                    this.inmigrants = response.data.data.inmigrants.data
-                    this.last_page = response.data.data.inmigrants.last_page
-                    this.inmigrantsTotalCount = response.data.data.inmigrantsTotalCount
+                    this.migrants = response.data.data.migrants.data
+                    this.last_page = response.data.data.migrants.last_page
+                    this.migrantsTotalCount = response.data.data.migrantsTotalCount
                 })
                 .catch(error => console.log(error))
                 .finally(() => {
@@ -33,10 +33,10 @@ export const useInmigrantsStores = defineStore('inmigrants', {
                 })
             
         },
-        addInmigrant(data) {
+        addMigrant(data) {
             this.setLoading(true)
 
-            return Inmigrants.create(data)
+            return Migrants.create(data)
                 .then((response) => {
                     return Promise.resolve(response)
                 })
@@ -46,13 +46,13 @@ export const useInmigrantsStores = defineStore('inmigrants', {
                 })
             
         },
-        showInmigrant(id) {
+        showMigrant(id) {
             this.setLoading(true)
 
-            return Inmigrants.show(id)
+            return Migrants.show(id)
                 .then((response) => {
                     if(response.data.success)
-                        return Promise.resolve(response.data.data.inmigrant)
+                        return Promise.resolve(response.data.data.migrant)
                 })
                 .catch(error => Promise.reject(error))
                 .finally(() => {
@@ -60,10 +60,10 @@ export const useInmigrantsStores = defineStore('inmigrants', {
                 })
             
         },
-        updateInmigrant(data) {
+        updateMigrant(data) {
             this.setLoading(true)
             
-            return Inmigrants.update(data)
+            return Migrants.update(data)
                 .then((response) => {
                     return Promise.resolve(response)
                 })
@@ -73,13 +73,13 @@ export const useInmigrantsStores = defineStore('inmigrants', {
                 })
          
         },
-        deleteInmigrant(id) {
+        deleteMigrant(id) {
             this.setLoading(true)
 
-            return Inmigrants.delete(id)
+            return Migrants.delete(id)
                 .then((response) => {
-                    let index = this.inmigrants.findIndex((item) => item.id === id)
-                    this.inmigrants.splice(index, 1)
+                    let index = this.migrants.findIndex((item) => item.id === id)
+                    this.migrants.splice(index, 1)
                     return Promise.resolve(response)
                 })
                 .catch(error => Promise.reject(error))

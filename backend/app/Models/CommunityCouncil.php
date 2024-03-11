@@ -19,8 +19,8 @@ class CommunityCouncil extends Model
         return $this->belongsTo(Circuit::class, 'circuit_id', 'id');
     }
 
-    public function inmigrants() {
-        return $this->hasMany(Inmigrant::class, 'community_council_id', 'id');
+    public function migrants() {
+        return $this->hasMany(Migrant::class, 'community_council_id', 'id');
     }
 
     /**** Scopes ****/

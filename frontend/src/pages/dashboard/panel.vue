@@ -10,14 +10,14 @@ const statisticsStores = useStatisticsStores()
 
 const userDataJ = ref('')
 const name = ref('')
-const total_inmigrant = ref('')
+const total_migrant = ref('')
 const undocumented = ref('')
 const states = ref('')
 const resident = ref(null)
 const isMarried = ref(null)
 const has_children = ref(null)
 const transient = ref(null)
-const inmigrant_byuser = ref(null)
+const migrant_byuser = ref(null)
 const listStatistics = ref([])
 const donutChartColors = {
   donut: {
@@ -118,14 +118,14 @@ async function fetchData() {
 
     await statisticsStores.fetchStatistics();
     loadStatistics()
-    total_inmigrant.value = listStatistics.value.total_inmigrant
+    total_migrant.value = listStatistics.value.total_migrant
     undocumented.value = listStatistics.value.undocumented
     states.value = listStatistics.value.states
     resident.value = listStatistics.value.resident
     isMarried.value = listStatistics.value.isMarried
     has_children.value = listStatistics.value.has_children
     transient.value = listStatistics.value.transient
-    inmigrant_byuser.value = listStatistics.value.inmigrant_by_user
+    migrant_byuser.value = listStatistics.value.migrant_by_user
 }
 
 </script>
@@ -153,7 +153,7 @@ async function fetchData() {
           <div class="d-flex justify-space-between flex-wrap gap-4 flex-column flex-md-row">
             <div
               v-for="{ title, value, icon, color } in [
-                { title: 'Migrantes registrados', value: total_inmigrant, icon: 'mdi-laptop', color: 'primary' },
+                { title: 'Migrantes registrados', value: total_migrant, icon: 'mdi-laptop', color: 'primary' },
                 { title: 'Indocumentados', value: undocumented, icon: 'mdi-account-alert-outline', color: 'error' },
                 { title: 'Estados reportados', value: states, icon: 'mdi-check-decagram-outline', color: 'success' },
               ]"
@@ -237,8 +237,9 @@ async function fetchData() {
         cols="12"
         md="5"
         lg="4"
+        v-if="migrant_byuser"
       >
-        <Congratulations :inmigrant_byuser="inmigrant_byuser"/>
+        <Congratulations :migrant_byuser="migrant_byuser"/>
       </VCol>
     </VRow>
 

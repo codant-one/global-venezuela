@@ -28,7 +28,7 @@ async function fetchData() {
     if(props.customerData.document !== null) {
     
     if(props.customerData.file_document) {
-        document.value = props.customerData.file_document.split('inmigrants/')[1]
+        document.value = props.customerData.file_document.split('migrants/')[1]
 
         switch (document.value.split('.')[1]) {
             case 'pdf':

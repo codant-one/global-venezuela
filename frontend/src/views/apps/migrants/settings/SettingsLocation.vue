@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { requiredValidator } from '@validators'
 
 const props = defineProps({
-  inmigrant: {
+  migrant: {
     type: Object,
     required: false
   },
@@ -150,30 +150,30 @@ watchEffect(fetchData)
 
 async function fetchData() {
 
-  if(props.inmigrant) {
+  if(props.migrant) {
 
-    selectState(props.inmigrant.parish.municipality.state.name)
-    selectMunicipalities(props.inmigrant.parish.municipality.id)
-    selectParishes(props.inmigrant.parish.id)
-    selectCircuit(props.inmigrant.community_council?.circuit.id)
+    selectState(props.migrant.parish.municipality.state.name)
+    selectMunicipalities(props.migrant.parish.municipality.id)
+    selectParishes(props.migrant.parish.id)
+    selectCircuit(props.migrant.community_council?.circuit.id)
 
-    locationDetail.value.parish_id = props.inmigrant.parish_id
-    locationDetail.value.community_council_id = props.inmigrant.community_council?.name
-    locationDetail.value.address = props.inmigrant.address
+    locationDetail.value.parish_id = props.migrant.parish_id
+    locationDetail.value.community_council_id = props.migrant.community_council?.name
+    locationDetail.value.address = props.migrant.address
 
-    stateOld_id.value = props.inmigrant.parish.municipality.state.id
-    state_id.value = props.inmigrant.parish.municipality.state.name
+    stateOld_id.value = props.migrant.parish.municipality.state.id
+    state_id.value = props.migrant.parish.municipality.state.name
 
-    municipalityOld_id.value = props.inmigrant.parish.municipality.id
-    municipality_id.value = props.inmigrant.parish.municipality.name
+    municipalityOld_id.value = props.migrant.parish.municipality.id
+    municipality_id.value = props.migrant.parish.municipality.name
 
-    parishOld_id.value = props.inmigrant.parish.id
-    parish_id.value = props.inmigrant.parish.name
+    parishOld_id.value = props.migrant.parish.id
+    parish_id.value = props.migrant.parish.name
 
-    circuitOld_id.value = props.inmigrant.community_council?.circuit.id
-    circuit_id.value = props.inmigrant.community_council?.circuit.name
+    circuitOld_id.value = props.migrant.community_council?.circuit.id
+    circuit_id.value = props.migrant.community_council?.circuit.name
 
-    community_council_id.value = props.inmigrant.community_council_id
+    community_council_id.value = props.migrant.community_council_id
   }
 }
 

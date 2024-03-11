@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Models\Inmigrant;
+use App\Models\Migrant;
 use App\Models\Country;
 use App\Models\CommunityCouncil;
 use App\Models\User;
@@ -15,14 +15,14 @@ use App\Models\Circuit;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
-class InmigrantFactory extends Factory
+class MigrantFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
-    protected $model = Inmigrant::class;
+    protected $model = Migrant::class;
 
     public function definition(): array
     {

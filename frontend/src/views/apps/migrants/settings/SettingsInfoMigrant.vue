@@ -3,7 +3,7 @@
 import { requiredValidator } from '@validators'
 
 const props = defineProps({
-  inmigrant: {
+  migrant: {
     type: Object,
     required: false
   },
@@ -39,20 +39,20 @@ watchEffect(fetchData)
 
 async function fetchData() {
 
-  if(props.inmigrant) {
+  if(props.migrant) {
 
-    infoDetail.value.country_id = props.inmigrant.country.id
-    infoDetail.value.transient = props.inmigrant.transient.toString()
-    infoDetail.value.resident = props.inmigrant.resident.toString()
-    infoDetail.value.years_in_country = props.inmigrant.years_in_country
-    infoDetail.value.antecedents = props.inmigrant.antecedents.toString()
-    infoDetail.value.passport_status = props.inmigrant.passport_status.toString()
-    infoDetail.value.isMarried = props.inmigrant.isMarried.toString()
-    infoDetail.value.has_children = props.inmigrant.has_children.toString()
-    infoDetail.value.children_number = props.inmigrant.children_number
+    infoDetail.value.country_id = props.migrant.country.id
+    infoDetail.value.transient = props.migrant.transient.toString()
+    infoDetail.value.resident = props.migrant.resident.toString()
+    infoDetail.value.years_in_country = props.migrant.years_in_country
+    infoDetail.value.antecedents = props.migrant.antecedents.toString()
+    infoDetail.value.passport_status = props.migrant.passport_status.toString()
+    infoDetail.value.isMarried = props.migrant.isMarried.toString()
+    infoDetail.value.has_children = props.migrant.has_children.toString()
+    infoDetail.value.children_number = props.migrant.children_number
 
-    country_id.value = props.inmigrant.country.name
-    countryOld_id.value = props.inmigrant.country_id
+    country_id.value = props.migrant.country.name
+    countryOld_id.value = props.migrant.country_id
   }
 }
 
@@ -102,9 +102,9 @@ const onSubmit = () => {
 
             <div>
               <div class="text-high-emphasis">
-                Información del Inmigrante
+                Información del Migrante
               </div>
-              <div class="v-card-subtitle">Información de regularidad del inmigrante.</div>
+              <div class="v-card-subtitle">Información de regularidad del migrante.</div>
             </div>
           </div>
         </VCardTitle>
@@ -257,7 +257,7 @@ const onSubmit = () => {
         Atrás
       </VBtn>
       <VBtn type="submit" color="primary">
-        {{ inmigrant ? 'Actualizar' : 'Agregar' }}
+        {{ migrant ? 'Actualizar' : 'Agregar' }}
       </VBtn>
     </div>
   </VForm>

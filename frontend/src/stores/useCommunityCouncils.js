@@ -4,19 +4,19 @@ import CommunityCouncils from '@/api/community-councils'
 export const useCommunityCouncilsStores = defineStore('community-councils', {
     state: () => ({
         communityCouncils: {},
-        inmigrants: {},
+        migrants: {},
         loading: false,
         last_page: 1,
-        inmigrant_last_page: 1,
-        inmigrantsTotalCount: 6,
+        migrant_last_page: 1,
+        migrantsTotalCount: 6,
         communityCouncilsTotalCount: 6
     }),
     getters:{
         getCommunityCouncils(){
             return this.communityCouncils
         },
-        getInmigrants(){
-            return this.inmigrants
+        getMigrants(){
+            return this.migrants
         }
     },
     actions: {
@@ -58,9 +58,9 @@ export const useCommunityCouncilsStores = defineStore('community-councils', {
             return CommunityCouncils.show(params, id)
                 .then((response) => {
 
-                    this.inmigrants = response.data.data.inmigrants.data
-                    this.inmigrant_last_page = response.data.data.inmigrants.last_page
-                    this.inmigrantsTotalCount = response.data.data.inmigrantsTotalCount
+                    this.migrants = response.data.data.migrants.data
+                    this.migrant_last_page = response.data.data.migrants.last_page
+                    this.migrantsTotalCount = response.data.data.migrantsTotalCount
 
                     if(response.data.success)
                         return Promise.resolve(response.data.data.communityCouncil)

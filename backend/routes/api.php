@@ -24,7 +24,7 @@ use App\Http\Controllers\{
     ProxyController,
     CommunityCouncilController,
     CircuitController,
-    InmigrantController,
+    MigrantController,
     VolunteerController,
     ReportController,
     DashboardController,
@@ -70,7 +70,7 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
     Route::apiResource('community-councils', CommunityCouncilController::class);
-    Route::apiResource('inmigrants', InmigrantController::class);
+    Route::apiResource('migrants', MigrantController::class);
 
     //Users
     Route::group(['prefix' => 'users'], function () {
@@ -112,9 +112,9 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
     //Dashboard Statistics
     Route::get('/dashboard-statistics',[DashboardController::class, 'index']);
 
-    //Inmigrants
-    Route::group(['prefix' => 'inmigrants'], function () {
-        Route::post('delete', [InmigrantController::class, 'delete']);
+    //Migrants
+    Route::group(['prefix' => 'migrants'], function () {
+        Route::post('delete', [MigrantController::class, 'delete']);
     });
 });
 

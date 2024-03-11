@@ -4,19 +4,19 @@ import router from '@/router'
 import Toaster from "@/components/common/Toaster.vue";
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
-import { useInmigrantsStores } from '@/stores/useInmigrants'
+import { useMigrantsStores } from '@/stores/useMigrants'
 
-const inmigrantsStores = useInmigrantsStores()
+const migrantsStores = useMigrantsStores()
 
-const inmigrants = ref([])
+const migrants = ref([])
 const searchQuery = ref('')
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPages = ref(1)
-const totalInmigrants = ref(0)
+const totalMigrants = ref(0)
 const isRequestOngoing = ref(true)
 const isConfirmDeleteDialogVisible = ref(false)
-const selectedInmigrant = ref({})
+const selectedMigrant = ref({})
 
 const advisor = ref({
   type: '',
@@ -31,10 +31,10 @@ const alert = ref({
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = inmigrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = inmigrants.value.length + (currentPage.value - 1) * rowPerPage.value
+  const firstIndex = migrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = migrants.value.length + (currentPage.value - 1) * rowPerPage.value
 
-  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalInmigrants.value } registros`
+  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalMigrants.value } registros`
 })
 
 // 👉 watching current page
@@ -57,35 +57,35 @@ async function fetchData() {
 
   isRequestOngoing.value = true
 
-  await inmigrantsStores.fetchInmigrants(data)
-  inmigrants.value = inmigrantsStores.getInmigrants
-  totalPages.value = inmigrantsStores.last_page
-  totalInmigrants.value = inmigrantsStores.inmigrantsTotalCount
+  await migrantsStores.fetchMigrants(data)
+  migrants.value = migrantsStores.getMigrants
+  totalPages.value = migrantsStores.last_page
+  totalMigrants.value = migrantsStores.migrantsTotalCount
 
   isRequestOngoing.value = false
 }
 
-const seeInmigrant = inmigrantData => {
-  router.push({ name : 'dashboard-admin-inmigrants-id', params: { id: inmigrantData.id } })
+const seeMigrant = migrantData => {
+  router.push({ name : 'dashboard-admin-migrants-id', params: { id: migrantData.id } })
 }
 
-const editInmigrant = inmigrantData => {
-  router.push({ name : 'dashboard-admin-inmigrants-edit-id', params: { id: inmigrantData.id } })
+const editMigrant = migrantData => {
+  router.push({ name : 'dashboard-admin-migrants-edit-id', params: { id: migrantData.id } })
 }
 
-const showDeleteDialog = inmigrantData => {
+const showDeleteDialog = migrantData => {
   isConfirmDeleteDialogVisible.value = true
-  selectedInmigrant.value = { ...inmigrantData }
+  selectedMigrant.value = { ...migrantData }
 }
 
-const removeInmigrant = async () => {
+const removeMigrant = async () => {
   isConfirmDeleteDialogVisible.value = false
-  let res = await inmigrantsStores.deleteInmigrant({ ids: [selectedInmigrant.value.id] })
-  selectedInmigrant.value = {}
+  let res = await migrantsStores.deleteMigrant({ ids: [selectedMigrant.value.id] })
+  selectedMigrant.value = {}
 
   advisor.value = {
     type: res.data.success ? 'success' : 'error',
-    message: res.data.success ? 'Inmigrante eliminado con éxito!' : res.data.message,
+    message: res.data.success ? 'Migrante eliminado con éxito!' : res.data.message,
     show: true
   }
 
@@ -110,18 +110,18 @@ const downloadCSV = async () => {
     limit: -1
   }
 
-  await inmigrantsStores.fetchInmigrants(data)
+  await migrantsStores.fetchMigrants(data)
 
   let dataArray = [];
   
-  inmigrantsStores.getInmigrants.forEach(element => {
+  migrantsStores.getMigrants.forEach(element => {
 
     let data = {
       NOMBRE: element.name,
       APELLIDO: element.last_name,
       EMAIL: element.email,
       FECHA_NACIMIENTO: element.birthdate,
-      PAÍS_INMIGRANTE: element.country.name,
+      PAÍS_MIGRANTE: element.country.name,
       GÉNERO: element.gender.name,
       NÚMERO_PASAPORTE: element.passport_number,
       PASAPORTE_VIGENTE: element.passport_status ? 'SI' : 'NO',
@@ -144,7 +144,7 @@ const downloadCSV = async () => {
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "inmigrants", "csv");
+    .exportDataFromJSON(dataArray, "migrants", "csv");
 
   isRequestOngoing.value = false
 
@@ -223,10 +223,10 @@ const downloadCSV = async () => {
             <div class="d-flex align-center flex-wrap gap-4">
               <!-- 👉 Add user button -->
               <v-btn
-                v-if="$can('crear','inmigrantes')"
+                v-if="$can('crear','migrantes')"
                 prepend-icon="tabler-plus"
-                :to="{ name: 'dashboard-admin-inmigrants-add' }">
-                  Agregar Inmigrante
+                :to="{ name: 'dashboard-admin-migrants-add' }">
+                  Agregar Migrante
               </v-btn>
             </div>
           </VCardText>
@@ -242,7 +242,7 @@ const downloadCSV = async () => {
                 <th scope="col"> TELÉFONO </th>
                 <th scope="col"> EMAIL </th>
                 <th scope="col"> DIRECCIÓN </th>
-                <th scope="col" v-if="$can('ver','inmigrantes') || $can('editar','inmigrantes') || $can('eliminar','inmigrantes')">
+                <th scope="col" v-if="$can('ver','migrantes') || $can('editar','migrantes') || $can('eliminar','migrantes')">
                   ACCIONES
                 </th>
               </tr>
@@ -250,24 +250,24 @@ const downloadCSV = async () => {
             <!-- 👉 table body -->
             <tbody>
               <tr 
-                v-for="inmigrant in inmigrants"
-                :key="inmigrant.id"
+                v-for="migrant in migrants"
+                :key="migrant.id"
                 style="height: 3.75rem;">
 
-                <td> {{inmigrant.id }} </td>
-                <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }}  {{inmigrant.last_name }} </td>
-                <td> {{inmigrant.phone }} </td>
-                <td> {{inmigrant.email }} </td>
-                <td> {{inmigrant.address }} </td>
+                <td> {{migrant.id }} </td>
+                <td class="text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
+                <td> {{migrant.phone }} </td>
+                <td> {{migrant.email }} </td>
+                <td> {{migrant.address }} </td>
                 <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('ver','inmigrantes') || $can('editar','inmigrantes') || $can('eliminar','inmigrantes')">      
+                <td class="text-center" style="width: 5rem;" v-if="$can('ver','migrantes') || $can('editar','migrantes') || $can('eliminar','migrantes')">      
                   <VBtn
-                    v-if="$can('ver','inmigrantes')"
+                    v-if="$can('ver','migrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="seeInmigrant(inmigrant)">
+                    @click="seeMigrant(migrant)">
                               
                     <VIcon
                         size="22"
@@ -275,12 +275,12 @@ const downloadCSV = async () => {
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('editar','inmigrantes')"
+                    v-if="$can('editar','migrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="editInmigrant(inmigrant)">
+                    @click="editMigrant(migrant)">
                               
                     <VIcon
                         size="22"
@@ -288,12 +288,12 @@ const downloadCSV = async () => {
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('eliminar','inmigrantes')"
+                    v-if="$can('eliminar','migrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="showDeleteDialog(inmigrant)">
+                    @click="showDeleteDialog(migrant)">
                               
                     <VIcon
                       size="22"
@@ -303,7 +303,7 @@ const downloadCSV = async () => {
               </tr>
             </tbody>
             <!-- 👉 table footer  -->
-            <tfoot v-show="!inmigrants.length">
+            <tfoot v-show="!migrants.length">
               <tr>
                 <td
                   colspan="7"
@@ -342,9 +342,9 @@ const downloadCSV = async () => {
       <DialogCloseBtn @click="isConfirmDeleteDialogVisible = !isConfirmDeleteDialogVisible" />
 
       <!-- Dialog Content -->
-      <VCard title="Eliminar Inmigrante">
+      <VCard title="Eliminar Migrante">
         <VCardText>
-          Está seguro de eliminar el inmigrante <strong>{{ selectedInmigrant.name }} {{ selectedInmigrant.last_name }}</strong>?.
+          Está seguro de eliminar el migrante <strong>{{ selectedMigrant.name }} {{ selectedMigrant.last_name }}</strong>?.
         </VCardText>
 
         <VCardText class="d-flex justify-end gap-3 flex-wrap">
@@ -354,7 +354,7 @@ const downloadCSV = async () => {
             @click="isConfirmDeleteDialogVisible = false">
               Cancelar
           </VBtn>
-          <VBtn @click="removeInmigrant">
+          <VBtn @click="removeMigrant">
               Aceptar
           </VBtn>
         </VCardText>
@@ -375,5 +375,5 @@ const downloadCSV = async () => {
 <route lang="yaml">
   meta:
     action: ver
-    subject: inmigrantes
+    subject: migrantes
 </route>

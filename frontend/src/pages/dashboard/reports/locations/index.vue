@@ -14,14 +14,14 @@ const statesStores = useStatesStores()
 const municipalitiesStores = useMunicipalitiesStores()
 const parishesStores = useParishesStores()
 
-const inmigrants = ref([])
+const migrants = ref([])
 const searchQuery = ref('')
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPages = ref(1)
-const totalInmigrants = ref(0)
+const totalMigrants = ref(0)
 const isRequestOngoing = ref(true)
-const selectedInmigrant = ref({})
+const selectedMigrant = ref({})
 
 const state_id = ref(null)
 const stateOld_id = ref(null)
@@ -49,10 +49,10 @@ const alert = ref({
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = inmigrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = inmigrants.value.length + (currentPage.value - 1) * rowPerPage.value
+  const firstIndex = migrants.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = migrants.value.length + (currentPage.value - 1) * rowPerPage.value
 
-  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalInmigrants.value } registros`
+  return `Mostrando ${ firstIndex } hasta ${ lastIndex } de ${ totalMigrants.value } registros`
 })
 
 // 👉 watching current page
@@ -78,11 +78,11 @@ async function fetchData() {
 
   isRequestOngoing.value = true
 
-  await reportsStores.fetchInmigrants(data)
+  await reportsStores.fetchMigrants(data)
   
-  inmigrants.value = reportsStores.getInmigrants
+  migrants.value = reportsStores.getMigrants
   totalPages.value = reportsStores.last_page
-  totalInmigrants.value = reportsStores.inmigrantsTotalCount
+  totalMigrants.value = reportsStores.migrantsTotalCount
 
   if(listParishes.value.length === 0) {
     await statesStores.fetchStates();
@@ -97,8 +97,8 @@ async function fetchData() {
   isRequestOngoing.value = false
 }
 
-const seeInmigrant = inmigrantData => {
-  router.push({ name : 'dashboard-admin-inmigrants-id', params: { id: inmigrantData.id } })
+const seeMigrant = migrantData => {
+  router.push({ name : 'dashboard-admin-migrants-id', params: { id: migrantData.id } })
 }
 
 const loadStates = () => {
@@ -174,18 +174,18 @@ const downloadCSV = async () => {
     limit: -1
   }
 
-  await reportsStores.fetchInmigrants(data)
+  await reportsStores.fetchMigrants(data)
 
   let dataArray = [];
   
-  reportsStores.getInmigrants.forEach(element => {
+  reportsStores.getMigrants.forEach(element => {
 
     let data = {
       NOMBRE: element.name,
       APELLIDO: element.last_name,
       EMAIL: element.email,
       FECHA_NACIMIENTO: element.birthdate,
-      PAÍS_INMIGRANTE: element.country.name,
+      PAÍS_MIGRANTE: element.country.name,
       GÉNERO: element.gender.name,
       NÚMERO_PASAPORTE: element.passport_number,
       PASAPORTE_VIGENTE: element.passport_status ? 'SI' : 'NO',
@@ -208,7 +208,7 @@ const downloadCSV = async () => {
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "inmigrants", "csv");
+    .exportDataFromJSON(dataArray, "migrants", "csv");
 
   isRequestOngoing.value = false
 
@@ -345,7 +345,7 @@ const downloadCSV = async () => {
                 <th scope="col"> ESTADO </th>
                 <th scope="col"> UBICACIÓN </th>
                 <th scope="col"> CIRCUITO </th>
-                <th scope="col" v-if="$can('ver','inmigrantes')">
+                <th scope="col" v-if="$can('ver','migrantes')">
                   ACCIONES
                 </th>
               </tr>
@@ -353,42 +353,42 @@ const downloadCSV = async () => {
             <!-- 👉 table body -->
             <tbody>
               <tr 
-                v-for="inmigrant in inmigrants"
-                :key="inmigrant.id"
+                v-for="migrant in migrants"
+                :key="migrant.id"
                 style="height: 3.75rem;">
 
-                <td> {{inmigrant.id }} </td>
-                <td class="text-base font-weight-medium mb-0"> {{inmigrant.name }}  {{inmigrant.last_name }} </td>
-                <td class="text-uppercase"> {{ inmigrant.parish.municipality.state.name }} </td>
+                <td> {{migrant.id }} </td>
+                <td class="text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
+                <td class="text-uppercase"> {{ migrant.parish.municipality.state.name }} </td>
                 <td class="text-uppercase">
                   <div class="d-flex align-center">
                     <div class="d-flex flex-column">
                       <h6 class="text-base font-weight-medium mb-0">
-                        {{ inmigrant.parish.municipality.name }}
+                        {{ migrant.parish.municipality.name }}
                       </h6>
-                      <span class="text-disabled text-sm">{{ inmigrant.parish.name }}</span>
+                      <span class="text-disabled text-sm">{{ migrant.parish.name }}</span>
                     </div>
                   </div>
                 </td>
                 <td class="text-wrap"> 
                   <div class="d-flex align-center">
                     <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0 text-primary"  @click="seeCircuit(inmigrant.community_council?.circuit)">
-                        {{ inmigrant.community_council?.circuit.name }}
+                      <h6 class="text-base font-weight-medium mb-0 text-primary"  @click="seeCircuit(migrant.community_council?.circuit)">
+                        {{ migrant.community_council?.circuit.name }}
                       </h6>
                       <span class="text-disabled text-sm"></span>
                     </div>
                   </div>
                 </td>
                 <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('ver','inmigrantes')">      
+                <td class="text-center" style="width: 5rem;" v-if="$can('ver','migrantes')">      
                   <VBtn
-                    v-if="$can('ver','inmigrantes')"
+                    v-if="$can('ver','migrantes')"
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="seeInmigrant(inmigrant)">
+                    @click="seeMigrant(migrant)">
                               
                     <VIcon
                         size="22"
@@ -398,7 +398,7 @@ const downloadCSV = async () => {
               </tr>
             </tbody>
             <!-- 👉 table footer  -->
-            <tfoot v-show="!inmigrants.length">
+            <tfoot v-show="!migrants.length">
               <tr>
                 <td
                   colspan="7"

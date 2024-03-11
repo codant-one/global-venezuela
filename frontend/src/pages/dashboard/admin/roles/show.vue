@@ -261,31 +261,31 @@ const closeRoleDetailDialog = function(){
                             />
                         </div>
                         <VLabel style="font-weight: bold;">
-                            Inmigrantes
+                            Migrantes
                         </VLabel>
                         <div class="demo-space-x ml-5">
                             <VCheckbox
                                 v-model="permissions"
-                                label="ver inmigrantes"
-                                value="ver inmigrantes"
+                                label="ver migrantes"
+                                value="ver migrantes"
                                 :readonly="readonly"
                             />
                             <VCheckbox
                                 v-model="permissions"
-                                label="crear inmigrantes"
-                                value="crear inmigrantes"
+                                label="crear migrantes"
+                                value="crear migrantes"
                                 :readonly="readonly"
                             />
                             <VCheckbox
                                 v-model="permissions"
-                                label="editar inmigrantes"
-                                value="editar inmigrantes"
+                                label="editar migrantes"
+                                value="editar migrantes"
                                 :readonly="readonly"
                             />
                             <VCheckbox
                                 v-model="permissions"
-                                label="eliminar inmigrantes"
-                                value="eliminar inmigrantes"
+                                label="eliminar migrantes"
+                                value="eliminar migrantes"
                                 :readonly="readonly"
                             />
                         </div>

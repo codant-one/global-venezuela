@@ -186,28 +186,28 @@ const closeModal = function(){
                             />
                         </div>
                         <VLabel style="font-weight: bold;">
-                            Inmigrantes
+                            Migrantes
                         </VLabel>
                         <div class="demo-space-x ml-5">
                             <VCheckbox
                                 v-model="assignedPermissions"
-                                label="ver inmigrantes"
-                                value="ver inmigrantes"
+                                label="ver migrantes"
+                                value="ver migrantes"
                             />
                             <VCheckbox
                                 v-model="assignedPermissions"
-                                label="crear inmigrantes"
-                                value="crear inmigrantes"
+                                label="crear migrantes"
+                                value="crear migrantes"
                             />
                             <VCheckbox
                                 v-model="assignedPermissions"
-                                label="editar inmigrantes"
-                                value="editar inmigrantes"
+                                label="editar migrantes"
+                                value="editar migrantes"
                             />
                             <VCheckbox
                                 v-model="assignedPermissions"
-                                label="eliminar inmigrantes"
-                                value="eliminar inmigrantes"
+                                label="eliminar migrantes"
+                                value="eliminar migrantes"
                             />
                         </div>
                     </div>

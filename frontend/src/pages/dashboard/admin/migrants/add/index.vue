@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref } from "vue"
-import { useInmigrantsStores } from '@/stores/useInmigrants'
+import { useMigrantsStores } from '@/stores/useMigrants'
 import { useStatesStores } from '@/stores/useStates'
 import { useCitiesStores } from '@/stores/useCities'
 import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
@@ -10,13 +10,13 @@ import { useGendersStores } from '@/stores/useGenders'
 import { useCircuitsStores } from '@/stores/useCircuits'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useCountriesStores } from '@/stores/useCountries'
-import SettingsGeneral from '@/views/apps/inmigrants/settings/SettingsGeneral.vue'
-import SettingsDocument from '@/views/apps/inmigrants/settings/SettingsDocument.vue'
-import SettingsLocation from '@/views/apps/inmigrants/settings/SettingsLocation.vue'
-import SettingsInfoInmigrant from '@/views/apps/inmigrants/settings/SettingsInfoInmigrant.vue'
+import SettingsGeneral from '@/views/apps/migrants/settings/SettingsGeneral.vue'
+import SettingsDocument from '@/views/apps/migrants/settings/SettingsDocument.vue'
+import SettingsLocation from '@/views/apps/migrants/settings/SettingsLocation.vue'
+import SettingsInfoMigrant from '@/views/apps/migrants/settings/SettingsInfoMigrant.vue'
 import router from '@/router'
 
-const inmigrantsStores = useInmigrantsStores()
+const migrantsStores = useMigrantsStores()
 const statesStores = useStatesStores()
 const citiesStores = useCitiesStores()
 const municipalitiesStores = useMunicipalitiesStores()
@@ -60,7 +60,7 @@ const tabsData = [
   },
   {
     icon: 'mdi-account-question',
-    title: isMobile ? '' : 'Información del Inmigrante',
+    title: isMobile ? '' : 'Información del Migrante',
   }
 ]
 
@@ -166,16 +166,16 @@ const uploadInfo = async (infoDetail) => {
   formData.append('passport_status', Number(infoDetail.passport_status))
   formData.append('children_number', Number(infoDetail.has_children) ? infoDetail.children_number : 0)
 
-  inmigrantsStores.addInmigrant(formData)
+  migrantsStores.addMigrant(formData)
     .then((res) => {
       if (res.data.success) {
 
           let data = {
-            message: 'Inmigrante Creado!',
+            message: 'Migrante Creado!',
             error: false
           }
 
-          router.push({ name : 'dashboard-admin-inmigrants'})
+          router.push({ name : 'dashboard-admin-migrants'})
           emitter.emit('toast', data)
 
       } else {
@@ -185,7 +185,7 @@ const uploadInfo = async (infoDetail) => {
           error: true
         }
 
-        router.push({ name : 'dashboard-admin-inmigrants'})
+        router.push({ name : 'dashboard-admin-migrants'})
         emitter.emit('toast', data)
       }
   })
@@ -195,7 +195,7 @@ const uploadInfo = async (infoDetail) => {
         error: true
       }
 
-      router.push({ name : 'dashboard-admin-inmigrants'})
+      router.push({ name : 'dashboard-admin-migrants'})
       emitter.emit('toast', data)
     })
 
@@ -234,7 +234,7 @@ const back = async () => {
       md="4"
     >
       <h6 class="text-h6 mb-4">
-        AGREGAR INMIGRANTE
+        AGREGAR MIGRANTE
       </h6>
 
       <VTabs
@@ -290,7 +290,7 @@ const back = async () => {
         </VWindowItem>
 
         <VWindowItem>
-          <SettingsInfoInmigrant
+          <SettingsInfoMigrant
             :countries="listCountries"
             @back="back"
             @submit="uploadInfo"
@@ -322,5 +322,5 @@ const back = async () => {
 <route lang="yaml">
     meta:
       action: crear
-      subject: inmigrantes
+      subject: migrantes
   </route>

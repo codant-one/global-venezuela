@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Illuminate\Http\Request;
 
-use App\Models\Inmigrant;
+use App\Models\Migrant;
 
 class ReportController extends Controller
 {
@@ -18,7 +18,7 @@ class ReportController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Inmigrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])
+        $query = Migrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -51,13 +51,13 @@ class ReportController extends Controller
                             ])
                         )->count();
 
-        $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+        $migrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
         return response()->json([
             'success' => true,
             'data' => [ 
-            'inmigrants' => $inmigrants,
-            'inmigrantsTotalCount' => $count
+            'migrants' => $migrants,
+            'migrantsTotalCount' => $count
             ]
         ], 200);
     }

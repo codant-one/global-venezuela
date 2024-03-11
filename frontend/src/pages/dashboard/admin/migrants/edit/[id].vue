@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref } from "vue"
-import { useInmigrantsStores } from '@/stores/useInmigrants'
+import { useMigrantsStores } from '@/stores/useMigrants'
 import { useStatesStores } from '@/stores/useStates'
 import { useCitiesStores } from '@/stores/useCities'
 import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
@@ -10,13 +10,13 @@ import { useGendersStores } from '@/stores/useGenders'
 import { useCircuitsStores } from '@/stores/useCircuits'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useCountriesStores } from '@/stores/useCountries'
-import SettingsGeneral from '@/views/apps/inmigrants/settings/SettingsGeneral.vue'
-import SettingsDocument from '@/views/apps/inmigrants/settings/SettingsDocument.vue'
-import SettingsLocation from '@/views/apps/inmigrants/settings/SettingsLocation.vue'
-import SettingsInfoInmigrant from '@/views/apps/inmigrants/settings/SettingsInfoInmigrant.vue'
+import SettingsGeneral from '@/views/apps/migrants/settings/SettingsGeneral.vue'
+import SettingsDocument from '@/views/apps/migrants/settings/SettingsDocument.vue'
+import SettingsLocation from '@/views/apps/migrants/settings/SettingsLocation.vue'
+import SettingsInfoMigrant from '@/views/apps/migrants/settings/SettingsInfoMigrant.vue'
 import router from '@/router'
 
-const inmigrantsStores = useInmigrantsStores()
+const migrantsStores = useMigrantsStores()
 const statesStores = useStatesStores()
 const citiesStores = useCitiesStores()
 const municipalitiesStores = useMunicipalitiesStores()
@@ -42,7 +42,7 @@ const isRequestOngoing = ref(true)
 const isMobile = /Mobi/i.test(navigator.userAgent);
 const activeTab = ref(null)
 
-const inmigrant = ref(null)
+const migrant = ref(null)
 const userDetail = ref(null)
 const documentDetail = ref(null)
 const locationDetail = ref(null)
@@ -62,7 +62,7 @@ const tabsData = [
   },
   {
     icon: 'mdi-account-question',
-    title: isMobile ? '' : 'Información del Inmigrante',
+    title: isMobile ? '' : 'Información del Migrante',
   }
 ]
 
@@ -123,7 +123,7 @@ async function fetchData() {
     loadGenders()
     loadCommunityCouncils()
 
-    inmigrant.value = await inmigrantsStores.showInmigrant(Number(route.params.id))
+    migrant.value = await migrantsStores.showMigrant(Number(route.params.id))
   }
 
   isRequestOngoing.value = false
@@ -176,16 +176,16 @@ const uploadInfo = async (infoDetail) => {
         id: Number(route.params.id)
     }
 
-    inmigrantsStores.updateInmigrant(data)
+    migrantsStores.updateMigrant(data)
         .then((res) => {
             if (res.data.success) {
 
                 let data = {
-                message: 'Inmigrante Actualizado!',
+                message: 'Migrante Actualizado!',
                 error: false
                 }
 
-                router.push({ name : 'dashboard-admin-inmigrants'})
+                router.push({ name : 'dashboard-admin-migrants'})
                 emitter.emit('toast', data)
 
             } else {
@@ -195,7 +195,7 @@ const uploadInfo = async (infoDetail) => {
                     error: true
                 }
 
-                router.push({ name : 'dashboard-admin-inmigrants'})
+                router.push({ name : 'dashboard-admin-migrants'})
                 emitter.emit('toast', data)
             }
         })
@@ -205,7 +205,7 @@ const uploadInfo = async (infoDetail) => {
                 error: true
             }
 
-            router.push({ name : 'dashboard-admin-inmigrants'})
+            router.push({ name : 'dashboard-admin-migrants'})
             emitter.emit('toast', data)
         })
 
@@ -244,7 +244,7 @@ const back = async () => {
       md="4"
     >
       <h6 class="text-h6 mb-4">
-        ACTUALIZAR INMIGRANTE
+        ACTUALIZAR MIGRANTE
       </h6>
 
       <VTabs
@@ -276,7 +276,7 @@ const back = async () => {
       >
         <VWindowItem>
           <SettingsGeneral 
-            :inmigrant="inmigrant"
+            :migrant="migrant"
             :genders="listGenders"
             @submit="uploadGeneral"
           />
@@ -284,7 +284,7 @@ const back = async () => {
 
         <VWindowItem>
           <SettingsDocument 
-            :inmigrant="inmigrant"
+            :migrant="migrant"
             @back="back"
             @submit="uploadDocument"
           />
@@ -292,7 +292,7 @@ const back = async () => {
 
         <VWindowItem>
           <SettingsLocation
-            :inmigrant="inmigrant"
+            :migrant="migrant"
             :states="listStates"
             :municipalities="listMunicipalities"
             :parishes="listParishes"
@@ -303,8 +303,8 @@ const back = async () => {
         </VWindowItem>
 
         <VWindowItem>
-          <SettingsInfoInmigrant
-            :inmigrant="inmigrant"
+          <SettingsInfoMigrant
+            :migrant="migrant"
             :countries="listCountries"
             @back="back"
             @submit="uploadInfo"
@@ -336,5 +336,5 @@ const back = async () => {
 <route lang="yaml">
     meta:
       action: editar
-      subject: inmigrantes
+      subject: migrantes
   </route>

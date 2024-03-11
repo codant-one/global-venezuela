@@ -2,7 +2,7 @@ export default [
   { 
     heading: 'MÓDULOS',
     action: 'ver' , 
-    subject: 'inmigrantes' 
+    subject: 'migrantes' 
   },
   { 
     title: 'Roles', 
@@ -33,10 +33,10 @@ export default [
     subject: 'consejos-comunales'
   },
   { 
-    title: 'Inmigrantes', 
+    title: 'Migrantes', 
     icon: { icon: 'mdi-target-account' },
-    to: 'dashboard-admin-inmigrants', 
+    to: 'dashboard-admin-migrants', 
     action: 'ver', 
-    subject: 'inmigrantes'
+    subject: 'migrantes'
   }
 ]

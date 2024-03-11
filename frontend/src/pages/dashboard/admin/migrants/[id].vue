@@ -1,6 +1,6 @@
 <script setup>
 
-import { useInmigrantsStores } from '@/stores/useInmigrants'
+import { useMigrantsStores } from '@/stores/useMigrants'
 import { themeConfig } from '@themeConfig'
 import axios from 'axios';
 import CustomerBioPanel from '@/views/apps/ecommerce/customer/view/CustomerBioPanel.vue'
@@ -9,16 +9,16 @@ import CustomerTabLocation from '@/views/apps/ecommerce/customer/view/CustomerTa
 import CustomerTabInfo from '@/views/apps/ecommerce/customer/view/CustomerTabInfo.vue'
 
 const route = useRoute()
-const inmigrantsStores = useInmigrantsStores()
+const migrantsStores = useMigrantsStores()
 
 const userTab = ref(null)
-const inmigrant = ref(null)
+const migrant = ref(null)
 const isRequestOngoing = ref(true)
 
 const tabs = [
   { title: 'Documentos' },
   { title: 'Ubicación' },
-  { title: 'Información del inmigrante' }
+  { title: 'Información del migrante' }
 ]
 
 const advisor = ref({
@@ -34,7 +34,7 @@ async function fetchData() {
   isRequestOngoing.value = true
 
   if(Number(route.params.id)) {
-    inmigrant.value = await inmigrantsStores.showInmigrant(Number(route.params.id))
+    migrant.value = await migrantsStores.showMigrant(Number(route.params.id))
   }
 
   isRequestOngoing.value = false
@@ -116,11 +116,11 @@ const download = async (img) => {
     </VDialog>
 
     <!-- 👉 Header  -->
-    <div v-if="inmigrant" class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+    <div v-if="migrant" class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
         <div>
             <div class="d-flex gap-2 align-center mb-2 flex-wrap">
                 <h4 class="text-h4 font-weight-medium">
-                    Inmigrante ID #{{ route.params.id }}
+                    Migrante ID #{{ route.params.id }}
                 </h4>
             </div>
         </div>
@@ -129,20 +129,20 @@ const download = async (img) => {
                 variant="tonal"
                 color="secondary"
                 class="mb-2"
-                :to="{ name: 'dashboard-admin-inmigrants' }"
+                :to="{ name: 'dashboard-admin-migrants' }"
                 >
                 Regresar
             </VBtn>
         </div>
     </div>
     <!-- 👉 Customer Profile  -->
-    <VRow v-if="inmigrant">
+    <VRow v-if="migrant">
         <VCol
             cols="12"
             md="5"
             lg="4"
         >
-            <CustomerBioPanel :customer-data="inmigrant" />
+            <CustomerBioPanel :customer-data="migrant" />
         </VCol>
         <VCol
             cols="12"
@@ -164,14 +164,14 @@ const download = async (img) => {
             >
                 <VWindowItem>
                     <CustomerTabDocuments 
-                        :customer-data="inmigrant"
+                        :customer-data="migrant"
                         @download="download" />
                 </VWindowItem>
                 <VWindowItem>
-                    <CustomerTabLocation :customer-data="inmigrant" />
+                    <CustomerTabLocation :customer-data="migrant" />
                 </VWindowItem>
                 <VWindowItem>
-                    <CustomerTabInfo :customer-data="inmigrant" />
+                    <CustomerTabInfo :customer-data="migrant" />
                 </VWindowItem>
             </VWindow>
         </VCol>
@@ -182,5 +182,5 @@ const download = async (img) => {
 <route lang="yaml">
   meta:
     action: ver
-    subject: inmigrantes
+    subject: migrantes
 </route>

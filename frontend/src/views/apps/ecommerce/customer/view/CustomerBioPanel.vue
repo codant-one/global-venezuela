@@ -67,7 +67,7 @@ const getFlagCountry = country => {
           <h4 class="text-h4 mt-4">
             {{ props.customerData.name }}  {{ props.customerData.last_name ?? '' }}
           </h4>
-          <span class="text-sm">Inmigrante ID #{{ props.customerData.id }}</span>
+          <span class="text-sm">Migrante ID #{{ props.customerData.id }}</span>
         </VCardText>
 
         <!-- 👉 Customer Details -->

@@ -5,38 +5,38 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-use App\Models\Inmigrant;
+use App\Models\Migrant;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $total_inmigrant =  Inmigrant::count();
+        $total_migrant =  Migrant::count();
 
-        $inmigrant_by_user = Inmigrant::where('user_id', auth()->user()->id) ->count();
+        $migrant_by_user = Migrant::where('user_id', auth()->user()->id) ->count();
 
-        $undocumented = Inmigrant::where('user_id', auth()->user()->id)
+        $undocumented = Migrant::where('user_id', auth()->user()->id)
                                  ->where('transient', 0)
                                  ->where('resident',0)
                                  ->count();
     
-        $parish = Inmigrant::whereHas('parish.municipality.state')->pluck('id');
+        $parish = Migrant::whereHas('parish.municipality.state')->pluck('id');
         
         $states = count($parish);
 
-        $resident = Inmigrant::where('resident', 1) ->count();
-        $transient = Inmigrant::where('transient', 1) ->count();
-        $isMarried = Inmigrant::where('isMarried', 1) ->count();
-        $has_children = Inmigrant::where('has_children', 1) ->count();
+        $resident = Migrant::where('resident', 1) ->count();
+        $transient = Migrant::where('transient', 1) ->count();
+        $isMarried = Migrant::where('isMarried', 1) ->count();
+        $has_children = Migrant::where('has_children', 1) ->count();
 
-        $topcountries = Inmigrant::withCount('country')
+        $topcountries = Migrant::withCount('country')
         ->orderByDesc('country_count')
         ->take(5)
         ->get();
 
         $response = [
-            'total_inmigrant' => $total_inmigrant,
-            'inmigrant_by_user' => $inmigrant_by_user, 
+            'total_migrant' => $total_migrant,
+            'migrant_by_user' => $migrant_by_user, 
             'undocumented' => $undocumented,
             'states' => $states, 
             'resident' => $resident,

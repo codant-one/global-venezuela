@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 use App\Models\CommunityCouncil;
-use App\Models\Inmigrant;
+use App\Models\Migrant;
 
 class CommunityCouncilController extends Controller
 {
@@ -83,7 +83,7 @@ class CommunityCouncilController extends Controller
     {
         try {
 
-            $communityCouncil = CommunityCouncil::with(['inmigrants'])->find($id);
+            $communityCouncil = CommunityCouncil::with(['migrants'])->find($id);
 
             if (!$communityCouncil)
                 return response()->json([
@@ -94,7 +94,7 @@ class CommunityCouncilController extends Controller
 
             $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = Inmigrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
+            $query = Migrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
                         ->where('community_council_id', $id)
                         ->applyFilters(
                             $request->only([
@@ -113,14 +113,14 @@ class CommunityCouncilController extends Controller
                             ])
                         )->count();
 
-            $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+            $migrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
             return response()->json([
                 'success' => true,
                 'data' => [ 
                     'communityCouncil' => $communityCouncil,
-                    'inmigrants' => $inmigrants,
-                    'inmigrantsTotalCount' => $count
+                    'migrants' => $migrants,
+                    'migrantsTotalCount' => $count
                 ]
             ], 200);
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Inmigrant extends Model
+class Migrant extends Model
 {
     use HasFactory;
     
@@ -115,8 +115,8 @@ class Inmigrant extends Model
     }
 
     /**** Public methods ****/
-    public static function createInmigrant($request) {
-        $inmigrant = self::create([
+    public static function createMigrant($request) {
+        $migrant = self::create([
             'country_id' => $request->country_id,
             'user_id' => auth()->user()->id,
             'gender_id' => $request->gender_id,
@@ -139,11 +139,11 @@ class Inmigrant extends Model
             'address' => $request->address
         ]);
 
-        return $inmigrant;
+        return $migrant;
     }
 
-    public static function updateInmigrant($request, $inmigrant) {
-        $inmigrant->update([
+    public static function updateMigrant($request, $migrant) {
+        $migrant->update([
             'country_id' => $request->country_id,
             'gender_id' => $request->gender_id,
             'parish_id' => $request->parish_id,
@@ -165,16 +165,16 @@ class Inmigrant extends Model
             'address' => $request->address,
         ]);
 
-        return $inmigrant;
+        return $migrant;
     }
 
-    public static function deleteInmigrants($ids) {
+    public static function deleteMigrants($ids) {
         foreach ($ids as $id) {
-            $inmigrant = self::find($id);
-            $inmigrant->delete();
+            $migrant = self::find($id);
+            $migrant->delete();
 
-            if($inmigrant->file_document)
-                deleteFile($inmigrant->file_document);
+            if($migrant->file_document)
+                deleteFile($migrant->file_document);
         }
     }
 

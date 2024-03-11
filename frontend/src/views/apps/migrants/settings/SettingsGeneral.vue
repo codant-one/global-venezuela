@@ -8,7 +8,7 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  inmigrant: {
+  migrant: {
     type: Object,
     required: false
   }
@@ -32,14 +32,14 @@ watchEffect(fetchData)
 
 async function fetchData() {
 
-  if(props.inmigrant) {
+  if(props.migrant) {
     
-    userDetail.value.name = props.inmigrant.name
-    userDetail.value.last_name = props.inmigrant.last_name
-    userDetail.value.email = props.inmigrant.email
-    userDetail.value.phone = props.inmigrant.phone
-    userDetail.value.gender_id = props.inmigrant.gender_id
-    userDetail.value.birthdate = props.inmigrant.birthdate
+    userDetail.value.name = props.migrant.name
+    userDetail.value.last_name = props.migrant.last_name
+    userDetail.value.email = props.migrant.email
+    userDetail.value.phone = props.migrant.phone
+    userDetail.value.gender_id = props.migrant.gender_id
+    userDetail.value.birthdate = props.migrant.birthdate
   }
 }
 

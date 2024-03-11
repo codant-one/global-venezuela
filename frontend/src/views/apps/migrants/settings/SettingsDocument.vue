@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import {  requiredValidator, phoneValidator } from '@validators'
 
 const props = defineProps({
-  inmigrant: {
+  migrant: {
     type: Object,
     required: false
   }
@@ -26,8 +26,8 @@ watchEffect(fetchData)
 
 async function fetchData() {
 
-  if(props.inmigrant) {
-    documentDetail.value.passport_number = props.inmigrant.passport_number
+  if(props.migrant) {
+    documentDetail.value.passport_number = props.migrant.passport_number
   }
 }
 
