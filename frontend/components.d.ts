@@ -18,6 +18,7 @@ declare module '@vue/runtime-core' {
     AppPricing: typeof import('./src/@core/components/AppPricing.vue')['default']
     AppSearchHeader: typeof import('./src/@core/components/AppSearchHeader.vue')['default']
     AppSelect: typeof import('./src/@core/components/app-form-elements/AppSelect.vue')['default']
+    AppStepper: typeof import('./src/@core/components/AppStepper.vue')['default']
     AppTextarea: typeof import('./src/@core/components/app-form-elements/AppTextarea.vue')['default']
     AppTextField: typeof import('./src/@core/components/app-form-elements/AppTextField.vue')['default']
     BuyNow: typeof import('./src/@core/components/BuyNow.vue')['default']
