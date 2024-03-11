@@ -1,12 +1,294 @@
 <script setup>
 
+import { ref } from "vue"
+import { useInmigrantsStores } from '@/stores/useInmigrants'
+import { useStatesStores } from '@/stores/useStates'
+import { useCitiesStores } from '@/stores/useCities'
+import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
+import { useParishesStores } from '@/stores/useParishes'
+import { useGendersStores } from '@/stores/useGenders'
+import { useCircuitsStores } from '@/stores/useCircuits'
+import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
+import { useCountriesStores } from '@/stores/useCountries'
+import SettingsGeneral from '@/views/apps/inmigrants/settings/SettingsGeneral.vue'
+import SettingsDocument from '@/views/apps/inmigrants/settings/SettingsDocument.vue'
+import SettingsLocation from '@/views/apps/inmigrants/settings/SettingsLocation.vue'
+import SettingsInfoInmigrant from '@/views/apps/inmigrants/settings/SettingsInfoInmigrant.vue'
+
+const inmigrantsStores = useInmigrantsStores()
+const statesStores = useStatesStores()
+const citiesStores = useCitiesStores()
+const municipalitiesStores = useMunicipalitiesStores()
+const parishesStores = useParishesStores()
+const gendersStores = useGendersStores()
+const circuitsStores = useCircuitsStores()
+const communityCouncilsStores = useCommunityCouncilsStores()
+const countriesStores = useCountriesStores()
+const route = useRoute()
+
+const listStates = ref([])
+const listCities = ref([])
+const listMunicipalities = ref([])
+const listParishes = ref([])
+const listGenders = ref([])
+const listCircuits = ref([])
+const listCommunityCouncils = ref([])
+const listCountries = ref([])
+
+const isRequestOngoing = ref(true)
+const isMobile = /Mobi/i.test(navigator.userAgent);
+const activeTab = ref(null)
+
+const inmigrant = ref(null)
+const userDetail = ref(null)
+const documentDetail = ref(null)
+const locationDetail = ref(null)
+
+const tabsData = [
+  {
+    icon: 'mdi-cog',
+    title: isMobile ? '' : 'General',
+  },
+  {
+    icon: 'mdi-account-credit-card-outline',
+    title: isMobile ? '' : 'Documentos',
+  },
+  {
+    icon: 'mdi-map-marker-radius',
+    title: isMobile ? '' : 'Ubicación',
+  },
+  {
+    icon: 'mdi-account-question',
+    title: isMobile ? '' : 'Información del Inmigrante',
+  }
+]
+
+const loadStates = () => {
+  listStates.value = statesStores.getStates
+}
+
+const loadCities = () => {
+  listCities.value = citiesStores.getCities
+}
+
+const loadMunicipalities = () => {
+  listMunicipalities.value = municipalitiesStores.getMunicipalities
+}
+
+const loadParishes = () => {
+  listParishes.value = parishesStores.getParishes
+}
+
+const loadGenders = () => {
+  listGenders.value = gendersStores.getGenders
+}
+
+const loadCircuits = () => {
+  listCircuits.value = circuitsStores.getCircuits
+}
+
+const loadCommunityCouncils = () => {
+  listCommunityCouncils.value = communityCouncilsStores.getCommunityCouncils
+}
+
+const loadCountries = () => {
+  listCountries.value = countriesStores.getCountries
+}
+
+watchEffect(fetchData)
+
+// 👉 Fetch usuarios
+async function fetchData() {
+  isRequestOngoing.value = true
+
+  if(listCommunityCouncils.value.length === 0) {
+    await countriesStores.fetchCountries();
+    await statesStores.fetchStates();
+    await citiesStores.fetchCities();
+    await municipalitiesStores.fetchMunicipalities();
+    await parishesStores.fetchParishes();
+    await gendersStores.fetchGenders();
+    await circuitsStores.fetchCircuits({ limit: -1 });
+    await communityCouncilsStores.fetchCommunityCouncils({ limit: -1 })
+
+    loadCountries()
+    loadStates()
+    loadCities()
+    loadMunicipalities()
+    loadParishes()
+    loadCircuits()
+    loadGenders()
+    loadCommunityCouncils()
+
+    inmigrant.value = await inmigrantsStores.showInmigrant(Number(route.params.id))
+  }
+
+  isRequestOngoing.value = false
+}
+
+
+const uploadGeneral = async (data) => {
+  userDetail.value = data
+  activeTab.value++
+}
+
+const uploadDocument = async (data) => {
+  documentDetail.value = data
+  activeTab.value++
+}
+
+const uploadLocation = async (data) => {
+  locationDetail.value = data
+  activeTab.value++
+}
+
+const uploadInfo = async (infoDetail) => {
+
+  let formData = new FormData()
+
+  formData.append('name', userDetail.value.name)
+  formData.append('last_name', userDetail.value.last_name)
+  formData.append('email', userDetail.value.email)
+  formData.append('phone', userDetail.value.phone)
+  formData.append('gender_id', userDetail.value.gender_id)
+  formData.append('birthdate', userDetail.value.birthdate)
+  formData.append('passport_number', documentDetail.value.passport_number)
+  formData.append('file_document', documentDetail.value.file_document[0])
+  formData.append('parish_id', locationDetail.value.parish_id)
+  formData.append('community_council_id', locationDetail.value.community_council_id)
+  formData.append('address', locationDetail.value.address)
+  formData.append('country_id', locationDetail.value.country_id)
+  formData.append('transient', Number(locationDetail.value.transient))
+  formData.append('resident', Number(locationDetail.value.resident))
+  formData.append('years_in_country', locationDetail.value.years_in_country)
+  formData.append('antecedents', Number(locationDetail.value.antecedents))
+  formData.append('isMarried', Number(locationDetail.value.isMarried))
+  formData.append('has_children', Number(locationDetail.value.has_children))
+  formData.append('children_number', Number(locationDetail.value.name) ? infoDetail.children_number : null)
+
+}
+
+const back = async () => {
+  activeTab.value--
+}
+
 </script>
 
 <template>
-    <section>
-        editar
-    </section>
+  <VRow>
+    <VDialog
+        v-model="isRequestOngoing"
+        width="300"
+        persistent>
+          
+        <VCard
+          color="primary"
+          width="300">
+            
+          <VCardText class="pt-3">
+            Cargando
+
+            <VProgressLinear
+              indeterminate
+              color="white"
+              class="mb-0"/>
+          </VCardText>
+        </VCard>
+      </VDialog>
+
+    <VCol
+      cols="12"
+      md="4"
+    >
+      <h6 class="text-h6 mb-4">
+        ACTUALIZAR INMIGRANTE
+      </h6>
+
+      <VTabs
+        v-model="activeTab"
+        :direction="isMobile ? 'horizontal' : 'vertical'"
+        class="v-tabs-pill disable-tab-transition"
+        :stacked="isMobile ? true : false"
+        disabled
+      >
+        <VTab
+          v-for="(tabItem, index) in tabsData"
+          :key="index"
+          :prepend-icon="tabItem.icon"
+        >
+          {{ tabItem.title }}
+        </VTab>
+      </VTabs>
+    </VCol>
+
+    <VCol
+      cols="12"
+      md="8"
+    >
+      <VWindow
+        v-if="listCircuits.length > 0"
+        v-model="activeTab"
+        class="disable-tab-transition"
+        :touch="false"
+      >
+        <VWindowItem>
+          <SettingsGeneral 
+            :inmigrant="inmigrant"
+            :genders="listGenders"
+            @submit="uploadGeneral"
+          />
+        </VWindowItem>
+
+        <VWindowItem>
+          <SettingsDocument 
+            :inmigrant="inmigrant"
+            @back="back"
+            @submit="uploadDocument"
+          />
+        </VWindowItem>
+
+        <VWindowItem>
+          <SettingsLocation
+            :inmigrant="inmigrant"
+            :states="listStates"
+            :municipalities="listMunicipalities"
+            :parishes="listParishes"
+            :circuits="listCircuits"
+            :communityCouncils="listCommunityCouncils"
+            @back="back"
+            @submit="uploadLocation"/>
+        </VWindowItem>
+
+        <VWindowItem>
+          <SettingsInfoInmigrant
+            :inmigrant="inmigrant"
+            :countries="listCountries"
+            @back="back"
+            @submit="uploadInfo"
+          />
+        </VWindowItem>
+
+      </VWindow>
+    </VCol>
+  </VRow>
 </template>
+
+<style lang="scss">
+
+    .v-btn--stacked.v-btn--size-default {
+      padding: 1.5% !important
+    }
+
+    .v-btn--disabled {
+      opacity: 1 !important;
+    }
+    
+    .my-class {
+      padding: 1.25rem;
+      border-radius: 0.375rem;
+      background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+    }
+</style>
 
 <route lang="yaml">
     meta:

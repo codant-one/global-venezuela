@@ -420,7 +420,7 @@ const closeUserEditDialog = ()=>{
         </VCard>
       </VCol>
 
-      <!-- DIALOGO DE EDITAR INFORMACION PERSONAL -->
+      <!-- DIALOGO DE EDITAR Información PERSONAL -->
       <VDialog
         v-model="isUserEditDialog"
         max-width="800"

@@ -2,7 +2,6 @@
 
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { requiredValidator } from '@validators'
-import { avatarText } from '@/@core/utils/formatters'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 
 const props = defineProps({
