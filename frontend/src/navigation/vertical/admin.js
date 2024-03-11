@@ -1,5 +1,9 @@
 export default [
-  { heading: 'MÓDULOS' },
+  { 
+    heading: 'MÓDULOS',
+    action: 'ver' , 
+    subject: 'inmigrantes' 
+  },
   { 
     title: 'Roles', 
     icon: { icon: 'mdi-account-lock-open' },
@@ -19,20 +23,20 @@ export default [
     icon: { icon: 'mdi-home-group' },
     to: 'dashboard-admin-circuits', 
     action: 'ver', 
-    subject: 'usuarios'
+    subject: 'circuitos'
   },
   { 
     title: 'Consejos Comunales', 
     icon: { icon: 'mdi-home-account' },
     to: 'dashboard-admin-community-councils', 
     action: 'ver', 
-    subject: 'usuarios'
+    subject: 'consejos-comunales'
   },
   { 
     title: 'Inmigrantes', 
     icon: { icon: 'mdi-target-account' },
     to: 'dashboard-admin-inmigrants', 
     action: 'ver', 
-    subject: 'usuarios'
+    subject: 'inmigrantes'
   }
 ]

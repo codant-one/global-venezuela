@@ -72,7 +72,7 @@ class InmigrantController extends Controller
     {
         try {
 
-            $inmigrant = Inmigrant::with(['community_councils'])->find($id);
+            $inmigrant = Inmigrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])->find($id);
         
             if (!$inmigrant)
                 return response()->json([

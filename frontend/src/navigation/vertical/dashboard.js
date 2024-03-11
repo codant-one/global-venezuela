@@ -1,5 +1,9 @@
 export default [
-    { heading: 'Dashboard' },
+    { 
+        heading: 'Dashboard',
+        action: 'ver' , 
+        subject: 'dashboard'
+    },
     {
         title: 'Inicio', 
         icon: { icon: 'tabler-home' },

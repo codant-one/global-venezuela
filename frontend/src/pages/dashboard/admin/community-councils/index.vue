@@ -85,7 +85,7 @@ async function fetchData() {
     await statesStores.fetchStates();
     await municipalitiesStores.fetchMunicipalities();
     await parishesStores.fetchParishes();
-    await circuitsStores.fetchCircuits();
+    await circuitsStores.fetchCircuits({ limit: -1 });
 
     loadStates()
     loadMunicipalities()
