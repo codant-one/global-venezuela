@@ -8,11 +8,11 @@ use App\Models\Inmigrant;
 
 class ReportController extends Controller
 {
-    public function Report_one(Request $request)
+    public function reports(Request $request)
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Inmigrant::with(['country', 'user', 'gender', 'community_council', 'parish.municipality.state'])
+        $query = Inmigrant::with(['country', 'user', 'gender', 'community_council.circuit', 'parish.municipality.state'])
                         ->where('user_id', auth()->user()->id)
                         ->applyFilters(
                             $request->only([
@@ -28,8 +28,9 @@ class ReportController extends Controller
                                 'orderByField',
                                 'orderBy'
                             ])
-                            );
-                        $count = $query->where('user_id', auth()->user()->id)
+                        );
+
+        $count = $query->where('user_id', auth()->user()->id)
                         ->applyFilters(
                             $request->only([
                                 'search',
@@ -46,14 +47,14 @@ class ReportController extends Controller
                             ])
                         )->count();
 
-                        $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
+        $inmigrants = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
-                        return response()->json([
-                            'success' => true,
-                            'data' => [ 
-                                'inmigrants' => $inmigrants,
-                                'inmigrantsTotalCount' => $count
-                            ]
-                        ], 200);
+        return response()->json([
+            'success' => true,
+            'data' => [ 
+            'inmigrants' => $inmigrants,
+            'inmigrantsTotalCount' => $count
+            ]
+        ], 200);
     }
 }

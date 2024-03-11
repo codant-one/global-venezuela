@@ -51,7 +51,7 @@ class Inmigrant extends Model
 
     public function scopeWhereMunicipality($query, $search) {
         $query->whereHas('parish.municipality', function ($q) use ($search) {
-            $q->where('state_id', $search);
+            $q->where('municipality_id', $search);
         });
     }
 
@@ -103,8 +103,6 @@ class Inmigrant extends Model
             $orderBy = $filters->get('orderBy') ? $filters->get('orderBy') : 'asc';
             $query->whereOrder($field, $orderBy);
         }
-
-        
       
     }
 

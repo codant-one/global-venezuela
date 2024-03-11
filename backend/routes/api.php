@@ -106,13 +106,12 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
     });
 
     //Reports
-    Route::get('/report',[ReportController::class, 'Report_one']);
+    Route::get('/reports',[ReportController::class, 'reports']);
+
     //Inmigrants
     Route::group(['prefix' => 'inmigrants'], function () {
         Route::post('delete', [InmigrantController::class, 'delete']);
     });
-
-
 });
 
 //Public Endpoints

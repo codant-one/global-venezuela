@@ -5,16 +5,23 @@ export default [
       subject: 'a'
     },
     { 
-      title: 'reporte 1', 
+      title: 'Por país de origen', 
       icon: { icon: 'mdi-chart-bar' },
-      to: 'dashboard-admin-roles', 
+      to: 'dashboard-reports-countries', 
       action: 'ver' , 
       subject: 'a'
     },
     { 
-      title: 'reporte 2', 
+      title: 'Por ubicación', 
       icon: { icon: 'mdi-chart-scatter-plot' },
-      to: 'dashboard-admin-users', 
+      to: 'dashboard-reports-locations',
+      action: 'ver', 
+      subject: 'b'
+    },
+    { 
+      title: 'Por documentación', 
+      icon: { icon: 'mdi-chart-bar-stacked' },
+      to: 'dashboard-reports-documentations',
       action: 'ver', 
       subject: 'b'
     }
