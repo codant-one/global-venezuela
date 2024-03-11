@@ -70,40 +70,33 @@ class Inmigrant extends Model
             $query->where('country_id', $filters->get('country_id'));
         }
 
-        if($filters->get('state_id')!==null){
+        if($filters->get('state_id') !== null) {
             $query->whereState($filters->get('state_id'));
         }
 
-        if($filters->get('municipality_id')!==null){
+        if($filters->get('municipality_id') !== null) {
             $query->whereMunicipality($filters->get('municipality_id'));
         }
 
-        if($filters->get('parish_id')!==null){
+        if($filters->get('parish_id') !== null) {
             $query->where('parish_id',$filters->get('parish_id'));
         }
 
-        if($filters->get('passport_status')!=null)
-        {
+        if($filters->get('passport_status') !== null) {
             $query->where('passport_status', $filters->get('passport_status'));
         }
 
-        if($filters->get('antecedents')!=null)
-        {
+        if($filters->get('antecedents') !== null) {
             $query->where('antecedents', $filters->get('antecedents'));
         }
 
-        if($filters->get('transient')!=null)
-        {
+        if($filters->get('transient') !== null) {
             $query->where('transient', $filters->get('transient'));
         }
 
-        if($filters->get('resident')!=null)
-        {
+        if($filters->get('resident') !== null) {
             $query->where('resident', $filters->get('resident'));
         }
-
-
-
 
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
             $field = $filters->get('orderByField') ? $filters->get('orderByField') : 'created_at';
@@ -136,6 +129,7 @@ class Inmigrant extends Model
             'email' => $request->email,
             'birthdate' => $request->birthdate,
             'passport_number' => $request->passport_number,
+            'passport_status' => $request->passport_status,
             'transient' => $request->transient,
             'resident' => $request->resident,
             'years_in_country' => $request->years_in_country,
@@ -161,6 +155,7 @@ class Inmigrant extends Model
             'email' => $request->email,
             'birthdate' => $request->birthdate,
             'passport_number' => $request->passport_number,
+            'passport_status' => $request->passport_status,
             'transient' => $request->transient,
             'resident' => $request->resident,
             'years_in_country' => $request->years_in_country,

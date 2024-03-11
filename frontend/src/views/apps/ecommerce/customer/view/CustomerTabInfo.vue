@@ -14,6 +14,7 @@ async function fetchData() {
     props.customerData.resident = props.customerData.resident ? '1' : '0'
     props.customerData.antecedents = props.customerData.antecedents ? '1' : '0'
     props.customerData.isMarried = props.customerData.isMarried ? '1' : '0'
+    props.customerData.passport_status = props.customerData.passport_status ? '1' : '0'
     props.customerData.has_children = props.customerData.has_children ? '1' : '0'
 }
 
@@ -36,78 +37,90 @@ async function fetchData() {
                     </thead>
                     <tbody>  
                         <tr>
-                        <td width="400px">¿Posee cédula de transeúnte?</td>
-                        <td colspan="2">
-                            <VRadioGroup v-model="props.customerData.transient" inline class="py-2" readonly>
-                            <VRadio value="1"/>
-                            <VSpacer />
-                            <VRadio value="0" class="radio-custom"/>
-                            </VRadioGroup>
-                        </td>
-                        <td></td>
-                        </tr>
-
-                        <tr>
-                        <td width="400px">¿Posee cédula de residencia?</td>
-                        <td colspan="2">
-                            <VRadioGroup v-model="props.customerData.resident" inline class="py-2" readonly>
+                            <td width="400px">¿Posee cédula de transeúnte?</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.transient" inline class="py-2" readonly>
                                 <VRadio value="1"/>
                                 <VSpacer />
                                 <VRadio value="0" class="radio-custom"/>
-                            </VRadioGroup>
-                        </td>
-                        <td></td>
+                                </VRadioGroup>
+                            </td>
+                            <td></td>
                         </tr>
 
                         <tr>
-                        <td width="400px">¿Cuantos años tiene el país?</td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <span class="text-body-2">
-                                {{ props.customerData.years_in_country }}
-                            </span>
-                        </td>
+                            <td width="400px">¿Posee cédula de residencia?</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.resident" inline class="py-2" readonly>
+                                    <VRadio value="1"/>
+                                    <VSpacer />
+                                    <VRadio value="0" class="radio-custom"/>
+                                </VRadioGroup>
+                            </td>
+                            <td></td>
                         </tr>
 
                         <tr>
-                        <td width="400px">¿Posee antecedentes penales?</td>
-                        <td colspan="2">
-                            <VRadioGroup v-model="props.customerData.antecedents" inline class="py-2" readonly>
-                            <VRadio value="1"/>
-                            <VSpacer />
-                            <VRadio value="0" class="radio-custom"/>
-                            </VRadioGroup>
-                        </td>
-                        <td></td>
+                            <td width="400px">¿Tiene el pasaporte vigente</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.passport_status" inline class="py-2" readonly>
+                                <VRadio value="1"/>
+                                <VSpacer />
+                                <VRadio value="0" class="radio-custom"/>
+                                </VRadioGroup>
+                            </td>
+                            <td></td>
                         </tr>
 
                         <tr>
-                        <td width="400px">¿Está casado/a con un venezolano/a?</td>
-                        <td colspan="2">
-                            <VRadioGroup v-model="props.customerData.isMarried" inline class="py-2" readonly>
-                            <VRadio value="1"/>
-                            <VSpacer />
-                            <VRadio value="0" class="radio-custom"/>
-                            </VRadioGroup>
-                        </td>
-                        <td></td>
+                            <td width="400px">¿Cuantos años tiene el país?</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <span class="text-body-2">
+                                    {{ props.customerData.years_in_country }}
+                                </span>
+                            </td>
                         </tr>
 
                         <tr>
-                        <td width="400px">¿Tiene hijos con nacionalidad venezolana?</td>
-                        <td colspan="2">
-                            <VRadioGroup v-model="props.customerData.has_children" inline class="py-2" readonly>
-                            <VRadio value="1"/>
-                            <VSpacer />
-                            <VRadio value="0" class="radio-custom"/>
-                            </VRadioGroup>
-                        </td>
-                        <td v-if="props.customerData.has_children === '1'">
-                            <span class="text-body-2">
-                                {{ props.customerData.children_number }}
-                            </span>
-                        </td>
+                            <td width="400px">¿Posee antecedentes penales?</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.antecedents" inline class="py-2" readonly>
+                                <VRadio value="1"/>
+                                <VSpacer />
+                                <VRadio value="0" class="radio-custom"/>
+                                </VRadioGroup>
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td width="400px">¿Está casado/a con un venezolano/a?</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.isMarried" inline class="py-2" readonly>
+                                <VRadio value="1"/>
+                                <VSpacer />
+                                <VRadio value="0" class="radio-custom"/>
+                                </VRadioGroup>
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td width="400px">¿Tiene hijos con nacionalidad venezolana?</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.has_children" inline class="py-2" readonly>
+                                <VRadio value="1"/>
+                                <VSpacer />
+                                <VRadio value="0" class="radio-custom"/>
+                                </VRadioGroup>
+                            </td>
+                            <td v-if="props.customerData.has_children === '1'">
+                                <span class="text-body-2">
+                                    {{ props.customerData.children_number }}
+                                </span>
+                            </td>
                         </tr>
                     </tbody>
                     </VTable>

@@ -31,6 +31,7 @@ const infoDetail = ref({
     antecedents: '0',
     isMarried: '0',
     has_children: '0',
+    passport_status: '0',
     children_number: 1
 })
 
@@ -45,6 +46,7 @@ async function fetchData() {
     infoDetail.value.resident = props.inmigrant.resident.toString()
     infoDetail.value.years_in_country = props.inmigrant.years_in_country
     infoDetail.value.antecedents = props.inmigrant.antecedents.toString()
+    infoDetail.value.passport_status = props.inmigrant.passport_status.toString()
     infoDetail.value.isMarried = props.inmigrant.isMarried.toString()
     infoDetail.value.has_children = props.inmigrant.has_children.toString()
     infoDetail.value.children_number = props.inmigrant.children_number
@@ -161,6 +163,18 @@ const onSubmit = () => {
                   <td width="400px">¿Posee cédula de residencia?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.resident" inline class="py-2">
+                      <VRadio value="1"/>
+                      <VSpacer />
+                      <VRadio value="0" class="radio-custom"/>
+                    </VRadioGroup>
+                  </td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td width="400px">¿Tiene el pasaporte vigente?</td>
+                  <td colspan="2">
+                    <VRadioGroup v-model="infoDetail.passport_status" inline class="py-2">
                       <VRadio value="1"/>
                       <VSpacer />
                       <VRadio value="0" class="radio-custom"/>
