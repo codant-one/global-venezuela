@@ -34,12 +34,12 @@ const items = [
   {
     title: 'Voluntarios',
     subtitle: 'Tipos',
-    icon: 'tabler-smart-home',
+    icon: 'tabler-heart-handshake',
   },
   {
     title: 'Temas',
     subtitle: 'Selecciona el tema',
-    icon: 'tabler-users',
+    icon: 'tabler-book',
   },
   {
     title: 'Información',
