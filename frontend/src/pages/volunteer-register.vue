@@ -1,4 +1,11 @@
 <script setup>
+
+import { useThemesStores } from '@/stores/useThemes'
+import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
+import { useCircuitsStores } from '@/stores/useCircuits'
+import { useStatesStores } from '@/stores/useStates'
+import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
+import { useParishesStores } from '@/stores/useParishes'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import registerMultistepIllustrationDark from '@images/logo_slogan_register.png'
 import registerMultistepIllustrationLight from '@images/logo_slogan_register.png'
@@ -11,6 +18,23 @@ const currentStep = ref(0)
 const isPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
+
+const themesStores = useThemesStores()
+const circuitsStores = useCircuitsStores()
+const statesStores = useStatesStores()
+const municipalitiesStores = useMunicipalitiesStores()
+const parishesStores = useParishesStores()
+
+const isRequestOngoing = ref(true)
+
+const listThemes = ref([])
+const theme_id = ref(null)
+
+const state_id = ref(null)
+const listStates = ref([])
+const listMunicipalities = ref([])
+const listParishes = ref([])
+const listCircuits = ref([])
 
 const radioContent = [
   {
@@ -27,7 +51,7 @@ const radioContent = [
          size: '100',
       },
       title: 'Estatal',
-      value: '99'
+      value: '1'
   },
   {
       icon: {
@@ -35,7 +59,7 @@ const radioContent = [
          size: '100',
       },
       title: 'Municipal',
-      value: '499'
+      value: '2'
   },
   {
       icon: {
@@ -43,7 +67,7 @@ const radioContent = [
          size: '100',
       },
       title: 'Por Circuitos',
-      value: '499'
+      value: '3'
   }
 ]
 
@@ -79,12 +103,56 @@ const form = ref({
   landmark: '',
   city: '',
   state: null,
-  selectedPlan: '0',
+  type: '0',
   cardNumber: '',
   cardName: '',
   expiryDate: '',
   cvv: '',
 })
+
+const loadThemes = () => {
+  listThemes.value = themesStores.getThemes
+}
+
+
+const loadStates = () => {
+  listStates.value = statesStores.getStates
+}
+
+const loadMunicipalities = () => {
+  listMunicipalities.value = municipalitiesStores.getMunicipalities
+}
+
+const loadParishes = () => {
+  listParishes.value = parishesStores.getParishes
+}
+
+const loadCircuits = () => {
+  listCircuits.value = circuitsStores.getCircuits
+}
+
+watchEffect(fetchData)
+
+async function fetchData() {
+
+   isRequestOngoing.value = true
+   
+   if(listParishes.value.length === 0) {
+      await themesStores.fetchThemes();
+      await statesStores.fetchStates();
+      await municipalitiesStores.fetchMunicipalities();
+      await parishesStores.fetchParishes();
+      await circuitsStores.fetchCircuits({ limit: -1 });
+
+      loadStates()
+      loadMunicipalities()
+      loadParishes()
+      loadCircuits()
+      loadThemes()
+   }
+
+   isRequestOngoing.value = false
+}
 
 const onSubmit = () => {
 
@@ -98,6 +166,24 @@ const onSubmit = () => {
     no-gutters
     class="auth-wrapper"
   >
+   <VDialog
+      v-model="isRequestOngoing"
+      width="300"
+      persistent>
+          
+      <VCard
+         color="primary"
+         width="300">
+            
+         <VCardText class="pt-3">
+            Cargando
+            <VProgressLinear
+              indeterminate
+              color="white"
+              class="mb-0"/>
+          </VCardText>
+        </VCard>
+   </VDialog>
     <VCol
       md="4"
       class="d-none d-md-flex bg-gray"
@@ -148,7 +234,7 @@ const onSubmit = () => {
                </p>
 
                <CustomRadiosWithIcon
-                  v-model:selected-radio="form.selectedPlan"
+                  v-model:selected-radio="form.type"
                   :radio-content="radioContent"
                   :grid-column="{ sm: '6', cols: '12' }"
                />

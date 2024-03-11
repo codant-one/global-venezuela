@@ -27,7 +27,8 @@ use App\Http\Controllers\{
     InmigrantController,
     VolunteerController,
     ReportController,
-    DashboardController
+    DashboardController,
+    ThemeController
 };
 
 /*
@@ -68,7 +69,6 @@ Route::group(['middleware' => ['cors','jwt'] ], function(){
     Route::apiResource('users', UsersController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
-    Route::apiResource('circuits', CircuitController::class);
     Route::apiResource('community-councils', CommunityCouncilController::class);
     Route::apiResource('inmigrants', InmigrantController::class);
 
@@ -126,7 +126,8 @@ Route::apiResource('municipalities', MunicipalityController::class);
 Route::apiResource('parishes', ParishController::class);
 Route::apiResource('states', StateController::class);
 Route::apiResource('volunteers', VolunteerController::class);
-
+Route::apiResource('themes', ThemeController::class);
+Route::apiResource('circuits', CircuitController::class);
 //PROXY
 Route::get('/proxy-image',[ProxyController::class, 'getImage']);
 Route::get('/proxy-document',[ProxyController::class, 'getDocument']);
