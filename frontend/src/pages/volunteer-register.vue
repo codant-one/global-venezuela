@@ -16,7 +16,7 @@ const radioContent = [
   {
       icon: {
          icon: 'mdi-cash-multiple',
-         size: '40',
+         size: '100',
       },
       title: 'Nacional',
       value: '0'
@@ -24,7 +24,7 @@ const radioContent = [
   {
       icon: {
          icon: 'mdi-cash-multiple',
-         size: '40',
+         size: '100',
       },
       title: 'Estatal',
       value: '99'
@@ -32,7 +32,7 @@ const radioContent = [
   {
       icon: {
          icon: 'mdi-cash-multiple',
-         size: '40',
+         size: '100',
       },
       title: 'Municipal',
       value: '499'
@@ -40,7 +40,7 @@ const radioContent = [
   {
       icon: {
          icon: 'mdi-cash-multiple',
-         size: '40',
+         size: '100',
       },
       title: 'Por Circuitos',
       value: '499'
