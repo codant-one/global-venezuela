@@ -40,6 +40,7 @@ const props = defineProps({
 const refNav = ref()
 const { width: windowWidth } = useWindowSize()
 const isHovered = useElementHover(refNav)
+const titleAPP = ref(import.meta.env.VITE_APP_TITLE)
 
 provide(injectionKeyIsVerticalNavHovered, isHovered)
 
@@ -101,14 +102,14 @@ const closeAll = () =>{
           to="/info"
           class="app-logo d-flex align-center gap-x-1 app-title-wrapper"
         >
-        <VNodeRenderer :nodes="(hideTitleAndIcon) ? config.app.logoWhite : config.app.logoFull" />
+        <!-- <VNodeRenderer :nodes="(hideTitleAndIcon) ? config.app.logoWhite : config.app.logoFull" /> -->
 
           <Transition name="vertical-nav-app-title">
             <h4
               v-show="!hideTitleAndIcon"
               class="app-title font-weight-bold leading-normal"
             >
-            VENEZUELA GLOBAL
+            {{ titleAPP }}
             </h4>
           </Transition>
         </RouterLink>

@@ -6,7 +6,7 @@
         <meta name="x-apple-disable-message-reformatting">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta content="telephone=no" name="format-detection">
-        <title>E-mails Venezuela Global</title>
+        <title>E-mails {{ env('APP_TITLE') }}</title>
 
         <style type="text/css">
             #outlook a {

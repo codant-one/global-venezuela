@@ -108,7 +108,7 @@ class UsersController extends Controller
                 'text' => 'Tu cuenta no está verificada. Confirma tu cuenta con los pasos a seguir para verificarla.',
                 'buttonLink' =>  env('APP_DOMAIN').'/register-confirm?token=' . $registerConfirm['token'],
                 'buttonText' => 'Confirmar',
-                'subject' => 'Bienvenido a VENEZUELA GLOBAL',
+                'subject' => 'Bienvenido a '.env('APP_TITLE'),
             ];
             
             $this->sendMail($user->id, $info); 

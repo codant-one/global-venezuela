@@ -364,7 +364,7 @@ const blobToBase64 = blob => {
         <VCardText>
           <p>Para poder utilizar nuestro panel con 
             normalidad, necesitamos que la primera vez que ingreses a él, nos rellenes el formulario con tus datos. Para que luego puedas utilizar todas las funciones que tenemos preparadas para ti.</p>
-          <p>¡Bienvenid@ a VENEZUELA GLOBAL! Cualquier duda, puedes ponerte en contacto con nosotros 📩.</p>
+          <p>¡Bienvenid@ a {{ import.meta.env.VITE_APP_TITLE }} Cualquier duda, puedes ponerte en contacto con nosotros 📩.</p>
         </VCardText>
       </VCard>
       <VDivider />

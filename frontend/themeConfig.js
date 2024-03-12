@@ -12,7 +12,7 @@ import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layo
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: 'VENEZUELA GLOBAL',
+    title: import.meta.env.VITE_APP_TITLE,
     logo: h('div', { innerHTML: logo, style: 'line-height:0; color: rgb(var(--v-global-theme-primary))' }),
     logoFull: h('img', { src: logoFull, style: 'width: 40px' }),
     logoSlogan: h('img', { src: logoSlogan, style: 'width: 100%' }),
