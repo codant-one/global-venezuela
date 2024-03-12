@@ -7,21 +7,21 @@ export default [
     { 
       title: 'Estatal', 
       icon: { icon: 'mdi-map-marker-radius' },
-      to: 'dashboard-reports-countries', 
+      to: 'dashboard-volunteers-states', 
       action: 'ver' , 
       subject: 'voluntarios'
     },
     { 
       title: 'Municipal', 
       icon: { icon: 'mdi-city' },
-      to: 'dashboard-reports-locations',
+      to: 'dashboard-volunteers-municipalities',
       action: 'ver', 
       subject: 'voluntarios'
     },
     { 
       title: 'Por Circuitos Comunales', 
       icon: { icon: 'mdi-crosshairs-gps' },
-      to: 'dashboard-reports-documentations',
+      to: 'dashboard-volunteers-circuits',
       action: 'ver', 
       subject: 'voluntarios'
     }

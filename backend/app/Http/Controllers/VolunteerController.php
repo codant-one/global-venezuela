@@ -36,8 +36,8 @@ class VolunteerController extends Controller
         return response()->json([
             'success' => true,
             'data' => [ 
-                'Volunteers' => $volunteers,
-                'VolunteersTotalCount' => $count
+                'volunteers' => $volunteers,
+                'volunteersTotalCount' => $count
             ]
         ], 200);
     }
