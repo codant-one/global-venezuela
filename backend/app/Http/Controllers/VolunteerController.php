@@ -42,8 +42,6 @@ class VolunteerController extends Controller
         ], 200);
     }
 
-    
-
     public function store(Request $request): JsonResponse
     {
         try {
@@ -157,6 +155,60 @@ class VolunteerController extends Controller
         }
     
     }
+
+    public function register(Request $request): JsonResponse
+    {
+        try {
+
+            Volunteer::registerVolunteer($request);
+
+            return response()->json([
+                'success' => true
+            ]);
+
+        } catch(\Illuminate\Database\QueryException $ex) {
+            return response()->json([
+                'success' => false,
+                'message' => 'database_error',
+                'exception' => $ex->getMessage()
+            ], 500);
+        }
+    }
+
+    private function sendMail($id, $info ){
+
+        $user = User::find($id);
+        $response = [];
+
+        $data = [
+            'title' => $info['title']?? null,
+            'user' => $user->name . ' ' . $user->last_name,
+            'text' => $info['text'] ?? null,
+            'username' => $info['username'] ?? null,
+            'password' => $info['password'] ?? null,
+            'buttonLink' =>  $info['buttonLink'] ?? null,
+            'buttonText' =>  $info['buttonText'] ?? null
+        ];
+
+        $email = $user->email;
+        $subject = $info['subject'];
+        
+        try {
+            \Mail::send($info['email'], $data, function ($message) use ($email, $subject) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                    $message->to($email)->subject($subject);
+            });
+
+            $response['success'] = true;
+            $response['message'] = "Tu solicitud se ha procesado satisfactoriamente.";
+        } catch (\Exception $e){
+            $response['success'] = false;
+            $response['message'] = "Ocurrió un error, no se pudo enviar el correo electrónico. ".$e;
+        }        
+
+        return $response;
+
+    } 
 
 
 }

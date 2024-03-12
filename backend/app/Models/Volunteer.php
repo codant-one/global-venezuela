@@ -71,19 +71,18 @@ class Volunteer extends Model
 
     /**** Public methods ****/
     public static function createVolunteer($request) {
-        $circuit = self::create([
+        $volunteer = self::create([
             'theme_id' => $request->theme_id,
             'state_id' => $request->state_id,
             'municipality_id'=>$request->municipality_id,
             'circuit_id' => $request->circuit_id,
             'name' => $request->name,
-            'last_name'=> $request->last_name,
             'document' => $request->document,
             'email' => $request->email,
             'phone' => $request->phone 
         ]);
 
-        return $circuit;
+        return $volunteer;
     }
 
     public static function updateVolunteer($request, $volunteer) {
@@ -93,11 +92,43 @@ class Volunteer extends Model
             'municipality_id'=>$request->municipality_id,
             'circuit_id' => $request->circuit_id,
             'name' => $request->name,
-            'last_name'=> $request->last_name,
             'document' => $request->document,
             'email' => $request->email,
             'phone' => $request->phone 
         ]);
+
+        return $volunteer;
+    }
+
+    public static function registerVolunteer($request) {
+
+        if($request->responsible['name'] !== null) {
+            self::create([
+                'theme_id' => $request->theme_id,
+                'state_id' => $request->type === '1' ? $request->state_id : null,
+                'municipality_id' => $request->type === '2' ? $request->municipality_id : null,
+                'circuit_id' => $request->type === '3' ? $request->circuit_id : null,
+                'isResponsible' => 1,
+                'name' => $request->responsible['name'],
+                'document' => $request->responsible['document'],
+                'email' => $request->responsible['email'],
+                'phone' => $request->responsible['phone'] 
+            ]);
+        }
+
+        foreach($request->form as $volunteer){
+            self::create([
+                'theme_id' => $request->theme_id,
+                'state_id' => $request->type === '1' ? $request->state_id : null,
+                'municipality_id' => $request->type === '2' ? $request->municipality_id : null,
+                'circuit_id' => $request->type === '3' ? $request->circuit_id : null,
+                'isResponsible' => 0,
+                'name' => $volunteer['name'],
+                'document' => $volunteer['document'],
+                'email' => $volunteer['email'],
+                'phone' => $volunteer['phone'] 
+            ]);
+        }
 
         return $volunteer;
     }

@@ -1,11 +1,8 @@
 <script setup>
 
 import { emailValidator, requiredValidator, phoneValidator } from '@/@core/utils/validators'
-import { useThemesStores } from '@/stores/useThemes'
-import { useCircuitsStores } from '@/stores/useCircuits'
-import { useStatesStores } from '@/stores/useStates'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
+import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
+import { useVolunteersStores } from '@/stores/useVolunteers'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import background from '@images/volunteer-people.jpg'
 import registerMultistepIllustrationDark from '@images/volunteer-logo-2.png'
@@ -18,11 +15,8 @@ const registerMultistepBg = useGenerateImageVariant(registerMultistepBgLight, re
 const currentStep = ref(0)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
 
-const themesStores = useThemesStores()
-const circuitsStores = useCircuitsStores()
-const statesStores = useStatesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
+const miscellaneousStores = useMiscellaneousStores()
+const volunteersStores = useVolunteersStores()
 
 const isRequestOngoing = ref(true)
 
@@ -38,15 +32,18 @@ const listMunicipalitiesByStates = ref([])
 const listParishesByMunicipalities = ref([])
 const listCircuitsByParishes = ref([])
 
-const state_id = ref()
-const stateOld_id = ref('')
-const municipality_id = ref()
-const municipalityOld_id = ref('')
-const parish_id = ref()
-const parishOld_id = ref('')
-const circuit_id = ref()
-const circuitOld_id = ref('')
+const state_id = ref(null)
+const stateOld_id = ref(null)
+const municipality_id = ref(null)
+const municipalityOld_id = ref(null)
+const parish_id = ref(null)
+const parishOld_id = ref(null)
+const circuit_id = ref(null)
+const circuitOld_id = ref(null)
 
+const isTonalSnackbarVisible = ref(false)
+const message = ref('')
+const color = ref('')
 const isMobile = /Mobi/i.test(navigator.userAgent);
 
 const radioContent = [
@@ -104,41 +101,27 @@ const items = [
 
 const isFormValid = ref(false)
 const refForm = ref()
-const panel = ref([0, 1, 2, 3, 4, 5, 6, 7])
+const panel = ref([0])
 
 const type = ref('1')
 const form = ref([
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''},
-  { name: '', document: '', phone: null, email: ''}
+  { name: null, document: null, phone: null, email: null},
+  { name: null, document: null, phone: null, email: null},
+  { name: null, document: null, phone: null, email: null},
+  { name: null, document: null, phone: null, email: null},
+  { name: null, document: null, phone: null, email: null},
+  { name: null, document: null, phone: null, email: null},
+  { name: null, document: null, phone: null, email: null}
 ])
 
-const responsible = ref({ name: '', document: '', phone: null, email: ''})
+const responsible = ref({ name: null, document: null, phone: null, email: null })
 
-const loadThemes = () => {
-  listThemes.value = themesStores.getThemes
-}
-
-
-const loadStates = () => {
-  listStates.value = statesStores.getStates
-}
-
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
-}
-
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
-}
-
-const loadCircuits = () => {
-  listCircuits.value = circuitsStores.getCircuits
+const loadData = () => {
+  listThemes.value = miscellaneousStores.getData.themes
+  listStates.value = miscellaneousStores.getData.states
+  listCircuits.value = miscellaneousStores.getData.circuits
+  listMunicipalities.value = miscellaneousStores.getData.municipalities
+  listParishes.value = miscellaneousStores.getData.parishes
 }
 
 watchEffect(fetchData)
@@ -148,17 +131,8 @@ async function fetchData() {
    isRequestOngoing.value = true
    
    if(listParishes.value.length === 0) {
-      await themesStores.fetchThemes();
-      await statesStores.fetchStates();
-      await municipalitiesStores.fetchMunicipalities();
-      await parishesStores.fetchParishes();
-      await circuitsStores.fetchCircuits({ limit: -1 });
-
-      loadStates()
-      loadMunicipalities()
-      loadParishes()
-      loadCircuits()
-      loadThemes()
+      await miscellaneousStores.fetchData();
+      loadData()
    }
 
    isRequestOngoing.value = false
@@ -195,7 +169,7 @@ const selectState = state => {
   if (state) {
     let _state = listStates.value.find(item => item.name === state)
     state_id.value = _state.name
- 
+    stateOld_id.value = _state.id
     municipality_id.value = ''
 
     listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
@@ -206,7 +180,7 @@ const selectMunicipalities = municipality => {
   if (municipality) {
     let _municipality = listMunicipalities.value.find(item => item.id === municipality)
     municipality_id.value = _municipality.name
- 
+    municipalityOld_id.value = _municipality.id
     parish_id.value = ''
 
     listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
@@ -218,7 +192,7 @@ const selectParishes = parish => {
   if (parish) {
     let _parish = listParishes.value.find(item => item.id === parish)
     parish_id.value = _parish.name
- 
+    parishOld_id.value = _parish.id
     circuit_id.value = ''
 
     listCircuitsByParishes.value = listCircuits.value.filter(item => item.parish_id === _parish.id)
@@ -227,6 +201,8 @@ const selectParishes = parish => {
 }
 
 const onSubmit = () => {
+
+  panel.value = [0, 1, 2, 3, 4, 5, 6, 7]
 
   refForm.value?.validate().then(({ valid }) => {
     if (currentStep.value === 0) {
@@ -240,7 +216,40 @@ const onSubmit = () => {
     } else if (valid && currentStep.value === 1) {
       currentStep.value++
     } else if (valid && currentStep.value === 2) {
-        console.log('terminamos')
+
+      let data = {
+        responsible: responsible.value,
+        form: form.value,
+        type: type.value,
+        theme_id: theme_id.value,
+        state_id: stateOld_id.value,
+        municipality_id: municipalityOld_id.value,
+        circuit_id: circuit_id.value
+      }
+
+      volunteersStores.register(data)
+        .then((res) => {
+          if (res.data.success) {
+            isTonalSnackbarVisible.value = true
+            message.value = 'Voluntarios credos con exito!!'
+            color.value = 'primary'
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000)
+
+          } else {
+            isTonalSnackbarVisible.value = true
+            message.value = 'Ha ocurrido un error'
+            color.value = 'error'
+          }
+        })
+        .catch((err) => {
+          isTonalSnackbarVisible.value = true
+          message.value = err
+          color.value = 'error'
+      })
+     
     }
 
   })
@@ -252,24 +261,32 @@ const onSubmit = () => {
     no-gutters
     class="auth-wrapper"
   >
-   <VDialog
-      v-model="isRequestOngoing"
-      width="300"
-      persistent>
-          
-      <VCard
-         color="primary"
-         width="300">
+    <VSnackbar
+      v-model="isTonalSnackbarVisible"
+      location="top"
+      variant="flat"
+      :color="color"
+      >
+       {{ message }}
+    </VSnackbar>
+    <VDialog
+        v-model="isRequestOngoing"
+        width="300"
+        persistent>
             
-         <VCardText class="pt-3">
-            Cargando
-            <VProgressLinear
-              indeterminate
-              color="white"
-              class="mb-0"/>
-          </VCardText>
-        </VCard>
-   </VDialog>
+        <VCard
+          color="primary"
+          width="300">
+              
+          <VCardText class="pt-3">
+              Cargando
+              <VProgressLinear
+                indeterminate
+                color="white"
+                class="mb-0"/>
+            </VCardText>
+          </VCard>
+    </VDialog>
     <VCol
       md="4"
       class="d-none d-md-flex"
@@ -323,7 +340,7 @@ const onSubmit = () => {
                 class="disable-tab-transition"
               >
                 <VWindowItem>
-                  <h5 class="text-h5 mb-1">
+                  <h5 class="text-h5 mb-2">
                     Voluntariados
                   </h5>
                   <p class="text-sm">
@@ -337,7 +354,7 @@ const onSubmit = () => {
                   />
                 </VWindowItem>
                 <VWindowItem>
-                  <h5 class="text-h5 mb-1">
+                  <h5 class="text-h5 mb-2">
                     Transformación
                   </h5>
                   <p class="text-sm">
@@ -392,14 +409,14 @@ const onSubmit = () => {
                         :rules="[requiredValidator]"
                         :items="listThemes"
                         item-title="name"
-                        item-value="name"
+                        item-value="id"
                         :menu-props="{ maxHeight: '200px' }"
                       />
                     </VCol>
                   </VRow>
                 </VWindowItem>
                 <VWindowItem>
-                  <h5 class="text-h5 mb-1">
+                  <h5 class="text-h5 mb-2">
                     Información Personal
                   </h5>
                   <p class="text-sm">
@@ -407,21 +424,21 @@ const onSubmit = () => {
                   </p>
                   <VExpansionPanels
                     v-model="panel"
-                    class="no-icon-rotate"
                     multiple
-                    variant="popout"
+                    variant="inset"            
                   >
                     <VExpansionPanel>
                       <VExpansionPanelTitle disable-icon-rotate>
                         Responsable de los voluntarios (opcional)
                       </VExpansionPanelTitle>
                       <VExpansionPanelText>
-                        <VRow>
+                        <VRow no-gutters>
                           <VCol cols="12" md="12">
                             <VTextField
                               v-model="responsible.name"
                               label="Nombre"
                               placeholder="Nombre"
+                              class="mb-2"
                             />
                           </VCol>
                           <VCol cols="12" md="6">
@@ -430,6 +447,7 @@ const onSubmit = () => {
                               type="tel"
                               label="Cédula"
                               placeholder="Cédula"
+                              class="mb-2 me-3"
                             />
                           </VCol>
                           <VCol cols="12" md="6">
@@ -438,6 +456,7 @@ const onSubmit = () => {
                               v-model="responsible.phone"
                               label="Teléfono"
                               placeholder="+(XX) XXXXXXXXX"
+                              class="mb-2"
                             />
                           </VCol>
                           <VCol cols="12" md="12">
@@ -450,49 +469,52 @@ const onSubmit = () => {
                         </VRow>
                       </VExpansionPanelText>
                     </VExpansionPanel>
-                    <VExpansionPanel v-for="n in 7" :key="n">
-                      <VExpansionPanelTitle disable-icon-rotate>
-                        Voluntario #{{n}}
-                      </VExpansionPanelTitle>
-                      <VExpansionPanelText>
-                        <VRow>
-                          <VCol cols="12" md="12">
-                            <VTextField
-                              v-model="form[n].name"
-                              label="Nombre"
-                              placeholder="Nombre"
-                              :rules="[requiredValidator]"
-                            />
-                          </VCol>
-                          <VCol cols="12" md="6">
-                            <VTextField
-                              v-model="form[n].document"
-                              type="tel"
-                              label="Cédula"
-                              placeholder="Cédula"
-                              :rules="[phoneValidator, requiredValidator]"
-                            />
-                          </VCol>
-                          <VCol cols="12" md="6">
-                            <VTextField
-                              type="tel"
-                              v-model="form[n].phone"
-                              label="Teléfono"
-                              placeholder="+(XX) XXXXXXXXX"
-                              :rules="[phoneValidator, requiredValidator]"
-                            />
-                          </VCol>
-                          <VCol cols="12" md="12">
-                            <VTextField
-                              v-model="form[n].email"
-                              label="E-mail"
-                              type="email"
-                              :rules="[requiredValidator, emailValidator]"
-                            />
-                          </VCol>
-                        </VRow>
-                      </VExpansionPanelText>
-                    </VExpansionPanel>
+                        <VExpansionPanel  v-for="n in 7" :key="n" class="mb-2" >
+                          <VExpansionPanelTitle disable-icon-rotate>
+                            Voluntario #{{n}}
+                          </VExpansionPanelTitle>
+                          <VExpansionPanelText>
+                            <VRow no-gutters>
+                              <VCol cols="12" md="12"> 
+                                <VTextField
+                                  v-model="form[n-1].name"
+                                  label="Nombre"
+                                  placeholder="Nombre"
+                                  :rules="[requiredValidator]"
+                                  class="mb-2"
+                                />
+                              </VCol>
+                              <VCol cols="12" md="6">
+                                <VTextField
+                                  v-model="form[n-1].document"
+                                  type="tel"
+                                  label="Cédula"
+                                  placeholder="Cédula"
+                                  :rules="[phoneValidator, requiredValidator]"
+                                  class="mb-2 me-3"
+                                />
+                              </VCol>
+                              <VCol cols="12" md="6">
+                                <VTextField
+                                  type="tel"
+                                  v-model="form[n-1].phone"
+                                  label="Teléfono"
+                                  placeholder="+(XX) XXXXXXXXX"
+                                  :rules="[phoneValidator, requiredValidator]"
+                                  class="mb-2"
+                                />
+                              </VCol>
+                              <VCol cols="12" md="12">
+                                <VTextField
+                                  v-model="form[n-1].email"
+                                  label="E-mail"
+                                  type="email"
+                                  :rules="[requiredValidator, emailValidator]"
+                                />
+                              </VCol>
+                            </VRow>
+                          </VExpansionPanelText>
+                        </VExpansionPanel>
                   </VExpansionPanels>
                   
                 </VWindowItem>
@@ -560,6 +582,12 @@ const onSubmit = () => {
       background-color: #fafafa;
    }
 
+   .v-text-field .v-input__details {
+    padding-inline-start: 4px !important;
+    padding-top: 2px !important;
+    min-height: 18px !important;
+   }
+
    @media (max-width: 768px) {
 
     .v-btn--size-default {
@@ -568,6 +596,7 @@ const onSubmit = () => {
 
     .backgroundMobile {
         background-image: url('@images/volunteer-people.jpg');
+        background-repeat: repeat;
     }
   }
 

@@ -28,7 +28,8 @@ use App\Http\Controllers\{
     VolunteerController,
     ReportController,
     DashboardController,
-    ThemeController
+    ThemeController,
+    MiscellaneousController
 };
 
 /*
@@ -128,6 +129,15 @@ Route::apiResource('states', StateController::class);
 Route::apiResource('volunteers', VolunteerController::class);
 Route::apiResource('themes', ThemeController::class);
 Route::apiResource('circuits', CircuitController::class);
+
+//MISCELLANEOUS
+Route::get('miscellaneous/data', [MiscellaneousController::class, 'allData']);
+
+//Volunteers
+Route::group(['prefix' => 'volunteers'], function () {
+    Route::post('register', [VolunteerController::class, 'register']);
+});
+
 //PROXY
 Route::get('/proxy-image',[ProxyController::class, 'getImage']);
 Route::get('/proxy-document',[ProxyController::class, 'getDocument']);
