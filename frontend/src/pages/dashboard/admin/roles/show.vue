@@ -306,6 +306,21 @@ const closeRoleDetailDialog = function(){
                         </div>
                     </div>
                 </VCardText>
+                <VCardTitle>
+                    Voluntarios  
+                </VCardTitle>
+                <VCardText>
+                    <div class="ml-5">
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="permissions"
+                                label="ver voluntarios"
+                                value="ver voluntarios"
+                                :readonly="readonly"
+                            />
+                        </div>
+                    </div>
+                </VCardText>
             </VCardText>
             <VCardText class="d-flex flex-wrap gap-3">
                 <VSpacer />

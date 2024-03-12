@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             MigrantSeeder::class,
             ThemeSeeder::class,
 
-            OtherPermissionsSeeder::class
+            OtherPermissionsSeeder::class,
+            VolunteerPermissionsSeeder::class
 
         ]);
 

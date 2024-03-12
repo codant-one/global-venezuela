@@ -226,6 +226,20 @@ const closeModal = function(){
                         </div>
                     </div>
                 </VCardText>
+                <VCardTitle>
+                    Voluntarios  
+                </VCardTitle>
+                <VCardText>
+                    <div class="ml-5">
+                        <div class="demo-space-x ml-5">
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="ver voluntarios"
+                                value="ver voluntarios"
+                            />
+                        </div>
+                    </div>
+                </VCardText>
             </VCardText>
             <VCardText class="d-flex flex-wrap gap-3">
                 <VSpacer />
