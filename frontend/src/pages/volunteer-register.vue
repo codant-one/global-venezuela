@@ -2,7 +2,6 @@
 
 import { emailValidator, requiredValidator, phoneValidator } from '@/@core/utils/validators'
 import { useThemesStores } from '@/stores/useThemes'
-import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useCircuitsStores } from '@/stores/useCircuits'
 import { useStatesStores } from '@/stores/useStates'
 import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
@@ -105,14 +104,21 @@ const items = [
 
 const isFormValid = ref(false)
 const refForm = ref()
+const panel = ref([0, 1, 2, 3, 4, 5, 6, 7])
 
-const form = ref({
-  name: '',
-  document: '',
-  phone: null,
-  email: '',
-  type: '1'
-})
+const type = ref('1')
+const form = ref([
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''},
+  { name: '', document: '', phone: null, email: ''}
+])
+
+const responsible = ref({ name: '', document: '', phone: null, email: ''})
 
 const loadThemes = () => {
   listThemes.value = themesStores.getThemes
@@ -225,14 +231,16 @@ const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (currentStep.value === 0) {
       currentStep.value++
-    } else if(valid && currentStep.value === 1 && form.value.type === '1' && refForm.value.items.length > 2) {
+    } else if(!valid && currentStep.value === 1 && type.value === '1' && refForm.value.items.length === 7 && refForm.value.errors.length === 4) {
       currentStep.value++
-    } else if(valid && currentStep.value === 1 && form.value.type === '2' && refForm.value.items.length > 3) {
+    } else if(!valid && currentStep.value === 1 && type.value === '2' && refForm.value.items.length === 8 && refForm.value.errors.length === 4) {
       currentStep.value++
-    } else if(valid && currentStep.value === 1 && form.value.type === '3' && refForm.value.items.length > 4){
+    } else if(!valid && currentStep.value === 1 && type.value === '3' && refForm.value.items.length === 9 && refForm.value.errors.length === 4){
+      currentStep.value++
+    } else if (valid && currentStep.value === 1) {
       currentStep.value++
     } else if (valid && currentStep.value === 2) {
-
+        console.log('terminamos')
     }
 
   })
@@ -323,7 +331,7 @@ const onSubmit = () => {
                   </p>
 
                   <CustomRadiosWithIcon
-                    v-model:selected-radio="form.type"
+                    v-model:selected-radio="type"
                     :radio-content="radioContent"
                     :grid-column="{ sm: '4', cols: '12' }"
                   />
@@ -336,7 +344,7 @@ const onSubmit = () => {
                     Selecciona la transformación
                   </p>
                   <VRow>
-                    <VCol cols="12" md="6" v-if="Number(form.type) >= 1">
+                    <VCol cols="12" md="6" v-if="Number(type) >= 1">
                       <VAutocomplete
                         v-model="state_id"
                         label="Estado"
@@ -348,7 +356,7 @@ const onSubmit = () => {
                         @update:model-value="selectState"
                       />
                     </VCol>
-                    <VCol cols="12" md="6" v-if="Number(form.type) >= 2">
+                    <VCol cols="12" md="6" v-if="Number(type) >= 2">
                       <VAutocomplete
                         v-model="municipality_id"
                         label="Municipio"
@@ -358,7 +366,7 @@ const onSubmit = () => {
                         @update:model-value="selectMunicipalities"
                       />
                     </VCol>
-                    <VCol cols="12" md="6" v-if="Number(form.type) > 2">
+                    <VCol cols="12" md="6" v-if="Number(type) > 2">
                       <VAutocomplete
                         v-model="parish_id"
                         label="Parroquia"
@@ -368,7 +376,7 @@ const onSubmit = () => {
                         @update:model-value="selectParishes"
                       />
                     </VCol>
-                    <VCol cols="12" md="6" v-if="Number(form.type) === 3">
+                    <VCol cols="12" md="6" v-if="Number(type) === 3">
                       <VAutocomplete
                         v-model="circuit_id"
                         label="Circuito Comunal"
@@ -395,44 +403,98 @@ const onSubmit = () => {
                     Información Personal
                   </h5>
                   <p class="text-sm">
-                    Ingrese la información personal
+                    Ingrese la información personal de los voluntarios
                   </p>
-                  <VRow>
-                    <VCol cols="12" md="12">
-                      <VTextField
-                        v-model="form.name"
-                        label="Nombre"
-                        placeholder="Nombre"
-                        :rules="[requiredValidator]"
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                      <VTextField
-                        v-model="form.document"
-                        type="tel"
-                        label="Cédula"
-                        placeholder="Cédula"
-                        :rules="[phoneValidator, requiredValidator]"
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                      <VTextField
-                        type="tel"
-                        v-model="form.phone"
-                        label="Teléfono"
-                        placeholder="+(XX) XXXXXXXXX"
-                        :rules="[phoneValidator, requiredValidator]"
-                      />
-                    </VCol>
-                    <VCol cols="12" md="12">
-                      <VTextField
-                        v-model="form.email"
-                        label="E-mail"
-                        type="email"
-                        :rules="[requiredValidator, emailValidator]"
-                      />
-                    </VCol>
-                  </VRow>
+                  <VExpansionPanels
+                    v-model="panel"
+                    class="no-icon-rotate"
+                    multiple
+                    variant="popout"
+                  >
+                    <VExpansionPanel>
+                      <VExpansionPanelTitle disable-icon-rotate>
+                        Responsable de los voluntarios (opcional)
+                      </VExpansionPanelTitle>
+                      <VExpansionPanelText>
+                        <VRow>
+                          <VCol cols="12" md="12">
+                            <VTextField
+                              v-model="responsible.name"
+                              label="Nombre"
+                              placeholder="Nombre"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6">
+                            <VTextField
+                              v-model="responsible.document"
+                              type="tel"
+                              label="Cédula"
+                              placeholder="Cédula"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6">
+                            <VTextField
+                              type="tel"
+                              v-model="responsible.phone"
+                              label="Teléfono"
+                              placeholder="+(XX) XXXXXXXXX"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="12">
+                            <VTextField
+                              v-model="responsible.email"
+                              label="E-mail"
+                              type="email"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VExpansionPanelText>
+                    </VExpansionPanel>
+                    <VExpansionPanel v-for="n in 7" :key="n">
+                      <VExpansionPanelTitle disable-icon-rotate>
+                        Voluntario #{{n}}
+                      </VExpansionPanelTitle>
+                      <VExpansionPanelText>
+                        <VRow>
+                          <VCol cols="12" md="12">
+                            <VTextField
+                              v-model="form[n].name"
+                              label="Nombre"
+                              placeholder="Nombre"
+                              :rules="[requiredValidator]"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6">
+                            <VTextField
+                              v-model="form[n].document"
+                              type="tel"
+                              label="Cédula"
+                              placeholder="Cédula"
+                              :rules="[phoneValidator, requiredValidator]"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6">
+                            <VTextField
+                              type="tel"
+                              v-model="form[n].phone"
+                              label="Teléfono"
+                              placeholder="+(XX) XXXXXXXXX"
+                              :rules="[phoneValidator, requiredValidator]"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="12">
+                            <VTextField
+                              v-model="form[n].email"
+                              label="E-mail"
+                              type="email"
+                              :rules="[requiredValidator, emailValidator]"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VExpansionPanelText>
+                    </VExpansionPanel>
+                  </VExpansionPanels>
+                  
                 </VWindowItem>
               </VWindow>
 
@@ -499,6 +561,11 @@ const onSubmit = () => {
    }
 
    @media (max-width: 768px) {
+
+    .v-btn--size-default {
+      font-size: 13px;
+    }
+
     .backgroundMobile {
         background-image: url('@images/volunteer-people.jpg');
     }
