@@ -281,13 +281,15 @@ const onSubmit = () => {
     <VCol
       cols="12"
       md="8"
-      class="auth-card-v2 d-flex align-center justify-center pa-7 pa-md-10 bg-gray backgroundMobile"
+      class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 px-md-10 bg-gray backgroundMobile"
     >
 
     <div class="d-block justify-center align-center w-100 position-relative">
-      <VImg
-        :src="registerMultistepIllustration"
-      />
+      <div class="px-7 py-5 d-block d-md-none">
+        <VImg
+          :src="registerMultistepIllustration"
+        />
+      </div>
     
       <VCard
         flat
