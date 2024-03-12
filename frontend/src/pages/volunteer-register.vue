@@ -1,6 +1,6 @@
 <script setup>
 
-import { requiredValidator } from '@validators'
+import { emailValidator, requiredValidator, phoneValidator } from '@/@core/utils/validators'
 import { useThemesStores } from '@/stores/useThemes'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
 import { useCircuitsStores } from '@/stores/useCircuits'
@@ -39,13 +39,13 @@ const listMunicipalitiesByStates = ref([])
 const listParishesByMunicipalities = ref([])
 const listCircuitsByParishes = ref([])
 
-const state_id = ref('')
+const state_id = ref()
 const stateOld_id = ref('')
-const municipality_id = ref('')
+const municipality_id = ref()
 const municipalityOld_id = ref('')
-const parish_id = ref('')
+const parish_id = ref()
 const parishOld_id = ref('')
-const circuit_id = ref('')
+const circuit_id = ref()
 const circuitOld_id = ref('')
 
 const isMobile = /Mobi/i.test(navigator.userAgent);
@@ -98,30 +98,20 @@ const items = [
   },
   {
     title: 'Información',
-    subtitle: 'Completa tus datos',
+    subtitle: 'Completa los datos',
     icon: 'tabler-file-text',
   },
 ]
 
+const isFormValid = ref(false)
+const refForm = ref()
+
 const form = ref({
-  username: '',
+  name: '',
+  document: '',
+  phone: null,
   email: '',
-  password: '',
-  confirmPassword: '',
-  link: '',
-  firstName: '',
-  lastName: '',
-  mobile: '',
-  pincode: '',
-  address: '',
-  landmark: '',
-  city: '',
-  state: null,
-  type: '0',
-  cardNumber: '',
-  cardName: '',
-  expiryDate: '',
-  cvv: '',
+  type: '1'
 })
 
 const loadThemes = () => {
@@ -232,8 +222,20 @@ const selectParishes = parish => {
 
 const onSubmit = () => {
 
-  // eslint-disable-next-line no-alert
-  alert('Voluntario Registrado..!!')
+  refForm.value?.validate().then(({ valid }) => {
+    if (currentStep.value === 0) {
+      currentStep.value++
+    } else if(valid && currentStep.value === 1 && form.value.type === '1' && refForm.value.items.length > 2) {
+      currentStep.value++
+    } else if(valid && currentStep.value === 1 && form.value.type === '2' && refForm.value.items.length > 3) {
+      currentStep.value++
+    } else if(valid && currentStep.value === 1 && form.value.type === '3' && refForm.value.items.length > 4){
+      currentStep.value++
+    } else if (valid && currentStep.value === 2) {
+
+    }
+
+  })
 }
 </script>
 
@@ -266,7 +268,7 @@ const onSubmit = () => {
       :style="`background: url(${background});`"
     >
       <!-- here your illustration -->
-      <div class="d-flex justify-center align-center w-100 position-relative">
+      <div class="d-flex justify-center align-center w-100 position-relative pa-16">
         <VImg
           :src="registerMultistepIllustration"
           class="illustration-image"
@@ -284,237 +286,197 @@ const onSubmit = () => {
       class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 px-md-10 bg-gray backgroundMobile"
     >
 
-    <div class="d-block justify-center align-center w-100 position-relative">
-      <div class="px-7 py-5 d-block d-md-none">
-        <VImg
-          :src="registerMultistepIllustration"
-        />
-      </div>
-    
-      <VCard
-        flat
-        class="pa-5 pa-md-10"
-      >
-        <AppStepper
-          v-model:current-step="currentStep"
-          :items="items"
-          direction="horizontal"
-          icon-size="24"
-          class="stepper-icon-step-bg mb-8"
-        />
-
-        <VWindow
-          v-model="currentStep"
-          class="disable-tab-transition"
-        >
-          <VForm>
-            <VWindowItem>
-               <h5 class="text-h5 mb-1">
-                  Voluntariados
-               </h5>
-               <p class="text-sm">
-                  Selecciona el tipo de voluntariado
-               </p>
-
-               <CustomRadiosWithIcon
-                  v-model:selected-radio="form.type"
-                  :radio-content="radioContent"
-                  :grid-column="{ sm: '4', cols: '12' }"
-               />
-            </VWindowItem>
-            <VWindowItem>
-              <h5 class="text-h5 mb-1">
-               Transformación
-              </h5>
-              <p class="text-sm">
-                Selecciona la transformación
-              </p>
-
-              <VRow>
-                <VCol
-                  cols="12"
-                  md="6"
-                  v-if="Number(form.type) >= 1"
-                >
-                  <VAutocomplete
-                     v-model="state_id"
-                     label="Estado"
-                     :rules="[requiredValidator]"
-                     :items="listStates"
-                     item-title="name"
-                     item-value="name"
-                     :menu-props="{ maxHeight: '200px' }"
-                     @update:model-value="selectState"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                  v-if="Number(form.type) >= 2"
-                >
-                  <VAutocomplete
-                     v-model="municipality_id"
-                     label="Municipio"
-                     :rules="[requiredValidator]"
-                     :items="getMunicipalities"
-                     :menu-props="{ maxHeight: '200px' }"
-                     @update:model-value="selectMunicipalities"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                  v-if="Number(form.type) > 2"
-                >
-                  <VAutocomplete
-                     v-model="parish_id"
-                     label="Parroquia"
-                     :rules="[requiredValidator]"
-                     :items="getParishes"
-                     :menu-props="{ maxHeight: '200px' }"
-                     @update:model-value="selectParishes"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                  v-if="Number(form.type) === 3"
-                >
-                  <VAutocomplete
-                     v-model="circuit_id"
-                     label="Circuito Comunal"
-                     :rules="[requiredValidator]"
-                     :items="getCircuits"
-                     :menu-props="{ maxHeight: '200px' }"
-                  />
-                </VCol>
-
-                <VCol cols="12">
-                  <VAutocomplete
-                     v-model="theme_id"
-                     label="Transformación"
-                     :rules="[requiredValidator]"
-                     :items="listThemes"
-                     item-title="name"
-                     item-value="name"
-                     :menu-props="{ maxHeight: '200px' }"
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
-
-            <VWindowItem>
-              <h5 class="text-h5 mb-1">
-               Información Personal
-              </h5>
-              <p class="text-sm">
-               Ingrese su información personal
-              </p>
-
-
-              <VRow>
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppTextField
-                    v-model="form.firstName"
-                    label="Nombre"
-                    placeholder="Nombre"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppTextField
-                    v-model="form.lastName"
-                    label="Apellido"
-                    placeholder="Apellido"
-                  />
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppTextField
-                    v-model="form.mobile"
-                    type="text"
-                    label="Teléfono"
-                    placeholder="Teléfono"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <AppTextField
-                    v-model="form.cardNumber"
-                    type="text"
-                    label="Documento"
-                    placeholder="Documento"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="12"
-                >
-                  <AppTextField
-                    v-model="form.city"
-                    label="E-mail"
-                    placeholder="E-mail"
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
-          </VForm>
-        </VWindow>
-
-        <div class="d-flex flex-wrap justify-sm-space-between justify-center gap-x-4 gap-y-2 mt-8">
-          <VBtn
-            v-if="currentStep > 0"
-            color="secondary"
-            :disabled="currentStep === 0"
-            variant="tonal"
-            @click="currentStep--"
-          >
-            <VIcon
-              icon="tabler-arrow-left"
-              start
-              class="flip-in-rtl"
-            />
-            Atrás
-          </VBtn>
-
-          <VSpacer />
-          <VBtn
-            v-if="items.length - 1 === currentStep"
-            color="primary"
-            append-icon="tabler-check"
-            @click="onSubmit"
-          >
-            Enviar
-          </VBtn>
-
-          <VBtn
-            v-else
-            @click="currentStep++"
-          >
-            Siguiente
-
-            <VIcon
-              icon="tabler-arrow-right"
-              end
-              class="flip-in-rtl"
-            />
-          </VBtn>
+      <div class="d-block justify-center align-center w-100 position-relative">
+        <div class="px-7 py-5 d-block d-md-none">
+          <VImg
+            :src="registerMultistepIllustration"
+          />
         </div>
-      </VCard>
+    
+        <VForm
+          ref="refForm"
+          v-model="isFormValid"
+          @submit.prevent="onSubmit">
+            <VCard
+              flat
+              class="pa-5 pa-md-10"
+            >
+              <AppStepper
+                v-model:current-step="currentStep"
+                :items="items"
+                :isActiveStepValid="false"
+                direction="horizontal"
+                icon-size="24"
+                class="stepper-icon-step-bg mb-8"
+              />
+
+              <VWindow
+                v-model="currentStep"
+                class="disable-tab-transition"
+              >
+                <VWindowItem>
+                  <h5 class="text-h5 mb-1">
+                    Voluntariados
+                  </h5>
+                  <p class="text-sm">
+                    Selecciona el tipo de voluntariado
+                  </p>
+
+                  <CustomRadiosWithIcon
+                    v-model:selected-radio="form.type"
+                    :radio-content="radioContent"
+                    :grid-column="{ sm: '4', cols: '12' }"
+                  />
+                </VWindowItem>
+                <VWindowItem>
+                  <h5 class="text-h5 mb-1">
+                    Transformación
+                  </h5>
+                  <p class="text-sm">
+                    Selecciona la transformación
+                  </p>
+                  <VRow>
+                    <VCol cols="12" md="6" v-if="Number(form.type) >= 1">
+                      <VAutocomplete
+                        v-model="state_id"
+                        label="Estado"
+                        :rules="[requiredValidator]"
+                        :items="listStates"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectState"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6" v-if="Number(form.type) >= 2">
+                      <VAutocomplete
+                        v-model="municipality_id"
+                        label="Municipio"
+                        :rules="[requiredValidator]"
+                        :items="getMunicipalities"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectMunicipalities"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6" v-if="Number(form.type) > 2">
+                      <VAutocomplete
+                        v-model="parish_id"
+                        label="Parroquia"
+                        :rules="[requiredValidator]"
+                        :items="getParishes"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectParishes"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6" v-if="Number(form.type) === 3">
+                      <VAutocomplete
+                        v-model="circuit_id"
+                        label="Circuito Comunal"
+                        :rules="[requiredValidator]"
+                        :items="getCircuits"
+                        :menu-props="{ maxHeight: '200px' }"
+                      />
+                    </VCol>
+                    <VCol cols="12">
+                      <VAutocomplete
+                        v-model="theme_id"
+                        label="Transformación"
+                        :rules="[requiredValidator]"
+                        :items="listThemes"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                      />
+                    </VCol>
+                  </VRow>
+                </VWindowItem>
+                <VWindowItem>
+                  <h5 class="text-h5 mb-1">
+                    Información Personal
+                  </h5>
+                  <p class="text-sm">
+                    Ingrese la información personal
+                  </p>
+                  <VRow>
+                    <VCol cols="12" md="12">
+                      <VTextField
+                        v-model="form.name"
+                        label="Nombre"
+                        placeholder="Nombre"
+                        :rules="[requiredValidator]"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="form.document"
+                        type="tel"
+                        label="Cédula"
+                        placeholder="Cédula"
+                        :rules="[phoneValidator, requiredValidator]"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        type="tel"
+                        v-model="form.phone"
+                        label="Teléfono"
+                        placeholder="+(XX) XXXXXXXXX"
+                        :rules="[phoneValidator, requiredValidator]"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="12">
+                      <VTextField
+                        v-model="form.email"
+                        label="E-mail"
+                        type="email"
+                        :rules="[requiredValidator, emailValidator]"
+                      />
+                    </VCol>
+                  </VRow>
+                </VWindowItem>
+              </VWindow>
+
+              <div class="d-flex flex-wrap justify-sm-space-between justify-center gap-x-4 gap-y-2 mt-8">
+                <VBtn
+                  v-if="currentStep > 0"
+                  color="secondary"
+                  :disabled="currentStep === 0"
+                  variant="tonal"
+                  @click="currentStep--"
+                >
+                  <VIcon
+                    icon="tabler-arrow-left"
+                    start
+                    class="flip-in-rtl"
+                  />
+                  Atrás
+                </VBtn>
+
+                <VSpacer />
+                <VBtn
+                  v-if="items.length - 1 === currentStep"
+                  color="primary"
+                  append-icon="tabler-check"
+                  type="submit"
+                >
+                  Enviar
+                </VBtn>
+
+                <VBtn
+                  v-else
+                  type="submit"
+                >
+                  Siguiente
+
+                  <VIcon
+                    icon="tabler-arrow-right"
+                    end
+                    class="flip-in-rtl"
+                  />
+                </VBtn>
+              </div>
+            </VCard>
+        </VForm>
       </div>
     </VCol>
   </VRow>
