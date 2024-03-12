@@ -88,7 +88,7 @@ watchEffect(() => {
                 />
               </div>
 
-              <div>
+              <div class="d-none d-md-block">
                 <p class="stepper-title font-weight-medium mb-0">
                   {{ item.title }}
                 </p>
@@ -104,7 +104,7 @@ watchEffect(() => {
             <!-- 👉 append chevron -->
             <VIcon
               v-if="isHorizontalAndNotLastStep(index)"
-              class="flip-in-rtl stepper-chevron-indicator mx-6"
+              class="flip-in-rtl stepper-chevron-indicator mx-6 d-none d-md-block"
               size="24"
               icon="tabler-chevron-right"
             />
@@ -161,7 +161,7 @@ watchEffect(() => {
             </div>
 
             <!-- 👉 title and subtitle -->
-            <div class="d-flex flex-column justify-center">
+            <div class="d-none d-md-flex flex-column justify-center">
               <div class="step-title font-weight-medium">
                 {{ item.title }}
               </div>
@@ -177,7 +177,7 @@ watchEffect(() => {
             <!-- 👉 stepper step icon -->
             <div
               v-if="isHorizontalAndNotLastStep(index)"
-              class="stepper-step-line"
+              class="stepper-step-line d-none d-md-block"
             >
               <VIcon
                 icon="tabler-chevron-right"
@@ -193,6 +193,21 @@ watchEffect(() => {
 </template>
 
 <style lang="scss">
+
+@media (max-width: 768px) {
+  .app-stepper {
+    &.stepper-icon-step-bg {
+      .stepper-icon-step {
+        .stepper-icon {
+          block-size: 4rem !important;
+          inline-size: 4rem !important;
+          margin-inline-end: 0;
+        }
+      }
+    }
+  }
+}
+
 .app-stepper {
   // 👉 stepper step with bg color
   &.stepper-icon-step-bg {

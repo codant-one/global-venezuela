@@ -8,16 +8,15 @@ import { useStatesStores } from '@/stores/useStates'
 import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
 import { useParishesStores } from '@/stores/useParishes'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import registerMultistepIllustrationDark from '@images/logo_slogan_register.png'
-import registerMultistepIllustrationLight from '@images/logo_slogan_register.png'
+import background from '@images/volunteer-people.jpg'
+import registerMultistepIllustrationDark from '@images/volunteer-logo-2.png'
+import registerMultistepIllustrationLight from '@images/volunteer-logo-2.png'
 import registerMultistepBgDark from '@images/pages/register-multistep-bg-dark.png'
 import registerMultistepBgLight from '@images/pages/register-multistep-bg-light.png'
 
 const registerMultistepBg = useGenerateImageVariant(registerMultistepBgLight, registerMultistepBgDark)
 
 const currentStep = ref(0)
-const isPasswordVisible = ref(false)
-const isConfirmPasswordVisible = ref(false)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
 
 const themesStores = useThemesStores()
@@ -48,21 +47,22 @@ const parish_id = ref('')
 const parishOld_id = ref('')
 const circuit_id = ref('')
 const circuitOld_id = ref('')
-const isEdit = ref(false)
+
+const isMobile = /Mobi/i.test(navigator.userAgent);
 
 const radioContent = [
-  {
-      icon: {
-         icon: 'mdi-flag-variant',
-         size: '100',
-      },
-      title: 'Nacional',
-      value: '0'
-  },
+  // {
+  //     icon: {
+  //        icon: 'mdi-flag-variant',
+  //        size: isMobile ? '30' : '60',
+  //     },
+  //     title: 'Nacional',
+  //     value: '0'
+  // },
   {
       icon: {
          icon: 'mdi-map-marker-radius',
-         size: '100',
+         size: isMobile ? '30' : '60',
       },
       title: 'Estatal',
       value: '1'
@@ -70,7 +70,7 @@ const radioContent = [
   {
       icon: {
          icon: 'mdi-city',
-         size: '100',
+         size: isMobile ? '30' : '60',
       },
       title: 'Municipal',
       value: '2'
@@ -78,7 +78,7 @@ const radioContent = [
   {
       icon: {
          icon: 'mdi-crosshairs-gps',
-         size: '100',
+         size: isMobile ? '30' : '60',
       },
       title: 'Por Circuitos Comunales',
       value: '3'
@@ -262,7 +262,8 @@ const onSubmit = () => {
    </VDialog>
     <VCol
       md="4"
-      class="d-none d-md-flex bg-gray"
+      class="d-none d-md-flex"
+      :style="`background: url(${background});`"
     >
       <!-- here your illustration -->
       <div class="d-flex justify-center align-center w-100 position-relative">
@@ -270,27 +271,32 @@ const onSubmit = () => {
           :src="registerMultistepIllustration"
           class="illustration-image"
         />
-        <VImg
+        <!-- <VImg
           :src="registerMultistepBg"
           class="bg-image position-absolute w-100"
-        />
+        /> -->
       </div>
     </VCol>
 
     <VCol
       cols="12"
       md="8"
-      class="auth-card-v2 d-flex align-center justify-center pa-10"
-      style="background-color: rgb(var(--v-theme-surface));"
+      class="auth-card-v2 d-flex align-center justify-center pa-7 pa-md-10 bg-gray backgroundMobile"
     >
+
+    <div class="d-block justify-center align-center w-100 position-relative">
+      <VImg
+        :src="registerMultistepIllustration"
+      />
+    
       <VCard
         flat
-        class="mt-12 mt-sm-0"
+        class="pa-5 pa-md-10"
       >
         <AppStepper
           v-model:current-step="currentStep"
           :items="items"
-          :direction="$vuetify.display.smAndUp ? 'horizontal' : 'vertical'"
+          direction="horizontal"
           icon-size="24"
           class="stepper-icon-step-bg mb-8"
         />
@@ -298,7 +304,6 @@ const onSubmit = () => {
         <VWindow
           v-model="currentStep"
           class="disable-tab-transition"
-          style="max-inline-size: 681px;"
         >
           <VForm>
             <VWindowItem>
@@ -312,7 +317,7 @@ const onSubmit = () => {
                <CustomRadiosWithIcon
                   v-model:selected-radio="form.type"
                   :radio-content="radioContent"
-                  :grid-column="{ sm: '6', cols: '6' }"
+                  :grid-column="{ sm: '4', cols: '12' }"
                />
             </VWindowItem>
             <VWindowItem>
@@ -508,6 +513,7 @@ const onSubmit = () => {
           </VBtn>
         </div>
       </VCard>
+      </div>
     </VCol>
   </VRow>
 </template>
@@ -527,6 +533,13 @@ const onSubmit = () => {
    .bg-gray {
       background-color: #fafafa;
    }
+
+   @media (max-width: 768px) {
+    .backgroundMobile {
+        background-image: url('@images/volunteer-people.jpg');
+    }
+  }
+
 </style>
 <route lang="yaml">
     meta:
