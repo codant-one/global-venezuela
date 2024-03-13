@@ -27,6 +27,7 @@ const infoDetail = ref({
     country_id: '',
     transient: '0',
     resident: '0',
+    process_saime:'0',
     years_in_country: 0,
     antecedents: '0',
     isMarried: '0',
@@ -44,6 +45,7 @@ async function fetchData() {
     infoDetail.value.country_id = props.migrant.country.id
     infoDetail.value.transient = props.migrant.transient.toString()
     infoDetail.value.resident = props.migrant.resident.toString()
+    infoDetail.value.process_saime = props.migrant.process_saime.toString()
     infoDetail.value.years_in_country = props.migrant.years_in_country
     infoDetail.value.antecedents = props.migrant.antecedents.toString()
     infoDetail.value.passport_status = props.migrant.passport_status.toString()
@@ -148,7 +150,7 @@ const onSubmit = () => {
               </thead>
               <tbody>  
                 <tr>
-                  <td width="400px">¿Posee cédula de transeúnte?</td>
+                  <td width="400px">¿Posee visa de transeúnte?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.transient" inline class="py-2">
                       <VRadio value="1"/>
@@ -163,6 +165,18 @@ const onSubmit = () => {
                   <td width="400px">¿Posee cédula de residencia?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.resident" inline class="py-2">
+                      <VRadio value="1"/>
+                      <VSpacer />
+                      <VRadio value="0" class="radio-custom"/>
+                    </VRadioGroup>
+                  </td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td width="400px">¿Ha tramitado el proceso de naturalización ante el SAIME?</td>
+                  <td colspan="2">
+                    <VRadioGroup v-model="infoDetail.process_saime" inline class="py-2">
                       <VRadio value="1"/>
                       <VSpacer />
                       <VRadio value="0" class="radio-custom"/>

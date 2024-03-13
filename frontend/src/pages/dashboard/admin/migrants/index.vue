@@ -129,6 +129,7 @@ const downloadCSV = async () => {
       DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
       CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',
       CÉDULA_RESIDENTE: element.resident ? 'SI' : 'NO',
+      PROCESO_SAIME: element.process_saime ? 'SI' : 'NO',
       AÑOS_EN_EL_PAÍS: element.years_in_country,
       ANTECEDENTES_PENALES: element.antecedents ? 'SI' : 'NO',
       CASADO_CON_UN_VENEZOLANO: element.isMarried ? 'SI' : 'NO',

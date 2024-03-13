@@ -19,6 +19,7 @@ const isRequestOngoing = ref(true)
 const infoDetail = ref({
     transient: null,
     resident: null,
+    process_saime: null,
     antecedents: null,
     isMarried: null,
     has_children: null,
@@ -62,6 +63,7 @@ async function fetchData() {
     page: currentPage.value,
     transient: Number(infoDetail.value.transient),
     resident: Number(infoDetail.value.resident),
+    process_saime: Number(infoDetail.value.process_saime),
     antecedents: Number(infoDetail.value.antecedents),
     isMarried: Number(infoDetail.value.isMarried),
     has_children: Number(infoDetail.value.has_children),
@@ -91,6 +93,7 @@ const downloadCSV = async () => {
   let data = {
     transient: Number(infoDetail.value.transient),
     resident: Number(infoDetail.value.resident),
+    process_saime: Number(infoDetail.value.process_saime),
     antecedents: Number(infoDetail.value.antecedents),
     isMarried: Number(infoDetail.value.isMarried),
     has_children: Number(infoDetail.value.has_children),
@@ -117,6 +120,7 @@ const downloadCSV = async () => {
       DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
       CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',
       CÉDULA_RESIDENTE: element.resident ? 'SI' : 'NO',
+      PROCESO_SAIME: element.process_saime ? 'SI' : 'NO',
       AÑOS_EN_EL_PAÍS: element.years_in_country,
       ANTECEDENTES_PENALES: element.antecedents ? 'SI' : 'NO',
       CASADO_CON_UN_VENEZOLANO: element.isMarried ? 'SI' : 'NO',
@@ -194,7 +198,7 @@ const downloadCSV = async () => {
                         sm="2"
                     >
                       <div class="align-center">
-                        <span>Cédula de transeunte</span>
+                        <span>Visa de transeunte</span>
                         <VRadioGroup v-model="infoDetail.transient" inline class="py-2">
                           <VRadio value="1" label="SI"/>
                           <VSpacer />
@@ -209,6 +213,20 @@ const downloadCSV = async () => {
                       <div class="align-center">
                         <span>Cédula de residente</span>
                         <VRadioGroup v-model="infoDetail.resident" inline class="py-2">
+                          <VRadio value="1" label="SI"/>
+                          <VSpacer />
+                          <VRadio value="0" label="NO" class="radio-custom"/>
+                        </VRadioGroup>
+                      </div>
+                    </VCol>
+
+                    <VCol
+                        cols="12"
+                        sm="2"
+                    >
+                      <div class="align-center">
+                        <span>¿Ha tramitado el proceso de naturalización ante el SAIME?</span>
+                        <VRadioGroup v-model="infoDetail.process_saime" inline class="py-2">
                           <VRadio value="1" label="SI"/>
                           <VSpacer />
                           <VRadio value="0" label="NO" class="radio-custom"/>

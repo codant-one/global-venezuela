@@ -12,6 +12,7 @@ watchEffect(fetchData)
 async function fetchData() {
     props.customerData.transient = props.customerData.transient ? '1' : '0'
     props.customerData.resident = props.customerData.resident ? '1' : '0'
+    props.customerData.process_saime = props.customerData.process_saime ? '1' : '0'
     props.customerData.antecedents = props.customerData.antecedents ? '1' : '0'
     props.customerData.isMarried = props.customerData.isMarried ? '1' : '0'
     props.customerData.passport_status = props.customerData.passport_status ? '1' : '0'
@@ -37,7 +38,7 @@ async function fetchData() {
                     </thead>
                     <tbody>  
                         <tr>
-                            <td width="400px">¿Posee cédula de transeúnte?</td>
+                            <td width="400px">¿Posee visa de transeúnte?</td>
                             <td colspan="2">
                                 <VRadioGroup v-model="props.customerData.transient" inline class="py-2" readonly>
                                 <VRadio value="1"/>
@@ -52,6 +53,18 @@ async function fetchData() {
                             <td width="400px">¿Posee cédula de residencia?</td>
                             <td colspan="2">
                                 <VRadioGroup v-model="props.customerData.resident" inline class="py-2" readonly>
+                                    <VRadio value="1"/>
+                                    <VSpacer />
+                                    <VRadio value="0" class="radio-custom"/>
+                                </VRadioGroup>
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td width="400px">¿Ha tramitado el proceso de naturalización ante el SAIME?</td>
+                            <td colspan="2">
+                                <VRadioGroup v-model="props.customerData.process_saime" inline class="py-2" readonly>
                                     <VRadio value="1"/>
                                     <VSpacer />
                                     <VRadio value="0" class="radio-custom"/>

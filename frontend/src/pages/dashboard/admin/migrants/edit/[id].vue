@@ -163,6 +163,7 @@ const uploadInfo = async (infoDetail) => {
     formData.append('country_id', infoDetail.country_id)
     formData.append('transient', Number(infoDetail.transient))
     formData.append('resident', Number(infoDetail.resident))
+    formData.append('process_saime', Number(infoDetail.process_saime))
     formData.append('years_in_country', infoDetail.years_in_country)
     formData.append('antecedents', Number(infoDetail.antecedents))
     formData.append('isMarried', Number(infoDetail.isMarried))
