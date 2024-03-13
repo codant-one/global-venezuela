@@ -98,6 +98,11 @@ class Migrant extends Model
             $query->where('resident', $filters->get('resident'));
         }
 
+        if($filters->get('process_saime') !== null) {
+            $query->where('process_saime', $filters->get('process_saime'));
+        }
+
+
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
             $field = $filters->get('orderByField') ? $filters->get('orderByField') : 'created_at';
             $orderBy = $filters->get('orderBy') ? $filters->get('orderBy') : 'asc';
@@ -130,6 +135,7 @@ class Migrant extends Model
             'passport_status' => $request->passport_status,
             'transient' => $request->transient,
             'resident' => $request->resident,
+            'process_saime'=> $request->process_saime,
             'years_in_country' => $request->years_in_country,
             'antecedents' => $request->antecedents,
             'isMarried' => $request->isMarried,
@@ -156,6 +162,7 @@ class Migrant extends Model
             'passport_status' => $request->passport_status,
             'transient' => $request->transient,
             'resident' => $request->resident,
+            'process_saime'=> $request->process_saime,
             'years_in_country' => $request->years_in_country,
             'antecedents' => $request->antecedents,
             'isMarried' => $request->isMarried,
