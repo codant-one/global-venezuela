@@ -1,7 +1,5 @@
 <script setup>
 
-import router from '@/router'
-import Toaster from "@/components/common/Toaster.vue";
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
@@ -24,23 +22,20 @@ const municipality_id = ref(null)
 const municipalityOld_id = ref(null)
 const parish_id = ref(null)
 const parishOld_id = ref(null)
+const circuit_id = ref(null)
+
 const listStates = ref([])
 const listMunicipalities = ref([])
 const listParishes = ref([])
+const listCircuits = ref([])
 
 const listMunicipalitiesByStates = ref([])
 const listParishesByMunicipalities = ref([])
+const listCircuitsByParishes = ref([])
 
-const advisor = ref({
-  type: '',
-  message: '',
-  show: false
-})
-
-const alert = ref({
-  show: false,
-  message: ''
-})
+const theme_id = ref(null)
+const themeOld_id = ref(null)
+const listThemes = ref([])
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
@@ -66,9 +61,12 @@ async function fetchData() {
     orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value,
+    theme_id: themeOld_id.value,
     state_id: stateOld_id.value,
     municipality_id: municipalityOld_id.value,
-    parish_id: parishOld_id.value
+    parish_id: parishOld_id.value,
+    circuit_id: circuit_id.value,
+    isCircuit: true
   }
 
   isRequestOngoing.value = true
@@ -87,10 +85,42 @@ async function fetchData() {
   isRequestOngoing.value = false
 }
 
+const clearSearch = () => {
+  searchQuery.value = null
+  fetchData()
+}
+
+const clearState = () => {
+  stateOld_id.value = null
+  fetchData()
+}
+
+const clearMunicipality = () => {
+  municipalityOld_id.value = null
+  fetchData()
+}
+
+const clearCircuit = () => {
+  circuit_id.value = null
+  fetchData()
+}
+
+const clearParish = () => {
+  parishOld_id.value = null
+  fetchData()
+}
+const clearTheme = () => {
+  themeOld_id.value = null
+  fetchData()
+}
+
+
 const loadData = () => {
+  listThemes.value = miscellaneousStores.getData.themes
   listStates.value = miscellaneousStores.getData.states
   listMunicipalities.value = miscellaneousStores.getData.municipalities
   listParishes.value = miscellaneousStores.getData.parishes
+  listCircuits.value = miscellaneousStores.getData.circuits
 }
 
 const getMunicipalities = computed(() => {
@@ -107,6 +137,15 @@ const getParishes = computed(() => {
     return {
       title: municipality.name,
       value: municipality.id,
+    }
+  })
+})
+
+const getCircuits = computed(() => {
+  return listCircuitsByParishes.value.map((parish) => {
+    return {
+      title: parish.name,
+      value: parish.id,
     }
   })
 })
@@ -140,6 +179,17 @@ const selectParishes = parish => {
     parish_id.value = _parish.name
     parishOld_id.value = _parish.id
 
+    circuit_id.value = ''
+
+    listCircuitsByParishes.value = listCircuits.value.filter(item => item.parish_id === _parish.id)
+  }
+}
+
+const selectTheme = theme => {
+  if (theme) {
+    let _theme = listThemes.value.find(item => item.name === theme) 
+    theme_id.value = _theme.name
+    themeOld_id.value = _theme.id
   }
 }
 
@@ -148,9 +198,12 @@ const downloadCSV = async () => {
   isRequestOngoing.value = true
 
   let data = {
+    theme_id: themeOld_id.value,
     state_id: stateOld_id.value,
     municipality_id: municipalityOld_id.value,
     parish_id: parishOld_id.value,
+    circuit_id: circuit_id.value,
+    isCircuit: true,
     limit: -1
   }
 
@@ -161,14 +214,23 @@ const downloadCSV = async () => {
   volunteersStores.getVolunteers.forEach(element => {
 
     let data = {
-     
+      ESTADO: element.circuit.parish.municipality.state.name,
+      MUNICIPIO: element.circuit.parish.municipality.name,
+      PARROQUIA: element.circuit.parish.name,
+      CIRCUITO: element.circuit.name,
+      TRANSFORMACIÓN: element.theme.name,
+      NOMBRE: element.name ?? '',
+      DOCUMENTO: element.document ?? '',
+      TELÉFONO: element.phone ?? '',
+      E_MAIL: element.email ?? '',
+      ES_RESPONSABLE: element.isResponsible ? 'SI' : ''
     }
 
     dataArray.push(data)
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "volunteers", "csv");
+    .exportDataFromJSON(dataArray, "volunteers-circuits", "csv");
 
   isRequestOngoing.value = false
 
@@ -200,69 +262,75 @@ const downloadCSV = async () => {
       </VDialog>
 
       <v-col cols="12">
-        <Toaster />
-        <v-alert
-          v-if="advisor.show"
-          :type="advisor.type"
-          class="mb-6">
-            
-          {{ advisor.message }}
-        </v-alert>
-
         <VCard title="Filtros">
             <VCardText>
                 <VRow>
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
-                        <VAutocomplete
-                          v-model="state_id"
-                          label="Estados"
-                          :items="listStates"
-                          item-title="name"
-                          item-value="name"
-                          :menu-props="{ maxHeight: '200px' }"
-                          @update:model-value="selectState"
-                          clearable
-                        />
+                    <VCol cols="12" sm="4">
+                      <VAutocomplete
+                        v-model="state_id"
+                        label="Estados"
+                        :items="listStates"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectState"
+                        @click:clear="clearState"
+                        clearable
+                      />
                     </VCol>
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
+                    <VCol cols="12" sm="4">
                       <VAutocomplete
                         v-model="municipality_id"
                         label="Municipios"
                         :items="getMunicipalities"
                         :menu-props="{ maxHeight: '200px' }"
                         @update:model-value="selectMunicipalities"
+                        @click:clear="clearMunicipality"
                         clearable
                       />
                     </VCol>
-
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
+                    <VCol cols="12" sm="4">
                       <VAutocomplete
                         v-model="parish_id"
                         label="Parroquias"
                         :items="getParishes"
                         :menu-props="{ maxHeight: '200px' }"
                         @update:model-value="selectParishes"
+                        @click:clear="clearParish"
                         clearable
                       />
                     </VCol>
-                    <VCol cols="12" sm="4" ></VCol>
-                    <VCol cols="12" sm="4" ></VCol>
-                    <VCol cols="12" sm="4" >
-                        <VTextField
-                        v-model="searchQuery"
-                        label="Buscar"
-                        placeholder="Buscar"
-                        density="compact"
+                    <VCol cols="12" sm="4">
+                      <VAutocomplete
+                        v-model="circuit_id"
+                        label="Circuitos"
+                        :items="getCircuits"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @click:clear="clearCircuit"
                         clearable
+                      />
+                    </VCol>
+                    <VCol cols="12" sm="4">
+                      <VAutocomplete
+                        v-model="theme_id"
+                        label="Transformaciones"
+                        :items="listThemes"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectTheme"
+                        @click:clear="clearTheme"
+                        clearable
+                      />
+                    </VCol>
+                    <VCol cols="12" sm="4">
+                        <VTextField
+                          v-model="searchQuery"
+                          label="Buscar"
+                          placeholder="Buscar"
+                          density="compact"
+                          @click:clear="clearSearch"
+                          clearable
                         />
                     </VCol>
                 </VRow>
@@ -301,13 +369,14 @@ const downloadCSV = async () => {
             <thead>
               <tr>
                 <th scope="col"> #ID </th>
-                <th scope="col"> NOMBRE </th>
                 <th scope="col"> ESTADO </th>
-                <th scope="col"> UBICACIÓN </th>
+                <th scope="col"> MUNICIPIO </th>
                 <th scope="col"> CIRCUITO </th>
-                <th scope="col" v-if="$can('ver','voluntarios')">
-                  ACCIONES
-                </th>
+                <th scope="col"> TRANSFORMACIÓN </th>
+                <th scope="col"> NOMBRE </th>
+                <th scope="col"> DOCUMENTO </th>
+                <th scope="col"> TELÉFONO </th> 
+                <th scope="col"> RESPONSABLE </th>
               </tr>
             </thead>
             <!-- 👉 table body -->
@@ -316,25 +385,26 @@ const downloadCSV = async () => {
                 v-for="volunteer in volunteers"
                 :key="volunteer.id"
                 style="height: 3.75rem;">
-
                 <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('ver','voluntarios')">      
-                  <VBtn
-                    v-if="$can('ver','voluntarios')"
-                    icon
-                    size="x-small"
-                    color="default"
-                    variant="text">
-                              
-                    <VIcon
-                        size="22"
-                        icon="tabler-eye" />
-                  </VBtn>
+                <td> {{volunteer.circuit.parish.municipality.state.name }} </td>
+                <td class="text-wrap"> 
+                  <div class="d-flex align-center">
+                    <div class="d-flex flex-column">
+                      <h6 class="text-base font-weight-medium mb-0">
+                        {{volunteer.circuit.parish.municipality.name }}
+                      </h6>
+                      <span class="text-disabled text-sm"> {{volunteer.circuit.parish.name }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td> {{volunteer.circuit.name }} </td>
+                <td> {{volunteer.theme.name }} </td>
+                <td> {{volunteer.name }} </td>
+                <td> {{volunteer.document }} </td>
+                <td> {{volunteer.phone }} </td>
+                <td>
+                  <VChip v-if="volunteer.isResponsible" color="primary">SI</VChip>
+                  <VChip v-else color="error">NO</VChip>
                 </td>
               </tr>
             </tbody>

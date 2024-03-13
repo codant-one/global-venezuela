@@ -14,12 +14,20 @@ class VolunteerController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Volunteer::with(['theme', 'state', 'municipality', 'circuit'])
+        $query = Volunteer::with(['theme', 'state', 'municipality.state', 'circuit.parish.municipality.state'])
                         ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy'
+                                'orderBy',
+                                'isState',
+                                'state_id',
+                                'theme_id',
+                                'isMunicipality',
+                                'municipality_id',
+                                'isCircuit',
+                                'parish_id',
+                                'circuit_id'
                             ])
                         );
 
@@ -27,7 +35,15 @@ class VolunteerController extends Controller
                             $request->only([
                                 'search',
                                 'orderByField',
-                                'orderBy'
+                                'orderBy',
+                                'isState',
+                                'state_id',
+                                'theme_id',
+                                'isMunicipality',
+                                'municipality_id',
+                                'isCircuit',
+                                'parish_id',
+                                'circuit_id'
                             ])
                         )->count();
 

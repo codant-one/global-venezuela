@@ -1,7 +1,5 @@
 <script setup>
 
-import router from '@/router'
-import Toaster from "@/components/common/Toaster.vue";
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
@@ -22,25 +20,14 @@ const state_id = ref(null)
 const stateOld_id = ref(null)
 const municipality_id = ref(null)
 const municipalityOld_id = ref(null)
-const parish_id = ref(null)
-const parishOld_id = ref(null)
 const listStates = ref([])
 const listMunicipalities = ref([])
-const listParishes = ref([])
 
 const listMunicipalitiesByStates = ref([])
-const listParishesByMunicipalities = ref([])
 
-const advisor = ref({
-  type: '',
-  message: '',
-  show: false
-})
-
-const alert = ref({
-  show: false,
-  message: ''
-})
+const theme_id = ref(null)
+const themeOld_id = ref(null)
+const listThemes = ref([])
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
@@ -67,8 +54,9 @@ async function fetchData() {
     limit: rowPerPage.value,
     page: currentPage.value,
     state_id: stateOld_id.value,
+    theme_id: themeOld_id.value,
     municipality_id: municipalityOld_id.value,
-    parish_id: parishOld_id.value
+    isMunicipality: true
   }
 
   isRequestOngoing.value = true
@@ -79,7 +67,7 @@ async function fetchData() {
   totalPages.value = volunteersStores.last_page
   totalVolunteers.value = volunteersStores.volunteersTotalCount
 
-  if(listParishes.value.length === 0) {
+  if(listMunicipalities.value.length === 0) {
     await miscellaneousStores.fetchData();
     loadData()
   }
@@ -87,10 +75,30 @@ async function fetchData() {
   isRequestOngoing.value = false
 }
 
+const clearSearch = () => {
+  searchQuery.value = null
+  fetchData()
+}
+
+const clearState = () => {
+  stateOld_id.value = null
+  fetchData()
+}
+
+const clearMunicipality = () => {
+  municipalityOld_id.value = null
+  fetchData()
+}
+
+const clearTheme = () => {
+  themeOld_id.value = null
+  fetchData()
+}
+
 const loadData = () => {
   listStates.value = miscellaneousStores.getData.states
+  listThemes.value = miscellaneousStores.getData.themes
   listMunicipalities.value = miscellaneousStores.getData.municipalities
-  listParishes.value = miscellaneousStores.getData.parishes
 }
 
 const getMunicipalities = computed(() => {
@@ -98,15 +106,6 @@ const getMunicipalities = computed(() => {
     return {
       title: state.name,
       value: state.id,
-    }
-  })
-})
-
-const getParishes = computed(() => {
-  return listParishesByMunicipalities.value.map((municipality) => {
-    return {
-      title: municipality.name,
-      value: municipality.id,
     }
   })
 })
@@ -127,19 +126,14 @@ const selectMunicipalities = municipality => {
     let _municipality = listMunicipalities.value.find(item => item.id === municipality)
     municipality_id.value = _municipality.name
     municipalityOld_id.value = _municipality.id
-    parish_id.value = ''
-
-    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
-
   }
 }
 
-const selectParishes = parish => {
-  if (parish) {
-    let _parish = listParishes.value.find(item => item.id === parish)
-    parish_id.value = _parish.name
-    parishOld_id.value = _parish.id
-
+const selectTheme = theme => {
+  if (theme) {
+    let _theme = listThemes.value.find(item => item.name === theme) 
+    theme_id.value = _theme.name
+    themeOld_id.value = _theme.id
   }
 }
 
@@ -149,8 +143,9 @@ const downloadCSV = async () => {
 
   let data = {
     state_id: stateOld_id.value,
+    theme_id: themeOld_id.value,
     municipality_id: municipalityOld_id.value,
-    parish_id: parishOld_id.value,
+    isMunicipality: true,
     limit: -1
   }
 
@@ -161,14 +156,21 @@ const downloadCSV = async () => {
   volunteersStores.getVolunteers.forEach(element => {
 
     let data = {
-     
+      ESTADO: element.municipality.state.name,
+      MUNICIPIO: element.municipality.name,
+      TRANSFORMACIÓN: element.theme.name,
+      NOMBRE: element.name ?? '',
+      DOCUMENTO: element.document ?? '',
+      TELÉFONO: element.phone ?? '',
+      E_MAIL: element.email ?? '',
+      ES_RESPONSABLE: element.isResponsible ? 'SI' : ''
     }
 
     dataArray.push(data)
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "volunteers", "csv");
+    .exportDataFromJSON(dataArray, "volunteers-municipalities", "csv");
 
   isRequestOngoing.value = false
 
@@ -200,70 +202,57 @@ const downloadCSV = async () => {
       </VDialog>
 
       <v-col cols="12">
-        <Toaster />
-        <v-alert
-          v-if="advisor.show"
-          :type="advisor.type"
-          class="mb-6">
-            
-          {{ advisor.message }}
-        </v-alert>
-
         <VCard title="Filtros">
             <VCardText>
                 <VRow>
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
-                        <VAutocomplete
-                          v-model="state_id"
-                          label="Estados"
-                          :items="listStates"
-                          item-title="name"
-                          item-value="name"
-                          :menu-props="{ maxHeight: '200px' }"
-                          @update:model-value="selectState"
-                          clearable
-                        />
+                    <VCol cols="12" sm="4">
+                      <VAutocomplete
+                        v-model="state_id"
+                        label="Estados"
+                        :items="listStates"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectState"
+                        @click:clear="clearState"
+                        clearable
+                      />
                     </VCol>
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
+                    <VCol cols="12" sm="4">
                       <VAutocomplete
                         v-model="municipality_id"
                         label="Municipios"
                         :items="getMunicipalities"
                         :menu-props="{ maxHeight: '200px' }"
                         @update:model-value="selectMunicipalities"
+                        @click:clear="clearMunicipality"
                         clearable
                       />
                     </VCol>
-
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
+                    <VCol cols="12" sm="4">
                       <VAutocomplete
-                        v-model="parish_id"
-                        label="Parroquias"
-                        :items="getParishes"
+                        v-model="theme_id"
+                        label="Transformaciones"
+                        :items="listThemes"
+                        item-title="name"
+                        item-value="name"
                         :menu-props="{ maxHeight: '200px' }"
-                        @update:model-value="selectParishes"
+                        @update:model-value="selectTheme"
+                        @click:clear="clearTheme"
                         clearable
                       />
                     </VCol>
-                    <VCol cols="12" sm="4" ></VCol>
-                    <VCol cols="12" sm="4" ></VCol>
-                    <VCol cols="12" sm="4" >
-                        <VTextField
+                    <VCol cols="12" sm="4"></VCol>
+                    <VCol cols="12" sm="4"></VCol>
+                    <VCol cols="12" sm="4">
+                      <VTextField
                         v-model="searchQuery"
                         label="Buscar"
                         placeholder="Buscar"
                         density="compact"
+                        @click:clear="clearSearch"
                         clearable
-                        />
+                      />
                     </VCol>
                 </VRow>
             </VCardText>
@@ -301,13 +290,13 @@ const downloadCSV = async () => {
             <thead>
               <tr>
                 <th scope="col"> #ID </th>
-                <th scope="col"> NOMBRE </th>
                 <th scope="col"> ESTADO </th>
-                <th scope="col"> UBICACIÓN </th>
-                <th scope="col"> CIRCUITO </th>
-                <th scope="col" v-if="$can('ver','voluntarios')">
-                  ACCIONES
-                </th>
+                <th scope="col"> MUNICIPIO </th>
+                <th scope="col"> TRANSFORMACIÓN </th>
+                <th scope="col"> NOMBRE </th>
+                <th scope="col"> DOCUMENTO </th>
+                <th scope="col"> TELÉFONO </th> 
+                <th scope="col"> RESPONSABLE </th>
               </tr>
             </thead>
             <!-- 👉 table body -->
@@ -318,23 +307,15 @@ const downloadCSV = async () => {
                 style="height: 3.75rem;">
 
                 <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <td> {{volunteer.id }} </td>
-                <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('ver','voluntarios')">      
-                  <VBtn
-                    v-if="$can('ver','voluntarios')"
-                    icon
-                    size="x-small"
-                    color="default"
-                    variant="text">
-                              
-                    <VIcon
-                        size="22"
-                        icon="tabler-eye" />
-                  </VBtn>
+                <td> {{volunteer.municipality.state.name }} </td>
+                <td> {{volunteer.municipality.name }} </td>
+                <td> {{volunteer.theme.name }} </td>
+                <td> {{volunteer.name }} </td>
+                <td> {{volunteer.document }} </td>
+                <td> {{volunteer.phone }} </td>
+                <td>
+                  <VChip v-if="volunteer.isResponsible" color="primary">SI</VChip>
+                  <VChip v-else color="error">NO</VChip>
                 </td>
               </tr>
             </tbody>

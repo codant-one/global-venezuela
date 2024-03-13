@@ -36,10 +36,19 @@ class Volunteer extends Model
      /**** Scopes ****/
      public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {
-            $query->where('name', 'LIKE', '%' . $term . '%')
-                  ->orWhere('email', 'LIKE', '%' . $term . '%')
-                  ->orWhere('phone', 'LIKE', '%' . $term . '%')
-                  ->orWhere('address', 'LIKE', '%' . $term . '%');
+            $query->whereHas('state', function ($q) use ($term) {
+                    $q->where('name', 'LIKE', '%' . $term . '%');
+                })
+                ->orWhereHas('municipality', function ($q) use ($term) {
+                    $q->where('name', 'LIKE', '%' . $term . '%');
+                })
+                ->orWhereHas('theme', function ($q) use ($term) {
+                    $q->where('name', 'LIKE', '%' . $term . '%');
+                })
+                ->orWhere('name', 'LIKE', '%' . $term . '%')
+                ->orWhere('email', 'LIKE', '%' . $term . '%')
+                ->orWhere('phone', 'LIKE', '%' . $term . '%')
+                ->orWhere('document', 'LIKE', '%' . $term . '%');
         }
     }
 
@@ -52,6 +61,75 @@ class Volunteer extends Model
 
         if ($filters->get('search')) {
             $query->whereSearch($filters->get('search'));
+        }
+
+        if ($filters->get('isState')) {
+            $query->whereNotNull('state_id');
+        }
+
+        if ($filters->get('isMunicipality')) {
+            $query->whereNull('state_id')
+                  ->whereNotNull('municipality_id');
+        }
+        
+        if ($filters->get('isCircuit')) {
+            $query->whereNull('state_id')
+                  ->whereNull('municipality_id')
+                  ->whereNotNull('circuit_id');
+        }
+    
+        if ($filters->get('state_id')) {
+            if ($filters->get('isState')) {
+                $query->where('state_id', $filters->get('state_id'));
+            } else if ($filters->get('isMunicipality')) {
+                $query->whereHas('municipality', function ($q) use ($filters) {
+                    $q->whereHas('state', function ($q) use ($filters) {
+                        $q->where('id', $filters->get('state_id'));
+                    });
+                });
+            } else if ($filters->get('isCircuit')) {
+                $query->whereHas('circuit', function ($q) use ($filters) {
+                    $q->whereHas('parish', function ($q) use ($filters) {
+                        $q->whereHas('municipality', function ($q) use ($filters) {
+                            $q->whereHas('state', function ($q) use ($filters) {
+                                $q->where('id', $filters->get('state_id'));
+                            });
+                        });
+                    });
+                });
+            }
+        }
+
+        if ($filters->get('municipality_id')) {
+            if ($filters->get('isMunicipality')) {
+                $query->where('municipality_id', $filters->get('municipality_id'));
+            }  else if ($filters->get('isCircuit')) {
+                $query->whereHas('circuit', function ($q) use ($filters) {
+                    $q->whereHas('parish', function ($q) use ($filters) {
+                        $q->whereHas('municipality', function ($q) use ($filters) {
+                            $q->where('id', $filters->get('municipality_id'));
+                        });
+                    });
+                });
+            } 
+        }
+
+        if ($filters->get('parish_id')) {
+            if ($filters->get('isCircuit')) {
+                $query->whereHas('circuit', function ($q) use ($filters) {
+                    $q->whereHas('parish', function ($q) use ($filters) {
+                        $q->where('id', $filters->get('parish_id'));
+                    });
+                });
+            } 
+        }
+
+        if ($filters->get('circuit_id')) {
+            $query->where('circuit_id', $filters->get('circuit_id'));
+        } 
+            
+        if ($filters->get('theme_id')) {
+            $query->where('theme_id', $filters->get('theme_id'));
         }
 
         if ($filters->get('orderByField') || $filters->get('orderBy')) {

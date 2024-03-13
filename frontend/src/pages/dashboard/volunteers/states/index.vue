@@ -1,7 +1,5 @@
 <script setup>
 
-import router from '@/router'
-import Toaster from "@/components/common/Toaster.vue";
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
@@ -22,16 +20,9 @@ const state_id = ref(null)
 const stateOld_id = ref(null)
 const listStates = ref([])
 
-const advisor = ref({
-  type: '',
-  message: '',
-  show: false
-})
-
-const alert = ref({
-  show: false,
-  message: ''
-})
+const theme_id = ref(null)
+const themeOld_id = ref(null)
+const listThemes = ref([])
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
@@ -57,7 +48,9 @@ async function fetchData() {
     orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value,
-    state_id: stateOld_id.value
+    state_id: stateOld_id.value,
+    theme_id: themeOld_id.value,
+    isState: true
   }
 
   isRequestOngoing.value = true
@@ -76,8 +69,24 @@ async function fetchData() {
   isRequestOngoing.value = false
 }
 
+const clearSearch = () => {
+  searchQuery.value = null
+  fetchData()
+}
+
+const clearState = () => {
+  stateOld_id.value = null
+  fetchData()
+}
+
+const clearTheme = () => {
+  themeOld_id.value = null
+  fetchData()
+}
+
 const loadData = () => {
   listStates.value = miscellaneousStores.getData.states
+  listThemes.value = miscellaneousStores.getData.themes
 }
 
 const selectState = state => {
@@ -85,7 +94,14 @@ const selectState = state => {
     let _state = listStates.value.find(item => item.name === state) 
     state_id.value = _state.name
     stateOld_id.value = _state.id
+  }
+}
 
+const selectTheme = theme => {
+  if (theme) {
+    let _theme = listThemes.value.find(item => item.name === theme) 
+    theme_id.value = _theme.name
+    themeOld_id.value = _theme.id
   }
 }
 
@@ -95,6 +111,8 @@ const downloadCSV = async () => {
 
   let data = {
     state_id: stateOld_id.value,
+    theme_id: themeOld_id.value,
+    isState: true,
     limit: -1
   }
 
@@ -105,14 +123,20 @@ const downloadCSV = async () => {
   volunteersStores.getVolunteers.forEach(element => {
 
     let data = {
-     
+      ESTADO: element.state.name,
+      TRANSFORMACIÓN: element.theme.name,
+      NOMBRE: element.name ?? '',
+      DOCUMENTO: element.document ?? '',
+      TELÉFONO: element.phone ?? '',
+      E_MAIL: element.email ?? '',
+      ES_RESPONSABLE: element.isResponsible ? 'SI' : ''
     }
 
     dataArray.push(data)
   })
 
   excelParser()
-    .exportDataFromJSON(dataArray, "volunteers", "csv");
+    .exportDataFromJSON(dataArray, "volunteers-states", "csv");
 
   isRequestOngoing.value = false
 
@@ -144,41 +168,43 @@ const downloadCSV = async () => {
       </VDialog>
 
       <v-col cols="12">
-        <Toaster />
-        <v-alert
-          v-if="advisor.show"
-          :type="advisor.type"
-          class="mb-6">
-            
-          {{ advisor.message }}
-        </v-alert>
-
         <VCard title="Filtros">
             <VCardText>
                 <VRow>
-                    <VCol
-                        cols="12"
-                        sm="4"
-                    >
-                        <VAutocomplete
-                          v-model="state_id"
-                          label="Estados"
-                          :items="listStates"
-                          item-title="name"
-                          item-value="name"
-                          :menu-props="{ maxHeight: '200px' }"
-                          @update:model-value="selectState"
-                          clearable
-                        />
-                    </VCol>
-                    <VCol cols="12" sm="4" ></VCol>
-                    <VCol cols="12" sm="4" >
-                        <VTextField
-                        v-model="searchQuery"
-                        label="Buscar"
-                        placeholder="Buscar"
-                        density="compact"
+                    <VCol cols="12" sm="4">
+                      <VAutocomplete
+                        v-model="state_id"
+                        label="Estados"
+                        :items="listStates"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectState"
+                        @click:clear="clearState"
                         clearable
+                      />
+                    </VCol>
+                    <VCol cols="12" sm="4">
+                      <VAutocomplete
+                        v-model="theme_id"
+                        label="Transformaciones"
+                        :items="listThemes"
+                        item-title="name"
+                        item-value="name"
+                        :menu-props="{ maxHeight: '200px' }"
+                        @update:model-value="selectTheme"
+                        @click:clear="clearTheme"
+                        clearable
+                      />
+                    </VCol>
+                    <VCol cols="12" sm="4">
+                        <VTextField
+                          v-model="searchQuery"
+                          label="Buscar"
+                          placeholder="Buscar"
+                          density="compact"
+                          @click:clear="clearSearch"
+                          clearable
                         />
                     </VCol>
                 </VRow>
@@ -217,13 +243,12 @@ const downloadCSV = async () => {
             <thead>
               <tr>
                 <th scope="col"> #ID </th>
+                <th scope="col"> ESTADO </th>
+                <th scope="col"> TRANSFORMACIÓN </th>
                 <th scope="col"> NOMBRE </th>
                 <th scope="col"> DOCUMENTO </th>
-                <th scope="col"> TELÉFONO </th>
-                <th scope="col"> ESTADO </th>
-                <th scope="col" v-if="$can('ver','voluntarios')">
-                  ACCIONES
-                </th>
+                <th scope="col"> TELÉFONO </th> 
+                <th scope="col"> RESPONSABLE </th>
               </tr>
             </thead>
             <!-- 👉 table body -->
@@ -234,23 +259,14 @@ const downloadCSV = async () => {
                 style="height: 3.75rem;">
 
                 <td> {{volunteer.id }} </td>
+                <td> {{volunteer.state.name }} </td>
+                <td> {{volunteer.theme.name }} </td>
                 <td> {{volunteer.name }} </td>
                 <td> {{volunteer.document }} </td>
                 <td> {{volunteer.phone }} </td>
-                <td> {{volunteer.state.name }} </td>
-                <!-- 👉 Acciones -->
-                <td class="text-center" style="width: 5rem;" v-if="$can('ver','voluntarios')">      
-                  <VBtn
-                    v-if="$can('ver','voluntarios')"
-                    icon
-                    size="x-small"
-                    color="default"
-                    variant="text">
-                              
-                    <VIcon
-                        size="22"
-                        icon="tabler-eye" />
-                  </VBtn>
+                <td>
+                  <VChip v-if="volunteer.isResponsible" color="primary">SI</VChip>
+                  <VChip v-else color="error">NO</VChip>
                 </td>
               </tr>
             </tbody>

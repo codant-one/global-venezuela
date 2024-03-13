@@ -10,8 +10,6 @@ import registerMultistepIllustrationLight from '@images/volunteer-logo-2.png'
 import registerMultistepBgDark from '@images/pages/register-multistep-bg-dark.png'
 import registerMultistepBgLight from '@images/pages/register-multistep-bg-light.png'
 
-const registerMultistepBg = useGenerateImageVariant(registerMultistepBgLight, registerMultistepBgDark)
-
 const currentStep = ref(0)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
 
@@ -39,7 +37,6 @@ const municipalityOld_id = ref(null)
 const parish_id = ref(null)
 const parishOld_id = ref(null)
 const circuit_id = ref(null)
-const circuitOld_id = ref(null)
 
 const isTonalSnackbarVisible = ref(false)
 const message = ref('')
