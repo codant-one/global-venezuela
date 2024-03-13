@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             MunicipalitySeeder::class,
             ParishSeeder::class,
             AdminSeeder::class,
+            OperatorSeeder::class,
 
             GenderSeeder::class,
 

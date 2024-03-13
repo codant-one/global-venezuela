@@ -437,7 +437,6 @@ const blobToBase64 = blob => {
                     v-model="name"
                     label="Nombre"
                     :rules="[requiredValidator]"
-                    readonly
                   />
                 </VCol>
                 <VCol

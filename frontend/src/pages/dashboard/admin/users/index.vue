@@ -252,11 +252,12 @@ const downloadCSV = async () => {
   
   usersStores.getUsers.forEach(element => {
     let data = {
-      NOMBRE: element.name + ' ' + (element.last_name ?? ''),
+      NOMBRE: element.name,
+      APELLIDO: (element.last_name ?? ''),
       CORREO: element.email,
       ROLES: element.roles.map(e => e['name']).join(','),
       ESTADO: element.user_detail.parish.municipality.state.name,
-      TELÉFONO: element.user_detail.phone
+      TELÉFONO: element.user_detail.phone ?? ''
     }
         
     dataArray.push(data)
