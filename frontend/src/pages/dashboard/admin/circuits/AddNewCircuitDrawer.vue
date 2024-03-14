@@ -25,10 +25,6 @@ const props = defineProps({
   municipalities: {
     type: Object,
     required: true
-  },
-  parishes: {
-    type: Object,
-    required: true
   }
 })
 
@@ -45,11 +41,9 @@ const refForm = ref()
 const listStates = ref(props.states)
 const listCities = ref(props.cities)
 const listMunicipalities = ref(props.municipalities)
-const listParishes = ref(props.parishes)
 
 const listCitiesByStates = ref([])
 const listMunicipalitiesByStates = ref([])
-const listParishesByMunicipalities = ref([])
 
 const id = ref(0)
 const name = ref('')
@@ -59,8 +53,6 @@ const city_id = ref('')
 const cityOld_id = ref('')
 const municipality_id = ref('')
 const municipalityOld_id = ref('')
-const parish_id = ref('')
-const parishOld_id = ref('')
 const isEdit = ref(false)
 
 const getTitle = computed(() => {
@@ -73,17 +65,14 @@ watchEffect(async() => {
       isEdit.value = true
       id.value = props.circuit.id
 
-      stateOld_id.value = props.circuit.parish.municipality.state.id
-      state_id.value = props.circuit.parish.municipality.state.name
+      stateOld_id.value = props.circuit.municipality.state.id
+      state_id.value = props.circuit.municipality.state.name
 
       cityOld_id.value = props.circuit.city?.id
       city_id.value = props.circuit.city?.name
 
-      municipalityOld_id.value = props.circuit.parish.municipality.id
-      municipality_id.value = props.circuit.parish.municipality.name
-
-      parishOld_id.value = props.circuit.parish.id
-      parish_id.value = props.circuit.parish.name
+      municipalityOld_id.value = props.circuit.municipality.id
+      municipality_id.value = props.circuit.municipality.name
 
       name.value = props.circuit.name
       
@@ -109,15 +98,6 @@ const getMunicipalities = computed(() => {
   })
 })
 
-const getParishes = computed(() => {
-  return listParishesByMunicipalities.value.map((municipality) => {
-    return {
-      title: municipality.name,
-      value: municipality.id,
-    }
-  })
-})
-
 const selectState = state => {
   if (state) {
     let _state = listStates.value.find(item => item.name === state)
@@ -128,18 +108,6 @@ const selectState = state => {
 
     listCitiesByStates.value = listCities.value.filter(item => item.state_id === _state.id)
     listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
-  }
-}
-
-const selectMunicipalities = municipality => {
-  if (municipality) {
-    let _municipality = listMunicipalities.value.find(item => item.id === municipality)
-    municipality_id.value = _municipality.name
- 
-    parish_id.value = ''
-
-    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
-
   }
 }
 
@@ -162,7 +130,7 @@ const onSubmit = () => {
 
       let data = {
         name: name.value,
-        parish_id:(Number.isInteger(parish_id.value)) ? parish_id.value : parishOld_id.value,
+        municipality_id:(Number.isInteger(municipality_id.value)) ? municipality_id.value : municipalityOld_id.value,
         city_id: (Number.isInteger(city_id.value)) ? city_id.value : cityOld_id.value
       }
 
@@ -254,18 +222,6 @@ const handleDrawerModelValueUpdate = val => {
                   label="Municipio"
                   :rules="[requiredValidator]"
                   :items="getMunicipalities"
-                  :menu-props="{ maxHeight: '200px' }"
-                  @update:model-value="selectMunicipalities"
-                />
-              </VCol>
-
-              <!-- 👉 Parish -->
-              <VCol cols="12">
-                <VAutocomplete
-                  v-model="parish_id"
-                  label="Parroquia"
-                  :rules="[requiredValidator]"
-                  :items="getParishes"
                   :menu-props="{ maxHeight: '200px' }"
                 />
               </VCol>

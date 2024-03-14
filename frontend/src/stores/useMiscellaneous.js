@@ -26,6 +26,18 @@ export const useMiscellaneousStores = defineStore('miscellaneous', {
                 .finally(() => {
                     this.setLoading(false)
                 });
+        },
+        fetchDataMigrant(){
+            this.setLoading(true)
+
+            return Miscellaneous.getDataMigrant()
+                .then((miscellaneous) => {
+                    this.data = miscellaneous.data.data
+                })
+                .catch(error => Promise.reject(error))
+                .finally(() => {
+                    this.setLoading(false)
+                });
         }
     }
 })

@@ -43,7 +43,7 @@ const listCommunityCouncils = ref(props.communityCouncils)
 
 const listMunicipalitiesByStates = ref([])
 const listParishesByMunicipalities = ref([])
-const listCircuitsByParishes = ref([])
+const listCircuitsByMunicipalities = ref([])
 const listCommunityCouncilsByCircuits = ref([])
 
 const refVForm = ref()
@@ -83,10 +83,10 @@ const getParishes = computed(() => {
 })
 
 const getCircuits = computed(() => {
-  return listCircuitsByParishes.value.map((parish) => {
+  return listCircuitsByMunicipalities.value.map((municipality) => {
     return {
-      title: parish.name,
-      value: parish.id,
+      title: municipality.name,
+      value: municipality.id,
     }
   })
 })
@@ -99,6 +99,47 @@ const getCommunityCouncils = computed(() => {
     }
   })
 })
+
+const clearState = () => {
+  state_id.value = ''
+  municipality_id.value = ''
+  parish_id.value = ''
+  locationDetail.value.parish_id = ''
+  circuit_id.value = ''
+  locationDetail.value.community_council_id = ''
+
+  listMunicipalitiesByStates.value = []
+  listParishesByMunicipalities.value = []
+  listCircuitsByMunicipalities.value = []
+  listCommunityCouncilsByCircuits.value = []
+}
+
+const clearMunicipality = () => {
+  municipality_id.value = ''
+  parish_id.value = ''
+  locationDetail.value.parish_id = ''
+  circuit_id.value = ''
+  locationDetail.value.community_council_id = ''
+
+  listParishesByMunicipalities.value = []
+  listCircuitsByMunicipalities.value = []
+  listCommunityCouncilsByCircuits.value = []
+}
+
+const clearParish = () => {
+  parish_id.value = ''
+  locationDetail.value.parish_id = ''
+}
+
+const clearCircuit = () => {
+  locationDetail.value.community_council_id = ''
+
+  listCommunityCouncilsByCircuits.value = []
+}
+
+const clearCommunityCouncil = () => {
+  locationDetail.value.community_council_id = ''
+}
 
 const selectState = state => {
   if (state) {
@@ -117,9 +158,11 @@ const selectMunicipalities = municipality => {
     municipality_id.value = _municipality.name
  
     locationDetail.value.parish_id = ''
+    parish_id.value = ''
+    circuit_id.value = ''
 
     listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
-
+    listCircuitsByMunicipalities.value = listCircuits.value.filter(item => item.municipality_id === _municipality.id)
   }
 }
 
@@ -128,9 +171,6 @@ const selectParishes = parish => {
     let _parish = listParishes.value.find(item => item.id === parish)
     parish_id.value = _parish.name
     locationDetail.value.parish_id = _parish.id
-
-    circuit_id.value = ''
-    listCircuitsByParishes.value = listCircuits.value.filter(item => item.parish_id === _parish.id)
 
   }
 }
@@ -208,6 +248,8 @@ const onSubmit = () => {
               item-value="name"
               :menu-props="{ maxHeight: '200px' }"
               @update:model-value="selectState"
+              @click:clear="clearState"
+              clearable
             />
           </VCol>
           <VCol cols="12" md="6">
@@ -218,6 +260,8 @@ const onSubmit = () => {
               :items="getMunicipalities"
               :menu-props="{ maxHeight: '200px' }"
               @update:model-value="selectMunicipalities"
+              @click:clear="clearMunicipality"
+              clearable
             />
           </VCol>
           <VCol cols="12" md="6">
@@ -228,6 +272,8 @@ const onSubmit = () => {
               :items="getParishes"
               :menu-props="{ maxHeight: '200px' }"
               @update:model-value="selectParishes"
+              @click:clear="clearParish"
+              clearable
             />
           </VCol>
           <VCol cols="12" md="6">
@@ -237,6 +283,8 @@ const onSubmit = () => {
               :items="getCircuits"
               :menu-props="{ maxHeight: '200px' }"
               @update:model-value="selectCircuit"
+              @click:clear="clearCircuit"
+              clearable
             />
           </VCol>
           <VCol cols="12" md="6">
@@ -245,6 +293,8 @@ const onSubmit = () => {
               label="Consejo Comunal"
               :items="getCommunityCouncils"
               :menu-props="{ maxHeight: '200px' }"
+              @click:clear="clearCommunityCouncil"
+              clearable
             />
           </VCol>
           <VCol cols="12" md="12">

@@ -66,7 +66,7 @@ const download = () => {
         <!-- SECTION Customer Details -->
         <VCol cols="12">
         <VCard v-if="props.customerData">
-            <VCardText class="text-center pt-15" v-if="props.customerData.file_document">
+            <VCardText class="text-center pt-15" v-if="false">
                 <!-- 👉 Avatar -->
                 <VAvatar
                     rounded
@@ -91,7 +91,7 @@ const download = () => {
 
             <!-- 👉 Customer Details -->
             <VCardText>
-                <VDivider class="my-4" v-if="props.customerData.file_document"/>
+                <VDivider class="my-4" v-if="false"/>
                 <VList class="card-list mt-2">
                     <VListItem>
                     <VListItemTitle>

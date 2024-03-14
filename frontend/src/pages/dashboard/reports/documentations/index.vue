@@ -222,21 +222,18 @@ const downloadCSV = async () => {
 
                     <VCol
                         cols="12"
-                        sm="2"
+                        sm="3"
                     >
                       <div class="align-center">
-                        <span>¿Ha tramitado el proceso de naturalización ante el SAIME?</span>
+                        <span>Naturalización ante el SAIME</span>
                         <VRadioGroup v-model="infoDetail.process_saime" inline class="py-2">
                           <VRadio value="1" label="SI"/>
                           <VSpacer />
-                          <VRadio value="0" label="NO" class="radio-custom"/>
+                          <VRadio value="0" label="NO" class="radio-custom2"/>
                         </VRadioGroup>
                       </div>
                     </VCol>
-                    <VCol
-                        cols="12"
-                        sm="2"
-                    >
+                    <VCol cols="12" sm="2">
                       <div class="align-center">
                         <span>Pasaporte vencido</span>
                         <VRadioGroup v-model="infoDetail.passport_status" inline class="py-2">
@@ -246,6 +243,7 @@ const downloadCSV = async () => {
                         </VRadioGroup>
                       </div>
                     </VCol>
+                    <VCol cols="12" sm="1"></VCol>
                     <VCol
                         cols="12"
                         sm="4"
@@ -381,6 +379,10 @@ const downloadCSV = async () => {
 <style scoped>
   .radio-custom {
     margin-right: 56px;
+  }
+
+  .radio-custom2 {
+    margin-right: 150px;
   }
 </style>
 <route lang="yaml">

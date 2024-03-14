@@ -2,14 +2,7 @@
 
 import { ref } from "vue"
 import { useMigrantsStores } from '@/stores/useMigrants'
-import { useStatesStores } from '@/stores/useStates'
-import { useCitiesStores } from '@/stores/useCities'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
-import { useGendersStores } from '@/stores/useGenders'
-import { useCircuitsStores } from '@/stores/useCircuits'
-import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
-import { useCountriesStores } from '@/stores/useCountries'
+import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
 import SettingsGeneral from '@/views/apps/migrants/settings/SettingsGeneral.vue'
 import SettingsDocument from '@/views/apps/migrants/settings/SettingsDocument.vue'
 import SettingsLocation from '@/views/apps/migrants/settings/SettingsLocation.vue'
@@ -17,14 +10,8 @@ import SettingsInfoMigrant from '@/views/apps/migrants/settings/SettingsInfoMigr
 import router from '@/router'
 
 const migrantsStores = useMigrantsStores()
-const statesStores = useStatesStores()
-const citiesStores = useCitiesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
-const gendersStores = useGendersStores()
-const circuitsStores = useCircuitsStores()
-const communityCouncilsStores = useCommunityCouncilsStores()
-const countriesStores = useCountriesStores()
+const miscellaneousStores = useMiscellaneousStores()
+
 const route = useRoute()
 
 const emitter = inject("emitter")
@@ -66,36 +53,15 @@ const tabsData = [
   }
 ]
 
-const loadStates = () => {
-  listStates.value = statesStores.getStates
-}
-
-const loadCities = () => {
-  listCities.value = citiesStores.getCities
-}
-
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
-}
-
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
-}
-
-const loadGenders = () => {
-  listGenders.value = gendersStores.getGenders
-}
-
-const loadCircuits = () => {
-  listCircuits.value = circuitsStores.getCircuits
-}
-
-const loadCommunityCouncils = () => {
-  listCommunityCouncils.value = communityCouncilsStores.getCommunityCouncils
-}
-
-const loadCountries = () => {
-  listCountries.value = countriesStores.getCountries
+const loadData = () => {
+  listStates.value = miscellaneousStores.getData.states
+  listCities.value = miscellaneousStores.getData.cities
+  listMunicipalities.value = miscellaneousStores.getData.municipalities
+  listParishes.value = miscellaneousStores.getData.parishes
+  listGenders.value = miscellaneousStores.getData.genders
+  listCircuits.value = miscellaneousStores.getData.circuits
+  listCommunityCouncils.value = miscellaneousStores.getData.communityCouncils
+  listCountries.value = miscellaneousStores.getData.countries
 }
 
 watchEffect(fetchData)
@@ -105,23 +71,8 @@ async function fetchData() {
   isRequestOngoing.value = true
 
   if(listCommunityCouncils.value.length === 0) {
-    await countriesStores.fetchCountries();
-    await statesStores.fetchStates();
-    await citiesStores.fetchCities();
-    await municipalitiesStores.fetchMunicipalities();
-    await parishesStores.fetchParishes();
-    await gendersStores.fetchGenders();
-    await circuitsStores.fetchCircuits({ limit: -1 });
-    await communityCouncilsStores.fetchCommunityCouncils({ limit: -1 })
-
-    loadCountries()
-    loadStates()
-    loadCities()
-    loadMunicipalities()
-    loadParishes()
-    loadCircuits()
-    loadGenders()
-    loadCommunityCouncils()
+    await miscellaneousStores.fetchDataMigrant();
+    loadData()
 
     migrant.value = await migrantsStores.showMigrant(Number(route.params.id))
   }

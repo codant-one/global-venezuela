@@ -25,13 +25,14 @@ class CircuitController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Circuit::with(['parish.municipality.state', 'city'])
+        $query = Circuit::with(['municipality.state', 'city'])
                         ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',
                                 'orderBy',
-                                'state_id'
+                                'state_id',
+                                'municipality_id'
                             ])
                         );
 
@@ -40,7 +41,8 @@ class CircuitController extends Controller
                                 'search',
                                 'orderByField',
                                 'orderBy',
-                                'state_id'
+                                'state_id',
+                                'municipality_id'
                             ])
                         )->count();
 
@@ -66,7 +68,7 @@ class CircuitController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'circuit' => Circuit::with(['parish.municipality.state', 'city'])->find($circuit->id)
+                    'circuit' => Circuit::with(['municipality.state', 'city'])->find($circuit->id)
                 ]
             ]);
 
@@ -94,7 +96,7 @@ class CircuitController extends Controller
 
             $limit = $request->has('limit') ? $request->limit : 10;
 
-            $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
+            $query = CommunityCouncil::with(['circuit.municipality.state', 'circuit.city'])
                             ->where('circuit_id', $id)
                             ->applyFilters(
                                 $request->only([
@@ -155,7 +157,7 @@ class CircuitController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'circuit' => Circuit::with(['parish.municipality.state', 'city'])->find($circuit->id)
+                    'circuit' => Circuit::with(['municipality.state', 'city'])->find($circuit->id)
                 ]
             ]);
 

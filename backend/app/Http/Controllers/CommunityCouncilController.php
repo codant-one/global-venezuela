@@ -25,13 +25,15 @@ class CommunityCouncilController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])
+        $query = CommunityCouncil::with(['circuit.municipality.state', 'circuit.city'])
                         ->applyFilters(
                             $request->only([
                                 'search',
                                 'orderByField',
                                 'orderBy',
-                                'state_id'
+                                'state_id',
+                                'municipality_id',
+                                'circuit_id'
                             ])
                         );
 
@@ -40,7 +42,9 @@ class CommunityCouncilController extends Controller
                                 'search',
                                 'orderByField',
                                 'orderBy',
-                                'state_id'
+                                'state_id',
+                                'municipality_id',
+                                'circuit_id'
                             ])
                         )->count();
 
@@ -66,7 +70,7 @@ class CommunityCouncilController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [ 
-                    'communityCouncil' => CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])->find($communityCouncil->id)
+                    'communityCouncil' => CommunityCouncil::with(['circuit.municipality.state', 'circuit.city'])->find($communityCouncil->id)
                 ]
             ]);
 
@@ -151,7 +155,7 @@ class CommunityCouncilController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'communityCouncil' => CommunityCouncil::with(['circuit.parish.municipality.state', 'circuit.city'])->find($communityCouncil->id)
+                    'communityCouncil' => CommunityCouncil::with(['circuit.municipality.state', 'circuit.city'])->find($communityCouncil->id)
                 ]
             ]);
 

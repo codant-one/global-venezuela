@@ -12,7 +12,6 @@ use App\Models\User;
 use App\Models\UserRegisterToken;
 use App\Models\UserDetails;
 use App\Models\Municipality;
-use App\Models\Parish;
 
 class OperatorSeeder extends Seeder
 {
@@ -26,51 +25,51 @@ class OperatorSeeder extends Seeder
 
         foreach($states as $state){
 
-            if($state->id !== 25) {
-                $password = 'patriagrande2024';
+            if($state->id !== 25)
                 $email = Str::slug($state->name).'patriagrande@gmail.com';
+            else 
+                $email = 'dfpatriagrande@gmail.com';
 
-                $user = User::create([
-                    'name' => $state->name,
-                    'last_name' => 'OPERADOR',
-                    'username' => Str::slug($state->name . ' ' . rand(1,100)),
-                    'email' => str_replace('-', '', $email),
-                    'password' => Hash::make($password),
-                    'created_at' => now()->toDateString(),
-                    'updated_at' => now()->toDateString()
-                ]);
+            $password = 'patriagrande2024';
+            $user = User::create([
+                'name' => $state->name,
+                'last_name' => 'OPERADOR',
+                'username' => Str::slug($state->name . ' ' . rand(1,100)),
+                'email' => str_replace('-', '', $email),
+                'password' => Hash::make($password),
+                'created_at' => now()->toDateString(),
+                'updated_at' => now()->toDateString()
+            ]);
         
-                $user->assignRole('Operador');
+            $user->assignRole('Operador');
 
-                $municipality_id = Municipality::where('state_id', $state->id)->InRandomOrder()->first()->id;
-                $parish_id = Parish::where('municipality_id', $municipality_id)->InRandomOrder()->first()->id;
+            $municipality_id = Municipality::where('state_id', $state->id)->InRandomOrder()->first()->id;
+            
+            UserDetails::create([
+                'user_id' => $user->id,
+                'parish_id' => 1126,
+                'created_at' => now()->toDateString(),
+                'updated_at' => now()->toDateString()
+            ]);
 
-                UserDetails::create([
-                    'user_id' => $user->id,
-                    'parish_id' => $parish_id,
-                    'created_at' => now()->toDateString(),
-                    'updated_at' => now()->toDateString()
-                ]);
+            $registerConfirm = UserRegisterToken::updateOrCreate(
+                ['user_id' => $user->id],
+                ['token' => Str::random(60)]
+            );
 
-                $registerConfirm = UserRegisterToken::updateOrCreate(
-                    ['user_id' => $user->id],
-                    ['token' => Str::random(60)]
-                );
+            $info = [
+                'title' => 'Cuenta creada satisfactoriamente!!!',
+                'user' => $user->name . ' ' . $user->last_name,
+                'username' => $user->email,
+                'email' => 'emails.auth.user_created',
+                'password' => $password,
+                'text' => 'Tu cuenta no está verificada. Confirma tu cuenta con los pasos a seguir para verificarla.',
+                'buttonLink' =>  env('APP_DOMAIN').'/register-confirm?token=' . $registerConfirm['token'],
+                'buttonText' => 'Confirmar',
+                'subject' => 'Bienvenido a '.env('APP_TITLE'),
+            ];
 
-                $info = [
-                    'title' => 'Cuenta creada satisfactoriamente!!!',
-                    'user' => $user->name . ' ' . $user->last_name,
-                    'username' => $user->email,
-                    'email' => 'emails.auth.user_created',
-                    'password' => $password,
-                    'text' => 'Tu cuenta no está verificada. Confirma tu cuenta con los pasos a seguir para verificarla.',
-                    'buttonLink' =>  env('APP_DOMAIN').'/register-confirm?token=' . $registerConfirm['token'],
-                    'buttonText' => 'Confirmar',
-                    'subject' => 'Bienvenido a '.env('APP_TITLE'),
-                ];
-
-                $this->sendMail($user->id, $info); 
-            }
+            $this->sendMail($user->id, $info);
         }
 
     }

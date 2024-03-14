@@ -23,7 +23,7 @@ class StateSeeder extends Seeder
             State::query()->updateOrCreate([
                 'id' => $state['id_estado'],
                 'country_id' => 231,
-                'name' => ucfirst(mb_strtolower($state['estado'])),
+                'name' => mb_strtoupper($state['estado'], 'UTF-8'),
                 'iso_3166-2' => $state['iso_3166-2']
             ]);
         }

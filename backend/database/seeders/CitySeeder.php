@@ -23,7 +23,7 @@ class CitySeeder extends Seeder
             City::query()->updateOrCreate([
                 'id' => $city['id_ciudad'],
                 'state_id' => $city['id_estado'],
-                'name' => ucfirst(mb_strtolower($city['ciudad'])),
+                'name' => mb_strtoupper($city['ciudad'], 'UTF-8'),
                 'capital' => $city['capital']
             ]);
         }

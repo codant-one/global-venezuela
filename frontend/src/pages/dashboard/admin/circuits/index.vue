@@ -5,16 +5,10 @@ import router from '@/router'
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 import { useCircuitsStores } from '@/stores/useCircuits'
-import { useStatesStores } from '@/stores/useStates'
-import { useCitiesStores } from '@/stores/useCities'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
+import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
 
 const circuitsStores = useCircuitsStores()
-const statesStores = useStatesStores()
-const citiesStores = useCitiesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
+const miscellaneousStores = useMiscellaneousStores()
 
 const circuits = ref([])
 const searchQuery = ref('')
@@ -28,10 +22,14 @@ const isConfirmDeleteDialogVisible = ref(false)
 const selectedCircuit = ref({})
 
 const state_id = ref(null)
+const stateOld_id = ref(null)
+const municipality_id = ref(null)
+const municipalityOld_id = ref(null)
 const listStates = ref([])
 const listCities = ref([])
 const listMunicipalities = ref([])
-const listParishes = ref([])
+
+const listMunicipalitiesByStates = ref([])
 
 const advisor = ref({
   type: '',
@@ -71,7 +69,8 @@ async function fetchData() {
     orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value,
-    state_id: state_id.value
+    state_id: stateOld_id.value,
+    municipality_id: municipalityOld_id.value
   }
 
   isRequestOngoing.value = true
@@ -81,35 +80,62 @@ async function fetchData() {
   totalPages.value = circuitsStores.last_page
   totalCircuits.value = circuitsStores.circuitsTotalCount
 
-  if(listParishes.value.length === 0) {
-    await statesStores.fetchStates();
-    await citiesStores.fetchCities();
-    await municipalitiesStores.fetchMunicipalities();
-    await parishesStores.fetchParishes();
-
-    loadStates()
-    loadCities()
-    loadMunicipalities()
-    loadParishes()
+  if(listMunicipalities.value.length === 0) {
+    await miscellaneousStores.fetchData();
+    loadData()
   }
 
   isRequestOngoing.value = false
 }
 
-const loadStates = () => {
-  listStates.value = statesStores.getStates
+const loadData = () => {
+  listStates.value = miscellaneousStores.getData.states
+  listMunicipalities.value = miscellaneousStores.getData.municipalities
+  listCities.value = miscellaneousStores.getData.cities
 }
 
-const loadCities = () => {
-  listCities.value = citiesStores.getCities
+const selectState = state => {
+  if (state) {
+    let _state = listStates.value.find(item => item.name === state) 
+    municipality_id.value = ''
+    state_id.value = _state.name
+    stateOld_id.value = _state.id
+
+    listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
+  }
 }
 
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
+const selectMunicipalities = municipality => {
+  if (municipality) {
+    let _municipality = listMunicipalities.value.find(item => item.id === municipality)
+    municipality_id.value = _municipality.name
+    municipalityOld_id.value = _municipality.id
+
+  }
 }
 
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
+const getMunicipalities = computed(() => {
+  return listMunicipalitiesByStates.value.map((state) => {
+    return {
+      title: state.name,
+      value: state.id,
+    }
+  })
+})
+
+const clearSearch = () => {
+  searchQuery.value = null
+  fetchData()
+}
+
+const clearState = () => {
+  stateOld_id.value = null
+  fetchData()
+}
+
+const clearMunicipality = () => {
+  municipalityOld_id.value = null
+  fetchData()
 }
 
 const seeCircuit = circuitData => {
@@ -230,7 +256,8 @@ const downloadCSV = async () => {
   isRequestOngoing.value = true
 
   let data = {
-    state_id: state_id.value,
+    state_id: stateOld_id.value,
+    municipality_id: municipalityOld_id.value,
     limit: -1
   }
 
@@ -241,9 +268,8 @@ const downloadCSV = async () => {
   circuitsStores.getCircuits.forEach(element => {
     let data = {
       NOMBRE: element.name,
-      ESTADO: element.parish.municipality.state.name,
-      MUNICIPIO: element.parish.municipality.name,
-      PARROQUIA: element.parish.name,
+      ESTADO: element.municipality.state.name,
+      MUNICIPIO: element.municipality.name,
       CIUDAD: element.city?.name
     }
 
@@ -298,27 +324,39 @@ const downloadCSV = async () => {
                 cols="12"
                 sm="4"
               >
-                <VSelect
+                <VAutocomplete
                   v-model="state_id"
                   label="Estados"
                   :items="listStates"
-                  item-value="id"
                   item-title="name"
+                  item-value="name"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @update:model-value="selectState"
+                  @click:clear="clearState"
                   clearable
-                  clear-icon="tabler-x"
-                  no-data-text="No disponible"
                 />
               </VCol>
-              <VCol cols="12" sm="2" />
+              <VCol cols="12" sm="4">
+                <VAutocomplete
+                  v-model="municipality_id"
+                  label="Municipios"
+                  :items="getMunicipalities"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @update:model-value="selectMunicipalities"
+                  @click:clear="clearMunicipality"
+                  clearable
+                />
+              </VCol>
               <VCol
                 cols="12"
-                sm="6"
+                sm="4"
               >
                 <VTextField
                   v-model="searchQuery"
                   label="Buscar"
                   placeholder="Buscar"
                   density="compact"
+                  @click:clear="clearSearch"
                   clearable
                 />
               </VCol>
@@ -371,7 +409,7 @@ const downloadCSV = async () => {
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
                 <th scope="col"> ESTADO </th>
-                <th scope="col"> UBICACIÓN </th>
+                <th scope="col"> MUNICIPIO </th>
                 <th scope="col"> CIUDAD </th>
                 <th scope="col" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">
                   ACCIONES
@@ -387,17 +425,8 @@ const downloadCSV = async () => {
 
                 <td> {{circuit.id }} </td>
                 <td class="text-base font-weight-medium mb-0"> {{circuit.name }} </td>
-                <td class="text-uppercase"> {{circuit.parish.municipality.state.name }} </td>
-                <td class="text-wrap"> 
-                  <div class="d-flex align-center">
-                    <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0">
-                        {{circuit.parish.municipality.name }}
-                      </h6>
-                      <span class="text-disabled text-sm"> {{circuit.parish.name }}</span>
-                    </div>
-                  </div>
-                </td>
+                <td class="text-wrap"> {{circuit.municipality.state.name }} </td>
+                <td class="text-wrap"> {{circuit.municipality.name }} </td>
                 <td class="text-uppercase"> {{ circuit.city?.name }} </td>
                 <!-- 👉 Acciones -->
                 <td class="text-center" style="width: 5rem;" v-if="$can('ver','circuitos') || $can('editar','circuitos') || $can('eliminar','circuitos')">      
@@ -474,13 +503,12 @@ const downloadCSV = async () => {
 
     <!-- 👉 Add New Circuit -->
     <AddNewCircuitDrawer
-      v-if="listParishes.length > 0"
+      v-if="listMunicipalities.length > 0"
       v-model:isDrawerOpen="isAddNewCircuitDrawerVisible"
       :circuit="selectedCircuit"
       :states="listStates"
       :cities="listCities"
       :municipalities="listMunicipalities"
-      :parishes="listParishes"
       @circuit-data="submitForm"/>
 
     <!-- 👉 Confirm Delete -->

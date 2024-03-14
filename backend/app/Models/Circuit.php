@@ -13,8 +13,8 @@ class Circuit extends Model
     protected $guarded = [];
 
     /**** Relationship ****/
-    public function parish() {
-        return $this->belongsTo(Parish::class, 'parish_id', 'id');
+    public function municipality() {
+        return $this->belongsTo(Municipality::class, 'municipality_id', 'id');
     }
 
     public function city() {
@@ -33,11 +33,9 @@ class Circuit extends Model
     }
 
     public function scopeWhereState($query, $search) {
-        $query->whereHas('parish', function ($q) use ($search) {
-            $q->whereHas('municipality', function ($q) use ($search) {
-                $q->whereHas('state', function ($q) use ($search) {
-                    $q->where('id', $search);
-                });
+        $query->whereHas('municipality', function ($q) use ($search) {
+            $q->whereHas('state', function ($q) use ($search) {
+                $q->where('id', $search);
             });
         });
     }
@@ -55,6 +53,10 @@ class Circuit extends Model
 
         if ($filters->get('state_id')) {
             $query->whereState($filters->get('state_id'));
+        }
+
+        if ($filters->get('municipality_id')) {
+            $query->where('municipality_id', $filters->get('municipality_id'));
         }
 
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
@@ -75,7 +77,7 @@ class Circuit extends Model
     /**** Public methods ****/
     public static function createCircuit($request) {
         $circuit = self::create([
-            'parish_id' => $request->parish_id,
+            'municipality_id' => $request->municipality_id,
             'city_id' => $request->city_id,
             'name' => $request->name
         ]);
@@ -85,7 +87,7 @@ class Circuit extends Model
 
     public static function updateCircuit($request, $circuit) {
         $circuit->update([
-            'parish_id' => $request->parish_id,
+            'municipality_id' => $request->municipality_id,
             'city_id' => $request->city_id,
             'name' => $request->name
         ]);

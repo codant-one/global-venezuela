@@ -132,6 +132,7 @@ Route::apiResource('circuits', CircuitController::class);
 
 //MISCELLANEOUS
 Route::get('miscellaneous/data', [MiscellaneousController::class, 'allData']);
+Route::get('miscellaneous/dataMigrant', [MiscellaneousController::class, 'dataMigrant']);
 
 //Volunteers
 Route::group(['prefix' => 'volunteers'], function () {

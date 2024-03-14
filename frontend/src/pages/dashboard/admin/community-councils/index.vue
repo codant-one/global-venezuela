@@ -3,18 +3,12 @@
 import AddNewCommunityCouncilDrawer from './AddNewCommunityCouncilDrawer.vue'
 import router from '@/router'
 import { useCommunityCouncilsStores } from '@/stores/useCommunityCouncils'
-import { useCircuitsStores } from '@/stores/useCircuits'
-import { useStatesStores } from '@/stores/useStates'
-import { useMunicipalitiesStores } from '@/stores/useMunicipalities'
-import { useParishesStores } from '@/stores/useParishes'
+import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
 import { ref } from "vue"
 import { excelParser } from '@/plugins/csv/excelParser'
 
 const communityCouncilsStores = useCommunityCouncilsStores()
-const circuitsStores = useCircuitsStores()
-const statesStores = useStatesStores()
-const municipalitiesStores = useMunicipalitiesStores()
-const parishesStores = useParishesStores()
+const miscellaneousStores = useMiscellaneousStores()
 
 const communityCouncils = ref([])
 const searchQuery = ref('')
@@ -27,11 +21,17 @@ const isAddNewCommunityCouncilDrawerVisible = ref(false)
 const isConfirmDeleteDialogVisible = ref(false)
 const selectedCommunityCouncil = ref({})
 
+const circuit_id = ref(null)
 const state_id = ref(null)
+const stateOld_id = ref(null)
+const municipality_id = ref(null)
+const municipalityOld_id = ref(null)
 const listStates = ref([])
 const listMunicipalities = ref([])
-const listParishes = ref([])
 const listCircuits = ref([])
+
+const listMunicipalitiesByStates = ref([])
+const listCircuitsByMunicipalities = ref([])
 
 const advisor = ref({
   type: '',
@@ -71,7 +71,9 @@ async function fetchData() {
     orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value,
-    state_id: state_id.value
+    state_id: stateOld_id.value,
+    municipality_id: municipalityOld_id.value,
+    circuit_id: circuit_id.value
   }
 
   isRequestOngoing.value = true
@@ -81,35 +83,78 @@ async function fetchData() {
   totalPages.value = communityCouncilsStores.last_page
   totalCommunityCouncils.value = communityCouncilsStores.communityCouncilsTotalCount
 
-  if(listParishes.value.length === 0) {
-    await statesStores.fetchStates();
-    await municipalitiesStores.fetchMunicipalities();
-    await parishesStores.fetchParishes();
-    await circuitsStores.fetchCircuits({ limit: -1 });
-
-    loadStates()
-    loadMunicipalities()
-    loadParishes()
-    loadCircuits()
+  if(listCircuits.value.length === 0) {
+    await miscellaneousStores.fetchData();
+    loadData()
   }
 
   isRequestOngoing.value = false
 }
 
-const loadStates = () => {
-  listStates.value = statesStores.getStates
+const loadData = () => {
+  listStates.value = miscellaneousStores.getData.states
+  listCircuits.value = miscellaneousStores.getData.circuits
+  listMunicipalities.value = miscellaneousStores.getData.municipalities
+  listCircuits.value = miscellaneousStores.getData.circuits
 }
 
-const loadMunicipalities = () => {
-  listMunicipalities.value = municipalitiesStores.getMunicipalities
+const getCircuits = computed(() => {
+  return listCircuitsByMunicipalities.value.map((municipality) => {
+    return {
+      title: municipality.name,
+      value: municipality.id,
+    }
+  })
+})
+
+const getMunicipalities = computed(() => {
+  return listMunicipalitiesByStates.value.map((state) => {
+    return {
+      title: state.name,
+      value: state.id,
+    }
+  })
+})
+
+const selectState = state => {
+  if (state) {
+    let _state = listStates.value.find(item => item.name === state) 
+    municipality_id.value = ''
+    state_id.value = _state.name
+    stateOld_id.value = _state.id
+
+    listMunicipalitiesByStates.value = listMunicipalities.value.filter(item => item.state_id === _state.id)
+  }
 }
 
-const loadParishes = () => {
-  listParishes.value = parishesStores.getParishes
+const selectMunicipalities = municipality => {
+  if (municipality) {
+    let _municipality = listMunicipalities.value.find(item => item.id === municipality)
+    municipality_id.value = _municipality.name
+    municipalityOld_id.value = _municipality.id
+
+    listCircuitsByMunicipalities.value = listCircuits.value.filter(item => item.municipality_id === _municipality.id)
+  }
 }
 
-const loadCircuits = () => {
-  listCircuits.value = circuitsStores.getCircuits
+const clearSearch = () => {
+  searchQuery.value = null
+  fetchData()
+}
+
+const clearState = () => {
+  stateOld_id.value = null
+  fetchData()
+}
+
+const clearMunicipality = () => {
+  municipalityOld_id.value = null
+  fetchData()
+}
+
+const clearCircuit = () => {
+  circuit_id.value = null
+  fetchData()
 }
 
 const submitForm = async (communityCouncil, method) => {
@@ -187,7 +232,6 @@ const submitUpdate = communityCouncilData => {
   }, 3000)
 }
 
-
 const editCommunityCouncil = communityCouncilData => {
     isAddNewCommunityCouncilDrawerVisible.value = true
     selectedCommunityCouncil.value = { ...communityCouncilData }
@@ -235,7 +279,9 @@ const downloadCSV = async () => {
   isRequestOngoing.value = true
 
   let data = {
-    state_id: state_id.value,
+    state_id: stateOld_id.value,
+    municipality_id: municipalityOld_id.value,
+    circuit_id: circuit_id.value,
     limit: -1
   }
 
@@ -247,9 +293,8 @@ const downloadCSV = async () => {
     let data = {
       NOMBRE: element.name,
       CIRCUITO: element.circuit.name,
-      ESTADO: element.circuit.parish.municipality.state.name,
-      MUNICIPIO: element.circuit.parish.municipality.name,
-      PARROQUIA: element.circuit.parish.name,
+      ESTADO: element.circuit.municipality.state.name,
+      MUNICIPIO: element.circuit.municipality.name,
       CIUDAD: element.circuit.city?.name
     }
 
@@ -304,27 +349,50 @@ const downloadCSV = async () => {
                 cols="12"
                 sm="4"
               >
-                <VSelect
+                <VAutocomplete
                   v-model="state_id"
                   label="Estados"
                   :items="listStates"
-                  item-value="id"
                   item-title="name"
+                  item-value="name"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @update:model-value="selectState"
+                  @click:clear="clearState"
                   clearable
-                  clear-icon="tabler-x"
-                  no-data-text="No disponible"
                 />
               </VCol>
-              <VCol cols="12" sm="2" />
+              <VCol cols="12" sm="4">
+                <VAutocomplete
+                  v-model="municipality_id"
+                  label="Municipios"
+                  :items="getMunicipalities"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @update:model-value="selectMunicipalities"
+                  @click:clear="clearMunicipality"
+                  clearable
+                />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <VAutocomplete
+                  v-model="circuit_id"
+                  label="Circuitos Comunales"
+                  :items="getCircuits"
+                  :menu-props="{ maxHeight: '200px' }"
+                  @click:clear="clearCircuit"
+                  clearable
+                />
+              </VCol>
+              <VCol cols="12" sm="8"></VCol>
               <VCol
                 cols="12"
-                sm="6"
+                sm="4"
               >
                 <VTextField
                   v-model="searchQuery"
                   label="Buscar"
                   placeholder="Buscar"
                   density="compact"
+                  @click:clear="clearSearch"
                   clearable
                 />
               </VCol>
@@ -377,9 +445,9 @@ const downloadCSV = async () => {
               <tr>
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
-                <th scope="col"> CIRCUITO </th>
                 <th scope="col"> ESTADO </th>
-                <th scope="col"> UBICACIÓN </th>
+                <th scope="col"> MUNICIPIO </th>
+                <th scope="col"> CIRCUITO </th>
                 <th scope="col" v-if="$can('ver','consejos-comunales') || $can('editar','consejos-comunales') || $can('eliminar','consejos-comunales')">
                   ACCIONES
                 </th>
@@ -394,24 +462,15 @@ const downloadCSV = async () => {
 
                 <td> {{communityCouncil.id }} </td>
                 <td class="text-base font-weight-medium mb-0"> {{communityCouncil.name }} </td>
+                <td class="text-uppercase"> {{communityCouncil.circuit.municipality.state.name }} </td>
+                <td class="text-uppercase"> {{ communityCouncil.circuit.municipality.name }} </td>
                 <td class="text-wrap"> 
                   <div class="d-flex align-center">
                     <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0 text-primary"  @click="seeCircuit(communityCouncil)">
+                      <h6 class="text-base font-weight-medium mb-0 text-primary cursor-pointer" @click="seeCircuit(communityCouncil)">
                         {{communityCouncil.circuit.name}}
                       </h6>
                       <span class="text-disabled text-sm">{{communityCouncil.circuit.city?.name }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-uppercase"> {{communityCouncil.circuit.parish.municipality.state.name }} </td>
-                <td class="text-uppercase">
-                  <div class="d-flex align-center">
-                    <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0">
-                        {{ communityCouncil.circuit.parish.municipality.name }}
-                      </h6>
-                      <span class="text-disabled text-sm">{{communityCouncil.circuit.parish.name }}</span>
                     </div>
                   </div>
                 </td>
@@ -494,7 +553,6 @@ const downloadCSV = async () => {
       :communityCouncil="selectedCommunityCouncil"
       :states="listStates"
       :municipalities="listMunicipalities"
-      :parishes="listParishes"
       :circuits="listCircuits"
       @community-council-data="submitForm"/>
 

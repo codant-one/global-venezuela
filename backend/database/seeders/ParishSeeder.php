@@ -23,7 +23,7 @@ class ParishSeeder extends Seeder
             Parish::query()->updateOrCreate([
                 'id' => $parish['id_parroquia'],
                 'municipality_id' => $parish['id_municipio'],
-                'name' => ucfirst(mb_strtolower($parish['parroquia']))
+                'name' => mb_strtoupper($parish['parroquia'], 'UTF-8')
             ]);
         }
     }

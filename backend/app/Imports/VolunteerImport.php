@@ -22,6 +22,7 @@ class VolunteerImport implements ToModel
     */
     public function model(array $row)
     {
+        mb_internal_encoding('UTF-8');
         preg_match('/\d+/', $row[3], $theme_id);
 
         $states = State::all();
@@ -67,7 +68,7 @@ class VolunteerImport implements ToModel
             'municipality_id' => $municipality_id,
             'circuit_id' => null,
             'isResponsible' => $isResponsible,
-            'name' => ucwords(strtolower($row[0])),
+            'name' => mb_convert_case(mb_strtolower($row[0]), MB_CASE_TITLE, "UTF-8"),
             'document' => str_replace('.', '', $row['1']) ?? null,
             'phone' => str_replace('-', '', $row['2']) ?? null,
             'email' => null

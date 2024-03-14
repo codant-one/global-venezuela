@@ -32,12 +32,18 @@ class CommunityCouncil extends Model
 
     public function scopeWhereState($query, $search) {
         $query->whereHas('circuit', function ($q) use ($search) {
-            $q->whereHas('parish', function ($q) use ($search) {
-                $q->whereHas('municipality', function ($q) use ($search) {
-                    $q->whereHas('state', function ($q) use ($search) {
-                        $q->where('id', $search);
-                    });
+            $q->whereHas('municipality', function ($q) use ($search) {
+                $q->whereHas('state', function ($q) use ($search) {
+                    $q->where('id', $search);
                 });
+            });
+        });
+    }
+    
+    public function scopeWhereMunicipality($query, $search) {
+        $query->whereHas('circuit', function ($q) use ($search) {
+            $q->whereHas('municipality', function ($q) use ($search) {
+                $q->where('id', $search);
             });
         });
     }
@@ -55,6 +61,14 @@ class CommunityCouncil extends Model
 
         if ($filters->get('state_id')) {
             $query->whereState($filters->get('state_id'));
+        }
+
+        if ($filters->get('municipality_id')) {
+            $query->whereMunicipality($filters->get('municipality_id'));
+        }
+
+        if ($filters->get('circuit_id')) {
+            $query->where('circuit_id', $filters->get('circuit_id'));
         }
 
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
