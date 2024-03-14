@@ -23,19 +23,15 @@ const theme_id = ref(null)
 
 const listStates = ref([])
 const listMunicipalities = ref([])
-const listParishes = ref([])
 const listCircuits = ref([])
 
 const listMunicipalitiesByStates = ref([])
-const listParishesByMunicipalities = ref([])
-const listCircuitsByParishes = ref([])
+const listCircuitsByMunicipalities = ref([])
 
 const state_id = ref(null)
 const stateOld_id = ref(null)
 const municipality_id = ref(null)
 const municipalityOld_id = ref(null)
-const parish_id = ref(null)
-const parishOld_id = ref(null)
 const circuit_id = ref(null)
 
 const isTonalSnackbarVisible = ref(false)
@@ -118,7 +114,6 @@ const loadData = () => {
   listStates.value = miscellaneousStores.getData.states
   listCircuits.value = miscellaneousStores.getData.circuits
   listMunicipalities.value = miscellaneousStores.getData.municipalities
-  listParishes.value = miscellaneousStores.getData.parishes
 }
 
 watchEffect(fetchData)
@@ -127,7 +122,7 @@ async function fetchData() {
 
    isRequestOngoing.value = true
    
-   if(listParishes.value.length === 0) {
+   if(listMunicipalities.value.length === 0) {
       await miscellaneousStores.fetchData();
       loadData()
    }
@@ -144,20 +139,11 @@ const getMunicipalities = computed(() => {
   })
 })
 
-const getParishes = computed(() => {
-  return listParishesByMunicipalities.value.map((municipality) => {
+const getCircuits = computed(() => {
+  return listCircuitsByMunicipalities.value.map((municipality) => {
     return {
       title: municipality.name,
       value: municipality.id,
-    }
-  })
-})
-
-const getCircuits = computed(() => {
-  return listCircuitsByParishes.value.map((parish) => {
-    return {
-      title: parish.name,
-      value: parish.id,
     }
   })
 })
@@ -178,21 +164,9 @@ const selectMunicipalities = municipality => {
     let _municipality = listMunicipalities.value.find(item => item.id === municipality)
     municipality_id.value = _municipality.name
     municipalityOld_id.value = _municipality.id
-    parish_id.value = ''
-
-    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
-
-  }
-}
-
-const selectParishes = parish => {
-  if (parish) {
-    let _parish = listParishes.value.find(item => item.id === parish)
-    parish_id.value = _parish.name
-    parishOld_id.value = _parish.id
     circuit_id.value = ''
 
-    listCircuitsByParishes.value = listCircuits.value.filter(item => item.parish_id === _parish.id)
+    listCircuitsByMunicipalities.value = listCircuits.value.filter(item => item.municipality_id === _municipality.id)
 
   }
 }
@@ -202,13 +176,14 @@ const onSubmit = () => {
   panel.value = [0, 1, 2, 3, 4, 5, 6, 7]
 
   refForm.value?.validate().then(({ valid }) => {
+    
     if (currentStep.value === 0) {
       currentStep.value++
-    } else if(!valid && currentStep.value === 1 && type.value === '1' && refForm.value.items.length === 7 && refForm.value.errors.length === 4) {
+    } else if(!valid && currentStep.value === 1 && type.value === '1' && refForm.value.items.length === 35 && refForm.value.errors.length <= 28) {
       currentStep.value++
-    } else if(!valid && currentStep.value === 1 && type.value === '2' && refForm.value.items.length === 8 && refForm.value.errors.length === 4) {
+    } else if(!valid && currentStep.value === 1 && type.value === '2' && refForm.value.items.length === 36 && refForm.value.errors.length <= 29) {
       currentStep.value++
-    } else if(!valid && currentStep.value === 1 && type.value === '3' && refForm.value.items.length === 9 && refForm.value.errors.length === 4){
+    } else if(!valid && currentStep.value === 1 && type.value === '3' && refForm.value.items.length === 37 && refForm.value.errors.length <= 30){
       currentStep.value++
     } else if (valid && currentStep.value === 1) {
       currentStep.value++
@@ -378,16 +353,6 @@ const onSubmit = () => {
                         :items="getMunicipalities"
                         :menu-props="{ maxHeight: '200px' }"
                         @update:model-value="selectMunicipalities"
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6" v-if="Number(type) > 2">
-                      <VAutocomplete
-                        v-model="parish_id"
-                        label="Parroquia"
-                        :rules="[requiredValidator]"
-                        :items="getParishes"
-                        :menu-props="{ maxHeight: '200px' }"
-                        @update:model-value="selectParishes"
                       />
                     </VCol>
                     <VCol cols="12" md="6" v-if="Number(type) === 3">

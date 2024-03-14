@@ -51,7 +51,7 @@ async function fetchData() {
         }
 
         communityCouncil.value = await communityCouncilsStores.showCommunityCouncil(data, Number(route.params.id))
-        title.value = "Migrantes en " + communityCouncil.value.name
+        title.value = "MIGRANTES EN '" + communityCouncil.value.name + "'"
 
         migrants.value = communityCouncilsStores.getMigrants
         totalPages.value = communityCouncilsStores.migrant_last_page

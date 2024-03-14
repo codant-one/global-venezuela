@@ -51,7 +51,7 @@ async function fetchData() {
         }
 
         circuit.value = await circuitsStores.showCircuit(data, Number(route.params.id))
-        title.value = "Consejos Comunales de " + circuit.value.name
+        title.value = "CONSEJOS COMUNALES DE '" + circuit.value.name + "'"
 
         communityCouncils.value = circuitsStores.getCommunityCouncils
         totalPages.value = circuitsStores.community_last_page
