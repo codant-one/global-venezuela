@@ -51,7 +51,7 @@ async function fetchData() {
     infoDetail.value.passport_status = props.migrant.passport_status.toString()
     infoDetail.value.isMarried = props.migrant.isMarried.toString()
     infoDetail.value.has_children = props.migrant.has_children.toString()
-    infoDetail.value.children_number = props.migrant.children_number
+    infoDetail.value.children_number = props.migrant.children_number ?? 1
 
     country_id.value = props.migrant.country.name
     countryOld_id.value = props.migrant.country_id

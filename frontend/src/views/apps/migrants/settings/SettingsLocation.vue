@@ -220,6 +220,8 @@ async function fetchData() {
 const onSubmit = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
+
+      locationDetail.value.community_council_id = Number(locationDetail.value.community_council_id) ? locationDetail.value.community_council_id : community_council_id.value
       emit('submit', locationDetail.value)
     }
   })

@@ -1,6 +1,8 @@
 <script setup>
 
 import congoImg from '@images/illustrations/congo-illustration.png'
+import router from '@/router'
+
 const props = defineProps({
   migrant_byuser: {
     type: Number,
@@ -11,6 +13,7 @@ const props = defineProps({
 const userDataJ = ref('')
 const name = ref('')
 const cant_migrant = ref(props.migrant_byuser)
+
 watchEffect(fetchData)
 
 async function fetchData() {
@@ -21,6 +24,9 @@ async function fetchData() {
     name.value = userDataJ.value.name
 }
 
+const go = () => {
+  router.push({ name : 'dashboard-admin-migrants'})
+}
 </script>
 
 <template>
@@ -37,7 +43,7 @@ async function fetchData() {
           <h4 class="text-h4 font-weight-medium text-primary mb-1">
             {{cant_migrant}}
           </h4>
-          <VBtn>Ver registros</VBtn>
+          <VBtn @click="go">Ver registros</VBtn>
         </VCardText>
       </VCol>
 

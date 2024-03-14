@@ -122,10 +122,10 @@ async function fetchData() {
     undocumented.value = listStatistics.value.undocumented
     states.value = listStatistics.value.states
     resident.value = listStatistics.value.resident
-    isMarried.value = listStatistics.value.isMarried
-    has_children.value = listStatistics.value.has_children
-    transient.value = listStatistics.value.transient
-    migrant_byuser.value = listStatistics.value.migrant_by_user
+    isMarried.value = listStatistics.value.isMarried ?? 0
+    has_children.value = listStatistics.value.has_children ?? 0
+    transient.value = listStatistics.value.transient ?? 0
+    migrant_byuser.value = listStatistics.value.migrant_by_user ?? 0
 }
 
 </script>
@@ -186,7 +186,7 @@ async function fetchData() {
           </div>
         </div>
       </VCol>
-      <VCol cols="12" md="4">
+      <VCol cols="12" md="4" v-if="false">
         <div class="d-flex justify-space-between align-center">
           <div class="d-flex flex-column ps-3">
             <h5 class="text-h5 text-high-emphasis mb-2 text-no-wrap">
@@ -223,7 +223,7 @@ async function fetchData() {
         cols="12"
         md="7"
         lg="8"
-        v-if="resident"
+        v-if="resident !== null"
       >
         <Statistics 
           :resident = "resident" 
