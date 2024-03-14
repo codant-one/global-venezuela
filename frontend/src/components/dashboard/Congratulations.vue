@@ -10,6 +10,8 @@ const props = defineProps({
   },
 })
 
+const rol = ref(null)
+const text = ref(null)
 const userDataJ = ref('')
 const name = ref('')
 const cant_migrant = ref(props.migrant_byuser)
@@ -22,10 +24,15 @@ async function fetchData() {
     
     userDataJ.value = JSON.parse(userData)
     name.value = userDataJ.value.name
+    rol.value = userDataJ.value.roles[0].name
 }
 
 const go = () => {
-  router.push({ name : 'dashboard-admin-migrants'})
+
+  if(rol.value === 'Operador')
+    router.push({ name : 'dashboard-admin-migrants-add'})
+  else
+    router.push({ name : 'dashboard-admin-migrants'})
 }
 </script>
 
@@ -43,7 +50,9 @@ const go = () => {
           <h4 class="text-h4 font-weight-medium text-primary mb-1">
             {{cant_migrant}}
           </h4>
-          <VBtn @click="go">Ver registros</VBtn>
+          <VBtn @click="go">
+            {{ rol === 'Operador' ? 'Agregar Migrante' : 'Ver Registros' }}          
+          </VBtn>
         </VCardText>
       </VCol>
 

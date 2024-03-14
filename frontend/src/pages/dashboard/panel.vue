@@ -186,6 +186,14 @@ async function fetchData() {
           </div>
         </div>
       </VCol>
+      <VCol
+        cols="12"
+        md="5"
+        lg="4"
+        v-if="migrant_byuser !== null"
+      >
+        <Congratulations :migrant_byuser="migrant_byuser"/>
+      </VCol>
       <VCol cols="12" md="4" v-if="false">
         <div class="d-flex justify-space-between align-center">
           <div class="d-flex flex-column ps-3">
@@ -233,14 +241,14 @@ async function fetchData() {
           class = "h-100" />
       </VCol>
 
-      <VCol
+      <!-- <VCol
         cols="12"
         md="5"
         lg="4"
         v-if="migrant_byuser"
       >
         <Congratulations :migrant_byuser="migrant_byuser"/>
-      </VCol>
+      </VCol> -->
     </VRow>
 
    <!-- <VRow class="px-md-6 px-2">

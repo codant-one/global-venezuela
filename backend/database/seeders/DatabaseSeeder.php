@@ -31,7 +31,9 @@ class DatabaseSeeder extends Seeder
 
             OtherPermissionsSeeder::class,
             VolunteerSeeder::class,
-            VolunteerPermissionsSeeder::class
+            VolunteerPermissionsSeeder::class,
+
+            OperatorPermissionsSeeder::class
 
         ]);
 

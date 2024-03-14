@@ -288,6 +288,12 @@ const closeRoleDetailDialog = function(){
                                 value="eliminar migrantes"
                                 :readonly="readonly"
                             />
+                            <VCheckbox
+                                v-model="permissions"
+                                label="crear operador-migrantes"
+                                value="crear operador-migrantes"
+                                :readonly="readonly"
+                            />
                         </div>
                     </div>
                 </VCardText>

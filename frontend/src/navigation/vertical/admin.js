@@ -38,5 +38,12 @@ export default [
     to: 'dashboard-admin-migrants', 
     action: 'ver', 
     subject: 'migrantes'
+  },
+  { 
+    title: 'Agregar Migrante', 
+    icon: { icon: 'mdi-target-account' },
+    to: 'dashboard-admin-migrants-add', 
+    action: 'crear', 
+    subject: 'operador-migrantes'
   }
 ]

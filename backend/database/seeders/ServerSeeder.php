@@ -20,7 +20,9 @@ class ServerSeeder extends Seeder
             CommunityCouncilSeeder::class,
 
             OperatorSeeder::class,
-            VolunteerSeeder::class
+            VolunteerSeeder::class,
+
+            OperatorPermissionsSeeder::class
         ]);
 
     }

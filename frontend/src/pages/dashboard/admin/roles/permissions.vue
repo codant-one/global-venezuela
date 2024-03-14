@@ -209,6 +209,11 @@ const closeModal = function(){
                                 label="eliminar migrantes"
                                 value="eliminar migrantes"
                             />
+                            <VCheckbox
+                                v-model="assignedPermissions"
+                                label="crear operador-migrantes"
+                                value="crear operador-migrantes"
+                            />
                         </div>
                     </div>
                 </VCardText>

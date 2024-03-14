@@ -15,7 +15,7 @@ class MigrantController extends Controller
     public function __construct()
     {
         $this->middleware(PermissionMiddleware::class . ':ver migrantes|administrador')->only(['index']);
-        $this->middleware(PermissionMiddleware::class . ':crear migrantes|administrador')->only(['store']);
+        $this->middleware(PermissionMiddleware::class . ':crear migrantes|crear operador-migrantes|administrador')->only(['store']);
         $this->middleware(PermissionMiddleware::class . ':editar migrantes|administrador')->only(['update','updatePasswordUser']);
         $this->middleware(PermissionMiddleware::class . ':eliminar migrantes|administrador')->only(['destroy']);
     }
