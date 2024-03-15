@@ -259,7 +259,7 @@ const downloadCSV = async () => {
                 <td class="text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
                 <td> {{migrant.phone }} </td>
                 <td> {{migrant.email }} </td>
-                <td> {{migrant.address }} </td>
+                <td class="w-20"> {{migrant.address }} </td>
                 <!-- 👉 Acciones -->
                 <td class="text-center" style="width: 5rem;" v-if="$can('ver','migrantes') || $can('editar','migrantes') || $can('eliminar','migrantes')">      
                   <VBtn
