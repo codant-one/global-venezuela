@@ -256,10 +256,10 @@ const downloadCSV = async () => {
                 style="height: 3.75rem;">
 
                 <td> {{migrant.id }} </td>
-                <td class="text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
-                <td> {{migrant.phone }} </td>
-                <td> {{migrant.email }} </td>
-                <td class="w-20"> {{migrant.address }} </td>
+                <td class="text-wrap text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
+                <td class="text-wrap"> {{migrant.phone }} </td>
+                <td class="text-wrap"> {{migrant.email }} </td>
+                <td class="text-wrap"> {{migrant.address }} </td>
                 <!-- 👉 Acciones -->
                 <td class="text-center" style="width: 5rem;" v-if="$can('ver','migrantes') || $can('editar','migrantes') || $can('eliminar','migrantes')">      
                   <VBtn
