@@ -89,11 +89,9 @@ class Volunteer extends Model
                 });
             } else if ($filters->get('isCircuit')) {
                 $query->whereHas('circuit', function ($q) use ($filters) {
-                    $q->whereHas('parish', function ($q) use ($filters) {
-                        $q->whereHas('municipality', function ($q) use ($filters) {
-                            $q->whereHas('state', function ($q) use ($filters) {
-                                $q->where('id', $filters->get('state_id'));
-                            });
+                    $q->whereHas('municipality', function ($q) use ($filters) {
+                        $q->whereHas('state', function ($q) use ($filters) {
+                            $q->where('id', $filters->get('state_id'));
                         });
                     });
                 });
@@ -105,20 +103,8 @@ class Volunteer extends Model
                 $query->where('municipality_id', $filters->get('municipality_id'));
             }  else if ($filters->get('isCircuit')) {
                 $query->whereHas('circuit', function ($q) use ($filters) {
-                    $q->whereHas('parish', function ($q) use ($filters) {
-                        $q->whereHas('municipality', function ($q) use ($filters) {
-                            $q->where('id', $filters->get('municipality_id'));
-                        });
-                    });
-                });
-            } 
-        }
-
-        if ($filters->get('parish_id')) {
-            if ($filters->get('isCircuit')) {
-                $query->whereHas('circuit', function ($q) use ($filters) {
-                    $q->whereHas('parish', function ($q) use ($filters) {
-                        $q->where('id', $filters->get('parish_id'));
+                    $q->whereHas('municipality', function ($q) use ($filters) {
+                        $q->where('id', $filters->get('municipality_id'));
                     });
                 });
             } 

@@ -358,7 +358,7 @@ const downloadCSV = async () => {
                 style="height: 3.75rem;">
 
                 <td> {{migrant.id }} </td>
-                <td class="text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
+                <td class="text-wrap text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
                 <td class="text-uppercase"> {{ migrant.parish.municipality.state.name }} </td>
                 <td class="text-uppercase">
                   <div class="d-flex align-center">

@@ -20,18 +20,14 @@ const state_id = ref(null)
 const stateOld_id = ref(null)
 const municipality_id = ref(null)
 const municipalityOld_id = ref(null)
-const parish_id = ref(null)
-const parishOld_id = ref(null)
 const circuit_id = ref(null)
 
 const listStates = ref([])
 const listMunicipalities = ref([])
-const listParishes = ref([])
 const listCircuits = ref([])
 
 const listMunicipalitiesByStates = ref([])
-const listParishesByMunicipalities = ref([])
-const listCircuitsByParishes = ref([])
+const listCircuitsByMunicipalities = ref([])
 
 const theme_id = ref(null)
 const themeOld_id = ref(null)
@@ -64,7 +60,6 @@ async function fetchData() {
     theme_id: themeOld_id.value,
     state_id: stateOld_id.value,
     municipality_id: municipalityOld_id.value,
-    parish_id: parishOld_id.value,
     circuit_id: circuit_id.value,
     isCircuit: true
   }
@@ -77,7 +72,7 @@ async function fetchData() {
   totalPages.value = volunteersStores.last_page
   totalVolunteers.value = volunteersStores.volunteersTotalCount
 
-  if(listParishes.value.length === 0) {
+  if(listMunicipalities.value.length === 0) {
     await miscellaneousStores.fetchData();
     loadData()
   }
@@ -105,10 +100,6 @@ const clearCircuit = () => {
   fetchData()
 }
 
-const clearParish = () => {
-  parishOld_id.value = null
-  fetchData()
-}
 const clearTheme = () => {
   themeOld_id.value = null
   fetchData()
@@ -119,7 +110,6 @@ const loadData = () => {
   listThemes.value = miscellaneousStores.getData.themes
   listStates.value = miscellaneousStores.getData.states
   listMunicipalities.value = miscellaneousStores.getData.municipalities
-  listParishes.value = miscellaneousStores.getData.parishes
   listCircuits.value = miscellaneousStores.getData.circuits
 }
 
@@ -132,20 +122,11 @@ const getMunicipalities = computed(() => {
   })
 })
 
-const getParishes = computed(() => {
-  return listParishesByMunicipalities.value.map((municipality) => {
+const getCircuits = computed(() => {
+  return listCircuitsByMunicipalities.value.map((municipality) => {
     return {
       title: municipality.name,
       value: municipality.id,
-    }
-  })
-})
-
-const getCircuits = computed(() => {
-  return listCircuitsByParishes.value.map((parish) => {
-    return {
-      title: parish.name,
-      value: parish.id,
     }
   })
 })
@@ -166,22 +147,10 @@ const selectMunicipalities = municipality => {
     let _municipality = listMunicipalities.value.find(item => item.id === municipality)
     municipality_id.value = _municipality.name
     municipalityOld_id.value = _municipality.id
-    parish_id.value = ''
-
-    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
-
-  }
-}
-
-const selectParishes = parish => {
-  if (parish) {
-    let _parish = listParishes.value.find(item => item.id === parish)
-    parish_id.value = _parish.name
-    parishOld_id.value = _parish.id
-
     circuit_id.value = ''
 
-    listCircuitsByParishes.value = listCircuits.value.filter(item => item.parish_id === _parish.id)
+    listCircuitsByMunicipalities.value = listCircuits.value.filter(item => item.municipality_id === _municipality.id)
+
   }
 }
 
@@ -201,7 +170,6 @@ const downloadCSV = async () => {
     theme_id: themeOld_id.value,
     state_id: stateOld_id.value,
     municipality_id: municipalityOld_id.value,
-    parish_id: parishOld_id.value,
     circuit_id: circuit_id.value,
     isCircuit: true,
     limit: -1
@@ -214,9 +182,8 @@ const downloadCSV = async () => {
   volunteersStores.getVolunteers.forEach(element => {
 
     let data = {
-      ESTADO: element.circuit.parish.municipality.state.name,
-      MUNICIPIO: element.circuit.parish.municipality.name,
-      PARROQUIA: element.circuit.parish.name,
+      ESTADO: element.circuit.municipality.state.name,
+      MUNICIPIO: element.circuit.municipality.name,
       CIRCUITO: element.circuit.name,
       TRANSFORMACIÓN: element.theme.name,
       NOMBRE: element.name ?? '',
@@ -291,17 +258,6 @@ const downloadCSV = async () => {
                     </VCol>
                     <VCol cols="12" sm="4">
                       <VAutocomplete
-                        v-model="parish_id"
-                        label="Parroquias"
-                        :items="getParishes"
-                        :menu-props="{ maxHeight: '200px' }"
-                        @update:model-value="selectParishes"
-                        @click:clear="clearParish"
-                        clearable
-                      />
-                    </VCol>
-                    <VCol cols="12" sm="4">
-                      <VAutocomplete
                         v-model="circuit_id"
                         label="Circuitos"
                         :items="getCircuits"
@@ -323,6 +279,7 @@ const downloadCSV = async () => {
                         clearable
                       />
                     </VCol>
+                    <VCol cols="12" sm="4"></VCol>
                     <VCol cols="12" sm="4">
                         <VTextField
                           v-model="searchQuery"
@@ -386,22 +343,13 @@ const downloadCSV = async () => {
                 :key="volunteer.id"
                 style="height: 3.75rem;">
                 <td> {{volunteer.id }} </td>
-                <td> {{volunteer.circuit.parish.municipality.state.name }} </td>
-                <td class="text-wrap"> 
-                  <div class="d-flex align-center">
-                    <div class="d-flex flex-column">
-                      <h6 class="text-base font-weight-medium mb-0">
-                        {{volunteer.circuit.parish.municipality.name }}
-                      </h6>
-                      <span class="text-disabled text-sm"> {{volunteer.circuit.parish.name }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td> {{volunteer.circuit.name }} </td>
-                <td> {{volunteer.theme.name }} </td>
-                <td> {{volunteer.name }} </td>
-                <td> {{volunteer.document }} </td>
-                <td> {{volunteer.phone }} </td>
+                <td> {{volunteer.circuit.municipality.state.name }} </td>
+                <td> {{volunteer.circuit.municipality.name }} </td>
+                <td class="text-wrap text-base font-weight-medium mb-0"> {{volunteer.circuit.name }} </td>
+                <td class="text-wrap"> {{volunteer.theme.name }} </td>
+                <td class="text-wrap"> {{volunteer.name }} </td>
+                <td class="text-wrap"> {{volunteer.document }} </td>
+                <td class="text-wrap"> {{volunteer.phone }} </td>
                 <td>
                   <VChip v-if="volunteer.isResponsible" color="primary">SI</VChip>
                   <VChip v-else color="error">NO</VChip>
