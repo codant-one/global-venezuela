@@ -471,7 +471,7 @@ const onSubmit = () => {
                                   v-model="form[n-1].email"
                                   label="E-mail"
                                   type="email"
-                                  :rules="[requiredValidator, emailValidator]"
+                                  :rules="[emailValidator]"
                                 />
                               </VCol>
                             </VRow>
