@@ -11,7 +11,6 @@ const props = defineProps({
 })
 
 const rol = ref(null)
-const text = ref(null)
 const userDataJ = ref('')
 const name = ref('')
 const cant_migrant = ref(props.migrant_byuser)

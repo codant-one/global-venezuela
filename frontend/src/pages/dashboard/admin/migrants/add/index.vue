@@ -14,6 +14,9 @@ const miscellaneousStores = useMiscellaneousStores()
 
 const emitter = inject("emitter")
 
+const rol = ref(null)
+const userDataJ = ref('')
+
 const listStates = ref([])
 const listCities = ref([])
 const listMunicipalities = ref([])
@@ -30,6 +33,12 @@ const activeTab = ref(null)
 const userDetail = ref(null)
 const documentDetail = ref(null)
 const locationDetail = ref(null)
+
+const advisor = ref({
+  type: '',
+  message: '',
+  show: false
+})
 
 const tabsData = [
   {
@@ -67,6 +76,11 @@ watchEffect(fetchData)
 async function fetchData() {
   isRequestOngoing.value = true
 
+  const userData = localStorage.getItem('user_data')
+    
+  userDataJ.value = JSON.parse(userData)
+  rol.value = userDataJ.value.roles[0].name
+
   if(listCommunityCouncils.value.length === 0) {
     await miscellaneousStores.fetchDataMigrant();
     loadData()
@@ -92,6 +106,8 @@ const uploadLocation = async (data) => {
 }
 
 const uploadInfo = async (infoDetail) => {
+
+  isRequestOngoing.value = true
 
   let formData = new FormData()
 
@@ -126,9 +142,19 @@ const uploadInfo = async (infoDetail) => {
             error: false
           }
 
-          router.push({ name : 'dashboard-admin-migrants'})
-          emitter.emit('toast', data)
+          if(rol.value === 'Operador'){
+            advisor.value.show = true
+            advisor.value.type = 'success'
+            advisor.value.message = 'Migrante Creado!'
+            isRequestOngoing.value = false
 
+            setTimeout(() => { 
+              window.location.reload();
+            }, 3000)
+          } else {
+            router.push({ name : 'dashboard-admin-migrants'})
+            emitter.emit('toast', data)
+          }
       } else {
 
         let data = {
@@ -136,8 +162,19 @@ const uploadInfo = async (infoDetail) => {
           error: true
         }
 
-        router.push({ name : 'dashboard-admin-migrants'})
-        emitter.emit('toast', data)
+        if(rol.value === 'Operador'){
+          advisor.value.show = true
+          advisor.value.type = 'error'
+          advisor.value.message = 'ERROR'
+          isRequestOngoing.value = false
+          
+          setTimeout(() => { 
+            window.location.reload();
+          }, 3000)
+        } else {
+          router.push({ name : 'dashboard-admin-migrants'})
+          emitter.emit('toast', data)
+        }
       }
   })
   .catch((err) => {
@@ -146,9 +183,20 @@ const uploadInfo = async (infoDetail) => {
         error: true
       }
 
-      router.push({ name : 'dashboard-admin-migrants'})
-      emitter.emit('toast', data)
-    })
+      if(rol.value === 'Operador'){
+        advisor.value.show = true
+        advisor.value.type = 'error'
+        advisor.value.message = err
+        isRequestOngoing.value = false
+        
+        setTimeout(() => { 
+          window.location.reload();
+        }, 3000)
+      } else {
+        router.push({ name : 'dashboard-admin-migrants'})
+        emitter.emit('toast', data)
+      }
+  })
 
 }
 
@@ -160,6 +208,14 @@ const back = async () => {
 
 <template>
   <VRow>
+    <v-col cols="12">
+      <v-alert
+        v-if="advisor.show"
+        :type="advisor.type"
+        class="mb-6">
+        {{ advisor.message }}
+      </v-alert>
+    </v-col>
     <VDialog
         v-model="isRequestOngoing"
         width="300"
