@@ -51,35 +51,54 @@ const closeAdvisor = () => {
     }, 3000)
 }
 
-const download = async (img) => {
+const download = async (data) => {
 
-    try {
+    if(data.icon === 'pdf' || data.icon === 'docx' || data.icon === 'doc') {
+        try {
+            const link = document.createElement('a');
+            link.href = themeConfig.settings.urlStorage + data.document
+            link.target = '_blank'
+            document.body.appendChild(link);
+            link.click();
 
-        const response = await axios({
-            url: themeConfig.settings.urlbase + 'proxy-document?file=' + img, // Asegúrate de cambiar esto por tu URL real
-            method: 'GET',
-            responseType: 'blob', // Importante para manejar la respuesta como un archivo binario
-        });
+            link.parentNode.removeChild(link);
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', img);
-        document.body.appendChild(link);
-        link.click();
+            advisor.value.type = 'success'
+            advisor.value.show = true
+            advisor.value.message = 'Descarga Exitosa!'
 
-        link.parentNode.removeChild(link);
-        window.URL.revokeObjectURL(url);
-  
-        advisor.value.type = 'success'
-        advisor.value.show = true
-        advisor.value.message = 'Descarga Exitosa!'
+        } catch (error) {
 
-    } catch (error) {
+            advisor.value.type = 'error'
+            advisor.value.show = true
+            advisor.value.message = 'Error al descargar el documento:' + error
+        }
+    } else {
+        try {
+            const response = await fetch(themeConfig.settings.urlbase + 'proxy-image?url=' + themeConfig.settings.urlStorage + data.document);
+            const blob = await response.blob();
 
-        advisor.value.type = 'error'
-        advisor.value.show = true
-        advisor.value.message = 'Error al descargar la imagen:' + error
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+
+            link.setAttribute('download', 'image.jpg');
+
+            document.body.appendChild(link);
+            link.click();
+
+            window.URL.revokeObjectURL(url);
+
+            advisor.value.type = 'success'
+            advisor.value.show = true
+            advisor.value.message = 'Descarga Exitosa!'
+
+        } catch (error) {
+
+            advisor.value.type = 'error'
+            advisor.value.show = true
+            advisor.value.message = 'Error al descargar la imagen:' + error
+        }
     }
 
     closeAdvisor()

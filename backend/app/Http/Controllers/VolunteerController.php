@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
+use App\Http\Requests\VolunteerRequest;
 use App\Models\Volunteer;
 
 class VolunteerController extends Controller
@@ -170,7 +171,7 @@ class VolunteerController extends Controller
     
     }
 
-    public function register(Request $request): JsonResponse
+    public function register(VolunteerRequest $request): JsonResponse
     {
         try {
 

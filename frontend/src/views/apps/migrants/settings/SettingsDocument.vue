@@ -61,10 +61,11 @@ const onSubmit = () => {
           </VCol>
           <VCol cols="12" md="6">
             <VFileInput
+              accept="image/*,application/pdf"
               v-model="documentDetail.file_document"
               value=""
               placeholder="Upload your documents"
-              label="Documento"
+              label="Documento (images/pdf)"
               prepend-icon="tabler-paperclip"
               >
               <template #selection="{ fileNames }">

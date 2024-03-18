@@ -40,6 +40,13 @@ const advisor = ref({
   show: false
 })
 
+
+const advisor2 = ref({
+  type: '',
+  message: '',
+  show: false
+})
+
 const tabsData = [
   {
     icon: 'mdi-cog',
@@ -136,38 +143,17 @@ const uploadInfo = async (infoDetail) => {
   migrantsStores.addMigrant(formData)
     .then((res) => {
       if (res.data.success) {
-
-          let data = {
-            message: 'Migrante Creado!',
-            error: false
-          }
-
-          if(rol.value === 'Operador'){
-            advisor.value.show = true
-            advisor.value.type = 'success'
-            advisor.value.message = 'Migrante Creado!'
-            isRequestOngoing.value = false
-
-            setTimeout(() => { 
-              window.location.reload();
-            }, 3000)
-          } else {
-            router.push({ name : 'dashboard-admin-migrants'})
-            emitter.emit('toast', data)
-          }
-      } else {
-
         let data = {
-          message: 'ERROR',
-          error: true
+          message: 'Migrante Creado!',
+          error: false
         }
 
         if(rol.value === 'Operador'){
           advisor.value.show = true
-          advisor.value.type = 'error'
-          advisor.value.message = 'ERROR'
+          advisor.value.type = 'success'
+          advisor.value.message = 'Migrante Creado!'
           isRequestOngoing.value = false
-          
+
           setTimeout(() => { 
             window.location.reload();
           }, 3000)
@@ -178,24 +164,21 @@ const uploadInfo = async (infoDetail) => {
       }
   })
   .catch((err) => {
-      let data = {
-        message: err,
-        error: true
-      }
 
-      if(rol.value === 'Operador'){
-        advisor.value.show = true
-        advisor.value.type = 'error'
-        advisor.value.message = err
-        isRequestOngoing.value = false
-        
-        setTimeout(() => { 
-          window.location.reload();
-        }, 3000)
-      } else {
-        router.push({ name : 'dashboard-admin-migrants'})
-        emitter.emit('toast', data)
-      }
+    isRequestOngoing.value = false
+    
+    if(err.success === false && err.feedback === 'params_validation_failed') {
+
+      advisor2.value.show = true
+      advisor2.value.type = 'error'
+      advisor2.value.message = Object.values(err.message).flat().join('<br>');
+
+      setTimeout(() => {
+        advisor2.value.show = false
+        advisor2.value.type = ''
+        advisor2.value.message = ''
+      }, 10000)
+    }
   })
 
 }
@@ -214,6 +197,16 @@ const back = async () => {
         :type="advisor.type"
         class="mb-6">
         {{ advisor.message }}
+      </v-alert>
+      <v-alert
+        v-if="advisor2.show"
+        :type="advisor2.type"
+        class="mb-6"
+        icon="mdi-alert-circle-outline"
+        prominent
+        closable
+      >
+        <span v-html="advisor2.message" />
       </v-alert>
     </v-col>
     <VDialog

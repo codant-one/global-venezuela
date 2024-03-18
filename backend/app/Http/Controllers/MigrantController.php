@@ -7,6 +7,7 @@ use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
+use App\Http\Requests\MigrantRequest;
 use App\Models\Migrant;
 
 class MigrantController extends Controller
@@ -54,7 +55,7 @@ class MigrantController extends Controller
 
 
 
-    public function store(Request $request): JsonResponse
+    public function store(MigrantRequest $request): JsonResponse
     {
         try {
 

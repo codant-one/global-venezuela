@@ -7,8 +7,6 @@ import { useGenerateImageVariant } from '@core/composable/useGenerateImageVarian
 import background from '@images/volunteer-people.jpg'
 import registerMultistepIllustrationDark from '@images/volunteer-logo-2.png'
 import registerMultistepIllustrationLight from '@images/volunteer-logo-2.png'
-import registerMultistepBgDark from '@images/pages/register-multistep-bg-dark.png'
-import registerMultistepBgLight from '@images/pages/register-multistep-bg-light.png'
 
 const currentStep = ref(0)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
@@ -38,6 +36,12 @@ const isTonalSnackbarVisible = ref(false)
 const message = ref('')
 const color = ref('')
 const isMobile = /Mobi/i.test(navigator.userAgent);
+
+const advisor = ref({
+  type: '',
+  message: '',
+  show: false
+})
 
 const radioContent = [
   // {
@@ -217,9 +221,24 @@ const onSubmit = () => {
           }
         })
         .catch((err) => {
-          isTonalSnackbarVisible.value = true
-          message.value = err
-          color.value = 'error'
+
+          if(err.success === false && err.feedback === 'params_validation_failed') {
+
+            advisor.value.show = true
+            advisor.value.type = 'error'
+            advisor.value.message = Object.values(err.message).flat().join('<br>');
+            
+
+            setTimeout(() => {
+              advisor.value.show = false
+              advisor.value.type = ''
+              advisor.value.message = ''
+            }, 10000)
+          } else {
+            isTonalSnackbarVisible.value = true
+            message.value = err
+            color.value = 'error'
+          }
       })
      
     }
@@ -280,7 +299,7 @@ const onSubmit = () => {
     <VCol
       cols="12"
       md="8"
-      class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 px-md-10 bg-gray backgroundMobile"
+      class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 pt-7 px-md-10 bg-gray backgroundMobile"
     >
 
       <div class="d-block justify-center align-center w-100 position-relative">
@@ -298,6 +317,17 @@ const onSubmit = () => {
               flat
               class="pa-5 pa-md-10"
             >
+              <v-alert
+                v-if="advisor.show"
+                :type="advisor.type"
+                class="mb-6"
+                icon="mdi-alert-circle-outline"
+                prominent
+                closable
+                >
+                  <span v-html="advisor.message" />
+              </v-alert>
+
               <AppStepper
                 v-model:current-step="currentStep"
                 :items="items"

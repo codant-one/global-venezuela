@@ -56,7 +56,12 @@ const download = () => {
 
     file.value = props.customerData.file_document === null ? '' : props.customerData.file_document
 
-    emit('download', file.value)
+    let data = {
+        icon: document.value.split('.')[1],
+        document: file.value
+    }
+    
+    emit('download', data)
 }
 
 </script>
@@ -66,7 +71,7 @@ const download = () => {
         <!-- SECTION Customer Details -->
         <VCol cols="12">
         <VCard v-if="props.customerData">
-            <VCardText class="text-center pt-15" v-if="false">
+            <VCardText class="text-center pt-15" v-if="props.customerData.file_document">
                 <!-- 👉 Avatar -->
                 <VAvatar
                     rounded
