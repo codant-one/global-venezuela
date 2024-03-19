@@ -43,7 +43,7 @@ const getFlagCountry = country => {
       <VList class="card-list">
         <VListItem
           v-for="(country, index) in countries_"
-          v-show="index < 6"
+          v-show="index < 5"
           :key="country.name"
         >
             <template #prepend>
