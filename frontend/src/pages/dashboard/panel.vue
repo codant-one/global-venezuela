@@ -173,7 +173,7 @@ async function fetchData() {
       registers: listStatistics.value.stateCount,
       completed: listStatistics.value.completedState,
       total: listStatistics.value.completedState + '/' + listStatistics.value.stateCount,
-      progress: ((listStatistics.value.completedState * 100) / listStatistics.value.stateCount).toFixed(2),
+      progress: ((listStatistics.value.completedState * 100) / listStatistics.value.stateCount).toFixed(1),
       color: 'primary',
       link: 'dashboard-volunteers-states'
     },
@@ -182,7 +182,7 @@ async function fetchData() {
       registers: listStatistics.value.municipalityCount,
       completed: listStatistics.value.completedMunicipality,
       total: listStatistics.value.completedMunicipality + '/' + listStatistics.value.municipalityCount,
-      progress: ((listStatistics.value.completedMunicipality * 100) / listStatistics.value.municipalityCount).toFixed(2),
+      progress: ((listStatistics.value.completedMunicipality * 100) / listStatistics.value.municipalityCount).toFixed(1),
       color: 'success',
       link: 'dashboard-volunteers-municipalities'
     },
@@ -191,7 +191,7 @@ async function fetchData() {
       registers: listStatistics.value.circuitCount,
       completed: listStatistics.value.completedCircuit,
       total: listStatistics.value.completedCircuit + '/' + listStatistics.value.circuitCount,
-      progress: ((listStatistics.value.completedCircuit * 100) / listStatistics.value.circuitCount).toFixed(2),
+      progress: ((listStatistics.value.completedCircuit * 100) / listStatistics.value.circuitCount).toFixed(1),
       color: 'error',
       link: 'dashboard-volunteers-circuits'
     }
