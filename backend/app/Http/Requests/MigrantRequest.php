@@ -60,11 +60,6 @@ class MigrantRequest extends FormRequest
                 'required',
                 'exists:App\Models\Parish,id'
             ],
-            'community_council_id' => [
-                'integer',
-                'required',
-                'exists:App\Models\CommunityCouncil,id'
-            ],
             'address' => [
                 'required'
             ],
@@ -97,9 +92,6 @@ class MigrantRequest extends FormRequest
             'parish_id.required' => 'La parroquia es requerida.',
             'parish_id.integer' => 'El formato de la parroquia debe ser entero.',
             'parish_id.exists' => 'La parroquia ingresada no existe.',
-            'community_council_id.required' => 'El consejo comunal es requerido.',
-            'community_council_id.integer' => 'El formato del consejo comunal debe ser entero.',
-            'community_council_id.exists' => 'El consejo comunal ingresado no existe.',
             'address.required' => 'La dirección es requerida.',
         ];
     }

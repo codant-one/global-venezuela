@@ -150,7 +150,7 @@ const onSubmit = () => {
               </thead>
               <tbody>  
                 <tr>
-                  <td width="400px">¿Posee visa de transeúnte?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Posee visa de transeúnte?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.transient" inline class="py-2">
                       <VRadio value="1"/>
@@ -162,7 +162,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Posee cédula de residencia?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Posee cédula de residencia?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.resident" inline class="py-2">
                       <VRadio value="1"/>
@@ -174,7 +174,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Ha tramitado el proceso de naturalización ante el SAIME?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Ha tramitado el proceso de naturalización ante el SAIME?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.process_saime" inline class="py-2">
                       <VRadio value="1"/>
@@ -186,7 +186,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Tiene el pasaporte vigente?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Tiene el pasaporte vigente?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.passport_status" inline class="py-2">
                       <VRadio value="1"/>
@@ -198,7 +198,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Cuantos años tiene el país?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Cuantos años tiene el país?</td>
                   <td></td>
                   <td></td>
                   <td>
@@ -213,7 +213,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Posee antecedentes penales?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Posee antecedentes penales?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.antecedents" inline class="py-2">
                       <VRadio value="1"/>
@@ -225,7 +225,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Está casado/a con un venezolano/a?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Está casado/a con un venezolano/a?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.isMarried" inline class="py-2">
                       <VRadio value="1"/>
@@ -237,7 +237,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td width="400px">¿Tiene hijos con nacionalidad venezolana?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Tiene hijos con nacionalidad venezolana?</td>
                   <td colspan="2">
                     <VRadioGroup v-model="infoDetail.has_children" inline class="py-2">
                       <VRadio value="1"/>
@@ -280,5 +280,29 @@ const onSubmit = () => {
 <style scoped>
   .radio-custom {
     margin-right: 56px;
+  }
+
+  @media(min-width: 991px) { 
+    .w-md-50{
+      width:50%!important
+    }
+  }
+
+  @media(max-width: 1024px) { 
+    .radio-custom {
+      margin-right: 0 !important;
+    }
+
+    .v-selection-control__input > .v-icon {
+      font-size: 20px;
+    }
+
+    .v-radio-group .v-selection-control-group .v-radio:not(:last-child) {
+      margin-inline-end: 0.3rem !important;
+    }
+
+    .v-icon-size-default {
+      font-size: 20px !important;
+    }
   }
 </style>
