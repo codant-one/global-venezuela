@@ -57,6 +57,7 @@ const onSubmit = () => {
               v-model="documentDetail.passport_number"
               :rules="[requiredValidator, phoneValidator]"
               label="N. Documento"
+              type="tel"
             />
           </VCol>
           <VCol cols="12" md="6">
