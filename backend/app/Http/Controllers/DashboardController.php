@@ -60,12 +60,13 @@ class DashboardController extends Controller
                 ->get();
 
         $top6Countries = $migrantsByCountries->take(6);
-        $othersTotal = $top6Countries->slice(6)->sum('total');
-
+        $othersTotal = $migrantsByCountries->slice(6)->sum('total');
+ 
         if ($othersTotal > 0) {
-            $top6Countries->push((object)[
+            $top6Countries->push([
                 'name' => 'Otros',
                 'total' => $othersTotal,
+                'iso' => ''
             ]);
         }
 

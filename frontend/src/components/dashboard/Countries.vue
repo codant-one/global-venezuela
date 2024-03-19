@@ -15,8 +15,9 @@ watchEffect(fetchData)
 
 async function fetchData() {
 
-    countries_.value.forEach( function  (element) { 
-        sum.value = sum.value + Number.parseInt(element.total)
+    countries_.value.forEach(function callback(value, index) {
+      if(index < 5)
+        sum.value = sum.value + Number.parseInt(value.total)
     });
 
     subtitle.value = `Total de ${sum.value} migrantes en el top 5`
