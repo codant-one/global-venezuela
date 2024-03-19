@@ -47,14 +47,14 @@ const statistics = [
   {
     title: 'Con hijos',
     stats: cant_haschildren.value,
-    icon: 'tabler-users-group',
-    color: 'info',
+    icon: 'mdi-account-child',
+    color: 'secondary',
   },
   {
     title: 'Transeúntes',
     stats: cant_transient.value,
     icon: 'tabler-user-up',
-    color: 'info',
+    color: '#FDD835',
   },
 ]
 </script>
@@ -62,7 +62,7 @@ const statistics = [
 <template>
   <VCard title="Estadísticas">
     <template #append>
-      <span class="text-sm text-disabled">En el mes</span>
+      <span class="text-sm text-disabled">Migrantes generales</span>
     </template>
 
     <VCardText class="pt-6">

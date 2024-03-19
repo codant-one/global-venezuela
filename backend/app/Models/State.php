@@ -11,4 +11,9 @@ class State extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    /**** Relationship ****/
+    public function volunteers() {
+        return $this->hasMany(Volunteer::class, 'state_id', 'id');
+    }
 }

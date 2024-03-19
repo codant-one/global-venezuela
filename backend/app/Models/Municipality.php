@@ -16,4 +16,8 @@ class Municipality extends Model
     public function state() {
         return $this->belongsTo(State::class, 'state_id', 'id');
     }
+
+    public function volunteers() {
+        return $this->hasMany(Volunteer::class, 'municipality_id', 'id');
+    }
 }

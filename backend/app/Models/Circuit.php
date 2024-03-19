@@ -25,6 +25,10 @@ class Circuit extends Model
         return $this->hasMany(CommunityCouncil::class, 'circuit_id', 'id');
     }
 
+    public function volunteers() {
+        return $this->hasMany(Volunteer::class, 'circuit_id', 'id');
+    }
+
     /**** Scopes ****/
     public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {
