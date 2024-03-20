@@ -39,17 +39,17 @@ class DashboardController extends Controller
 
         $completedCircuit = 
             Circuit::withCount('volunteers')
-                ->having('volunteers_count', '>=', 7)
+                ->having('volunteers_count', '>=', 49)
                 ->get();
 
         $completedMunicipality = 
             Municipality::withCount('volunteers')
-                ->having('volunteers_count', '>=', 7)
+                ->having('volunteers_count', '>=', 49)
                 ->get();
 
         $completedState = 
             State::withCount('volunteers')
-                ->having('volunteers_count', '>=', 7)
+                ->having('volunteers_count', '>=', 49)
                 ->get();
 
         $migrantsByCountries = 
