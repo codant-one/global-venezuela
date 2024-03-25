@@ -4,9 +4,9 @@ import { emailValidator, requiredValidator, phoneValidator } from '@/@core/utils
 import { useMiscellaneousStores } from '@/stores/useMiscellaneous'
 import { useVolunteersStores } from '@/stores/useVolunteers'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import background from '@images/volunteer-people.jpg'
-import registerMultistepIllustrationDark from '@images/volunteer-logo-2.png'
-import registerMultistepIllustrationLight from '@images/volunteer-logo-2.png'
+import background from '@images/volunteer-background.jpg'
+import registerMultistepIllustrationDark from '@images/volunteer-logo-4.png'
+import registerMultistepIllustrationLight from '@images/volunteer-logo-4.png'
 
 const currentStep = ref(0)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
@@ -281,7 +281,7 @@ const onSubmit = () => {
     <VCol
       md="4"
       class="d-none d-md-flex"
-      :style="`background: url(${background});`"
+      :style="`background: url(${background}); background-repeat: no-repeat; background-size: cover`"
     >
       <!-- here your illustration -->
       <div class="d-flex justify-center align-center w-100 position-relative pa-16">
@@ -559,36 +559,41 @@ const onSubmit = () => {
 </template>
 
 <style lang="scss">
-   @use "@core/scss/template/pages/page-auth.scss";
+  @use "@core/scss/template/pages/page-auth.scss";
 
-   .illustration-image {
-      block-size: 550px;
-      inline-size: 248px;
-   }
+  .v-theme--light {
+    --v-theme-primary: 8, 113, 76 !important;
+    --v-theme-error: 230, 48, 34 !important;
+  }
 
-   .bg-image {
-      inset-block-end: 0;
-   }
+  .illustration-image {
+    block-size: 550px;
+    inline-size: 248px;
+  }
 
-   .bg-gray {
-      background-color: #fafafa;
-   }
+  .bg-image {
+    inset-block-end: 0;
+  }
 
-   .v-text-field .v-input__details {
+  .bg-gray {
+    background-color: #fafafa;
+  }
+
+  .v-text-field .v-input__details {
     padding-inline-start: 4px !important;
     padding-top: 2px !important;
     min-height: 18px !important;
-   }
+  }
 
-   @media (max-width: 768px) {
+  @media (max-width: 768px) {
 
     .v-btn--size-default {
       font-size: 13px;
     }
 
     .backgroundMobile {
-        background-image: url('@images/volunteer-people.jpg');
-        background-repeat: repeat;
+        background-image: url('@images/volunteer-background.jpg');
+        background-repeat: no-repeat !important;
     }
   }
 
