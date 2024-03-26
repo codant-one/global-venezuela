@@ -219,7 +219,7 @@ const translateMouse = computed(() => {
         opacity: 0.5;
     }
 
-    .landing-hero-dark-bg{
+    .landing-hero-dark-bg {
         background-color: #1e2130;
         background-image: url("@images/frontPages/backgrounds/hero-bg-dark.png");
         background-position: center;
