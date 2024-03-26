@@ -105,7 +105,7 @@ const translateMouse = computed(() => {
         inset-inline-start: 50%;
         margin-inline: auto;
         transform: translateX(-50%);
-        margin-top: -34rem;
+        margin-top: -26rem;
     }
 
     section {
@@ -114,14 +114,11 @@ const translateMouse = computed(() => {
 
     .blank-section {
         background-color: rgba(var(--v-theme-surface));
-        min-block-size: 19rem;
+        min-block-size: 10rem;
     }
 
     @media (min-width: 1280px) and (max-width: 1440px)
     {
-        .blank-section {
-            min-block-size: 18rem;
-        }
 
         .landing-hero {
             padding-block-end: 15rem;
@@ -134,76 +131,64 @@ const translateMouse = computed(() => {
 
     @media (min-width: 900px) and (max-width: 1279px)
     {
-        .blank-section{
-            min-block-size: 13rem;
-        }
-
         .landing-hero{
             padding-block-end: 14rem;
         }
 
         .hero-animation-img{
-            inset-block-start: 23rem;
+            inset-block-start: 13rem;
+            inline-size: 100%;
         }
     }
 
     @media (min-width: 768px) and (max-width: 899px)
     {
-        .blank-section{
-            min-block-size: 12rem;
-        }
 
         .landing-hero{
             padding-block-end: 12rem;
         }
 
         .hero-animation-img {
-            inset-block-start: 25rem;
+            inset-block-start: 15rem;
+            inline-size: 100%;
         }
     }
 
     @media (min-width: 600px) and (max-width: 767px)
     {
-        .blank-section {
-            min-block-size: 12rem;
-        }
 
         .landing-hero {
             padding-block-end: 8rem;
         }
 
         .hero-animation-img {
-            inset-block-start: 28rem;
+            inset-block-start: 20rem;
+            inline-size: 100%;
         }
     }
 
     @media (min-width: 425px) and (max-width: 600px)
     {
-        .blank-section {
-            min-block-size: 8rem;
-        }
 
         .landing-hero {
             padding-block-end: 8rem;
         }
 
         .hero-animation-img{
-            inset-block-start: 28rem;
+            inset-block-start: 20rem;
+            inline-size: 100%;
         }
     }
 
     @media (min-width: 300px) and (max-width: 424px)
     {
-        .blank-section {
-            min-block-size: 4rem;
-        }
 
         .landing-hero {
             padding-block-end: 6rem;
         }
 
         .hero-animation-img {
-            margin-top: -8rem;
+            margin-top: -16rem;
             inline-size: 100%;
         }
 
@@ -239,7 +224,7 @@ const translateMouse = computed(() => {
         }
     }
 
-    @media (max-width: 767px)
+    @media (max-width: 991px)
     {
         .hero-elements-img {
             margin-top: 15rem;
@@ -274,7 +259,7 @@ const translateMouse = computed(() => {
         margin-inline: auto;
         transform-style: preserve-3d;
         transition: all 0.35s;
-        width: 85%;
+        width: 75%;
         
         img {
             inline-size: 100%;
