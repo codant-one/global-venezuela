@@ -24,6 +24,13 @@ export default [
       to: 'dashboard-volunteers-circuits',
       action: 'ver', 
       subject: 'voluntarios'
+    },
+    { 
+      title: 'De carácter individual', 
+      icon: { icon: 'mdi-account-supervisor-circle' },
+      to: 'dashboard-volunteers-independents',
+      action: 'ver', 
+      subject: 'voluntarios'
     }
   ]
   

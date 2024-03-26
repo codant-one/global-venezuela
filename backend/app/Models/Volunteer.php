@@ -33,6 +33,14 @@ class Volunteer extends Model
         return $this->belongsTo(Circuit::class, 'circuit_id', 'id');
     }
 
+    public function parish() {
+        return $this->belongsTo(Parish::class, 'parish_id', 'id');
+    }
+
+    public function community_council() {
+        return $this->belongsTo(CommunityCouncil::class, 'community_council_id', 'id');
+    }    
+
      /**** Scopes ****/
      public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {
@@ -77,7 +85,13 @@ class Volunteer extends Model
                   ->whereNull('municipality_id')
                   ->whereNotNull('circuit_id');
         }
-    
+
+        if ($filters->get('isParish')) {
+            $query->whereNull('state_id')
+                  ->whereNull('municipality_id')
+                  ->whereNull('circuit_id');
+        }
+
         if ($filters->get('state_id')) {
             if ($filters->get('isState')) {
                 $query->where('state_id', $filters->get('state_id'));
@@ -89,6 +103,14 @@ class Volunteer extends Model
                 });
             } else if ($filters->get('isCircuit')) {
                 $query->whereHas('circuit', function ($q) use ($filters) {
+                    $q->whereHas('municipality', function ($q) use ($filters) {
+                        $q->whereHas('state', function ($q) use ($filters) {
+                            $q->where('id', $filters->get('state_id'));
+                        });
+                    });
+                });
+            } else if ($filters->get('isParish')) {
+                $query->whereHas('parish', function ($q) use ($filters) {
                     $q->whereHas('municipality', function ($q) use ($filters) {
                         $q->whereHas('state', function ($q) use ($filters) {
                             $q->where('id', $filters->get('state_id'));
@@ -107,11 +129,21 @@ class Volunteer extends Model
                         $q->where('id', $filters->get('municipality_id'));
                     });
                 });
-            } 
+            }  else if ($filters->get('isParish')) { 
+                $query->whereHas('parish', function ($q) use ($filters) {
+                    $q->whereHas('municipality', function ($q) use ($filters) {
+                        $q->where('id', $filters->get('municipality_id'));
+                    });
+                });
+            }
         }
 
         if ($filters->get('circuit_id')) {
             $query->where('circuit_id', $filters->get('circuit_id'));
+        } 
+
+        if ($filters->get('parish_id')) {
+            $query->where('parish_id', $filters->get('parish_id'));
         } 
             
         if ($filters->get('theme_id')) {
@@ -186,11 +218,14 @@ class Volunteer extends Model
                 'state_id' => $request->type === '1' ? $request->state_id : null,
                 'municipality_id' => $request->type === '2' ? $request->municipality_id : null,
                 'circuit_id' => $request->type === '3' ? $request->circuit_id : null,
+                'parish_id' => $request->type === '4' ? $request->parish_id : null,
+                'community_council_id' => $request->type === '4' ? $request->community_council_id : null,
                 'isResponsible' => 0,
                 'name' => $volunteer['name'],
                 'document' => $volunteer['document'],
                 'email' => $volunteer['email'],
-                'phone' => $volunteer['phone'] 
+                'phone' => $volunteer['phone'],
+                'address' => $volunteer['address'] 
             ]);
         }
 

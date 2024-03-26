@@ -102,16 +102,16 @@ const panel = ref([0])
 
 const type = ref('1')
 const form = ref([
-  { name: null, document: null, phone: null, email: null},
-  { name: null, document: null, phone: null, email: null},
-  { name: null, document: null, phone: null, email: null},
-  { name: null, document: null, phone: null, email: null},
-  { name: null, document: null, phone: null, email: null},
-  { name: null, document: null, phone: null, email: null},
-  { name: null, document: null, phone: null, email: null}
+  { name: null, document: null, phone: null, email: null, address: null},
+  { name: null, document: null, phone: null, email: null, address: null},
+  { name: null, document: null, phone: null, email: null, address: null},
+  { name: null, document: null, phone: null, email: null, address: null},
+  { name: null, document: null, phone: null, email: null, address: null},
+  { name: null, document: null, phone: null, email: null, address: null},
+  { name: null, document: null, phone: null, email: null, address: null}
 ])
 
-const responsible = ref({ name: null, document: null, phone: null, email: null })
+const responsible = ref({ name: null, document: null, phone: null, email: null, address: null })
 
 const loadData = () => {
   listThemes.value = miscellaneousStores.getData.themes
@@ -299,11 +299,11 @@ const onSubmit = () => {
     <VCol
       cols="12"
       md="8"
-      class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 pt-7 px-md-10 bg-gray backgroundMobile"
+      class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 pt-0 pt-md-7 px-md-10 bg-gray backgroundMobile"
     >
 
       <div class="d-block justify-center align-center w-100 position-relative">
-        <div class="px-7 py-5 d-block d-md-none">
+        <div class="px-7 py-0 d-block d-md-none">
           <VImg
             :src="registerMultistepIllustration"
           />

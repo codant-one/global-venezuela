@@ -15,10 +15,10 @@ export const useMiscellaneousStores = defineStore('miscellaneous', {
         setLoading(payload){
             this.loading = payload
         }, 
-        fetchData(){
+        fetchData(params){
             this.setLoading(true)
 
-            return Miscellaneous.getData()
+            return Miscellaneous.getData(params)
                 .then((miscellaneous) => {
                     this.data = miscellaneous.data.data
                 })

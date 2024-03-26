@@ -13,6 +13,6 @@ class OtherThemeSeeder extends Seeder
      */
     public function run(): void
     {
-        Theme::create(['name' => 'DE CARÁCTER INDIVIDUAL']);
+        Theme::create(['name' => 'OTRO']);
     }
 }

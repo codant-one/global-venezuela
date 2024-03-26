@@ -103,7 +103,7 @@ class DashboardController extends Controller
             'completedState' => $completedState->count(),
             'countries' => $countries,
             'volunteerCount' => Volunteer::count(),
-            'individualVolunteerCounter' => Volunteer::where('theme_id', 8)->count(),
+            'individualVolunteerCounter' => Volunteer::whereNotNull('parish_id')->count(),
             'userCount' => $users
         ];
     

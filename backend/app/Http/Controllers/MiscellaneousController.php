@@ -36,7 +36,8 @@ class MiscellaneousController extends Controller
                 'municipalities' => $municipalities,
                 'parishes' => $parishes,
                 'circuits' => $circuits,
-                'cities' => $cities
+                'cities' => $cities,
+                'communityCouncils' => $request->communityCouncil ? CommunityCouncil::all() : [],
             ]
         ], 200);
     }

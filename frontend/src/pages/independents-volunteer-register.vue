@@ -9,7 +9,6 @@ import registerMultistepIllustrationDark from '@images/volunteer-logo-4.png'
 import registerMultistepIllustrationLight from '@images/volunteer-logo-4.png'
 import HeroSection from "@/components/register/hero-section.vue";
 
-const currentStep = ref(0)
 const registerMultistepIllustration = useGenerateImageVariant(registerMultistepIllustrationLight, registerMultistepIllustrationDark)
 
 const miscellaneousStores = useMiscellaneousStores()
@@ -18,25 +17,32 @@ const volunteersStores = useVolunteersStores()
 const isRequestOngoing = ref(true)
 
 const listThemes = ref([])
-const theme_id = ref(null)
+const theme_id = ref('')
 
 const listStates = ref([])
 const listMunicipalities = ref([])
 const listCircuits = ref([])
+const listParishes = ref([])
+const listCommunityCouncils = ref([])
 
 const listMunicipalitiesByStates = ref([])
+const listParishesByMunicipalities = ref([])
 const listCircuitsByMunicipalities = ref([])
+const listCommunityCouncilsByCircuits = ref([])
 
-const state_id = ref(null)
-const stateOld_id = ref(null)
-const municipality_id = ref(null)
-const municipalityOld_id = ref(null)
-const circuit_id = ref(null)
+const state_id = ref('')
+const stateOld_id = ref('')
+const municipality_id = ref('')
+const municipalityOld_id = ref('')
+const parish_id = ref('')
+const parishOld_id = ref('')
+const circuit_id = ref('')
+const circuitOld_id = ref('')
+const community_council_id = ref('')
 
 const isTonalSnackbarVisible = ref(false)
 const message = ref('')
 const color = ref('')
-const isMobile = /Mobi/i.test(navigator.userAgent);
 
 const isRegister = ref(false)
 
@@ -46,57 +52,11 @@ const advisor = ref({
   show: false
 })
 
-const radioContent = [
-  {
-      icon: {
-         icon: 'mdi-map-marker-radius',
-         size: isMobile ? '30' : '60',
-      },
-      title: 'Estatal',
-      value: '1'
-  },
-  {
-      icon: {
-         icon: 'mdi-city',
-         size: isMobile ? '30' : '60',
-      },
-      title: 'Municipal',
-      value: '2'
-  },
-  {
-      icon: {
-         icon: 'mdi-crosshairs-gps',
-         size: isMobile ? '30' : '60',
-      },
-      title: 'Por Circuitos Comunales',
-      value: '3'
-  }
-]
-
-const items = [
-  {
-    title: 'Voluntarios',
-    subtitle: 'Tipos',
-    icon: 'tabler-heart-handshake',
-  },
-  {
-    title: 'Transformación',
-    subtitle: 'Selecciona la transformación',
-    icon: 'tabler-book',
-  },
-  {
-    title: 'Información',
-    subtitle: 'Completa los datos',
-    icon: 'tabler-file-text',
-  },
-]
-
 const isFormValid = ref(false)
 const refForm = ref()
 const panel = ref([0])
 
-const type = ref('1')
-const form = ref({ name: null, document: null, phone: null, email: null})
+const form = ref({ name: null, document: null, phone: null, email: null, address: null})
 const responsible = ref({ name: null, document: null, phone: null, email: null })
 
 const loadData = () => {
@@ -104,8 +64,10 @@ const loadData = () => {
   listStates.value = miscellaneousStores.getData.states
   listCircuits.value = miscellaneousStores.getData.circuits
   listMunicipalities.value = miscellaneousStores.getData.municipalities
+  listParishes.value = miscellaneousStores.getData.parishes
+  listCommunityCouncils.value = miscellaneousStores.getData.communityCouncils
 
-  let newTheme = {id: 8, name: 'DE CARÁCTER INDIVIDUAL'};
+  let newTheme = {id: 8, name: 'OTRO'};
 
   listThemes.value.unshift(newTheme);
 }
@@ -117,7 +79,7 @@ async function fetchData() {
    isRequestOngoing.value = true
    
    if(listMunicipalities.value.length === 0) {
-      await miscellaneousStores.fetchData();
+      await miscellaneousStores.fetchData({communityCouncil: true});
       loadData()
    }
 
@@ -133,6 +95,15 @@ const getMunicipalities = computed(() => {
   })
 })
 
+const getParishes = computed(() => {
+  return listParishesByMunicipalities.value.map((municipality) => {
+    return {
+      title: municipality.name,
+      value: municipality.id,
+    }
+  })
+})
+
 const getCircuits = computed(() => {
   return listCircuitsByMunicipalities.value.map((municipality) => {
     return {
@@ -141,6 +112,61 @@ const getCircuits = computed(() => {
     }
   })
 })
+
+const getCommunityCouncils = computed(() => {
+  return listCommunityCouncilsByCircuits.value.map((circuit) => {
+    return {
+      title: circuit.name,
+      value: circuit.id,
+    }
+  })
+})
+
+const clearState = () => {
+  state_id.value = ''
+  stateOld_id.value = ''
+  municipality_id.value = ''
+  municipalityOld_id.value = ''
+  parish_id.value = ''
+  parishOld_id.value = ''
+  circuit_id.value = ''
+  circuitOld_id.value = ''
+  community_council_id.value = ''
+
+  listMunicipalitiesByStates.value = []
+  listParishesByMunicipalities.value = []
+  listCircuitsByMunicipalities.value = []
+  listCommunityCouncilsByCircuits.value = []
+}
+
+const clearMunicipality = () => {
+  municipality_id.value = ''
+  municipalityOld_id.value = ''
+  parish_id.value = ''
+  parishOld_id.value = ''
+  circuit_id.value = ''
+  circuitOld_id.value = ''
+  community_council_id.value = ''
+
+  listParishesByMunicipalities.value = []
+  listCircuitsByMunicipalities.value = []
+  listCommunityCouncilsByCircuits.value = []
+}
+
+const clearParish = () => {
+  parish_id.value = ''
+  parishOld_id.value = ''
+}
+
+const clearCircuit = () => {
+  community_council_id.value = ''
+
+  listCommunityCouncilsByCircuits.value = []
+}
+
+const clearCommunityCouncil = () => {
+  community_council_id.value = ''
+}
 
 const selectState = state => {
   if (state) {
@@ -158,9 +184,31 @@ const selectMunicipalities = municipality => {
     let _municipality = listMunicipalities.value.find(item => item.id === municipality)
     municipality_id.value = _municipality.name
     municipalityOld_id.value = _municipality.id
+    parish_id.value = ''
     circuit_id.value = ''
 
+    listParishesByMunicipalities.value = listParishes.value.filter(item => item.municipality_id === _municipality.id)
     listCircuitsByMunicipalities.value = listCircuits.value.filter(item => item.municipality_id === _municipality.id)
+
+  }
+}
+
+const selectParishes = parish => {
+  if (parish) {
+    let _parish = listParishes.value.find(item => item.id === parish)
+    parish_id.value = _parish.name
+    parishOld_id.value = _parish.id
+  }
+}
+
+const selectCircuit = circuit => {
+  if (circuit) {
+    let _circuit = listCircuits.value.find(item => item.id === circuit)
+    circuit_id.value = _circuit.name
+    circuitOld_id.value = _circuit.id
+
+    community_council_id.value = ''
+    listCommunityCouncilsByCircuits.value = listCommunityCouncils.value.filter(item => item.circuit_id === _circuit.id)
 
   }
 }
@@ -170,66 +218,60 @@ const onSubmit = () => {
   panel.value = [0, 1, 2, 3, 4, 5, 6, 7]
 
   refForm.value?.validate().then(({ valid }) => {
-    if (currentStep.value === 0) {
-      currentStep.value++
-    } else if(!valid && currentStep.value === 1 && type.value === '1' && refForm.value.items.length === 7 && refForm.value.errors.length <= 3) {
-      currentStep.value++
-    } else if(!valid && currentStep.value === 1 && type.value === '2' && refForm.value.items.length === 8 && refForm.value.errors.length <= 4) {
-      currentStep.value++
-    } else if(!valid && currentStep.value === 1 && type.value === '3' && refForm.value.items.length === 9 && refForm.value.errors.length <= 5){
-      currentStep.value++
-    } else if (valid && currentStep.value === 1) {
-      currentStep.value++
-    } else if (valid && currentStep.value === 2) {
 
-      let data = {
-        responsible: responsible.value,
-        form: [form.value],
-        type: type.value,
-        theme_id: theme_id.value,
-        state_id: stateOld_id.value,
-        municipality_id: municipalityOld_id.value,
-        circuit_id: circuit_id.value
-      }
+    if(valid) {
 
-      volunteersStores.register(data)
-        .then((res) => {
-          if (res.data.success) {
-            isTonalSnackbarVisible.value = true
-            message.value = 'Voluntario registrado con exito!!'
-            color.value = 'primary'
+        let data = {
+            responsible: responsible.value,
+            form: [form.value],
+            type: '4',
+            theme_id: theme_id.value,
+            state_id: stateOld_id.value,
+            municipality_id: municipalityOld_id.value,
+            circuit_id: circuitOld_id.value,
+            parish_id: parishOld_id.value,
+            community_council_id: community_council_id.value
+        }
 
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000)
+        console.log('data', data)
 
-          } else {
-            isTonalSnackbarVisible.value = true
-            message.value = 'Ha ocurrido un error'
-            color.value = 'error'
-          }
-        })
-        .catch((err) => {
+        volunteersStores.register(data)
+            .then((res) => {
+                if (res.data.success) {
+                    isTonalSnackbarVisible.value = true
+                    message.value = 'Voluntario registrado con exito!!'
+                    color.value = 'primary'
 
-          if(err.success === false && err.feedback === 'params_validation_failed') {
+                    setTimeout(() => {
+                    window.location.reload();
+                    }, 3000)
 
-            advisor.value.show = true
-            advisor.value.type = 'error'
-            advisor.value.message = Object.values(err.message).flat().join('<br>');
-            
+                } else {
+                    isTonalSnackbarVisible.value = true
+                    message.value = 'Ha ocurrido un error'
+                    color.value = 'error'
+                }
+            })
+            .catch((err) => {
 
-            setTimeout(() => {
-              advisor.value.show = false
-              advisor.value.type = ''
-              advisor.value.message = ''
-            }, 10000)
-          } else {
-            isTonalSnackbarVisible.value = true
-            message.value = err
-            color.value = 'error'
-          }
-      })
-     
+                if(err.success === false && err.feedback === 'params_validation_failed') {
+
+                    advisor.value.show = true
+                    advisor.value.type = 'error'
+                    advisor.value.message = Object.values(err.message).flat().join('<br>');
+                    
+
+                    setTimeout(() => {
+                    advisor.value.show = false
+                    advisor.value.type = ''
+                    advisor.value.message = ''
+                    }, 10000)
+                } else {
+                    isTonalSnackbarVisible.value = true
+                    message.value = err
+                    color.value = 'error'
+                }
+            })
     }
 
   })
@@ -300,11 +342,11 @@ const register = () => {
             <VCol
                 cols="12"
                 md="8"
-                class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 pt-7 px-md-10 bg-gray backgroundMobile"
+                class="auth-card-v2 d-flex align-center justify-center px-7 pb-7 pt-0 pt-md-7 px-md-10 bg-gray backgroundMobile"
             >
 
                 <div class="d-block justify-center align-center w-100 position-relative">
-                    <div class="px-7 py-5 d-block d-md-none">
+                    <div class="px-7 py-0 d-block d-md-none">
                         <VImg
                             :src="registerMultistepIllustration"
                         />
@@ -316,7 +358,7 @@ const register = () => {
                         @submit.prevent="onSubmit">
                         <VCard
                             flat
-                            class="pa-5 pa-md-10"
+                            class="pa-5"
                         >
                             <v-alert
                                 v-if="advisor.show"
@@ -329,180 +371,138 @@ const register = () => {
                                 <span v-html="advisor.message" />
                             </v-alert>
 
-                            <AppStepper
-                                v-model:current-step="currentStep"
-                                :items="items"
-                                :isActiveStepValid="false"
-                                direction="horizontal"
-                                icon-size="24"
-                                class="stepper-icon-step-bg mb-8"
-                            />
-
-                            <VWindow
-                                v-model="currentStep"
-                                class="disable-tab-transition"
-                            >
-                                <VWindowItem>
-                                <h5 class="text-h5 mb-2">
-                                    Voluntariados
-                                </h5>
-                                <p class="text-sm">
-                                    Selecciona el tipo de voluntariado
-                                </p>
-
-                                <CustomRadiosWithIcon
-                                    v-model:selected-radio="type"
-                                    :radio-content="radioContent"
-                                    :grid-column="{ sm: '4', cols: '12' }"
-                                />
-                                </VWindowItem>
-                                <VWindowItem>
-                                <h5 class="text-h5 mb-2">
-                                    Transformación
-                                </h5>
-                                <p class="text-sm">
-                                    Selecciona la transformación
-                                </p>
+                            <VCardTitle class="text-h5 mb-2 px-2 px-md-10">
+                                Registro Individual de Voluntareado
+                            </VCardTitle>
+                               
+                            <VCardText class="px-2 px-md-10">
                                 <VRow>
-                                    <VCol cols="12" md="6" v-if="Number(type) >= 1">
-                                    <VAutocomplete
-                                        v-model="state_id"
-                                        label="Estado"
-                                        :rules="[requiredValidator]"
-                                        :items="listStates"
-                                        item-title="name"
-                                        item-value="name"
-                                        :menu-props="{ maxHeight: '200px' }"
-                                        @update:model-value="selectState"
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="state_id"
+                                            label="Estado"
+                                            :rules="[requiredValidator]"
+                                            :items="listStates"
+                                            item-title="name"
+                                            item-value="name"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            @update:model-value="selectState"
+                                            @click:clear="clearState"
+                                            clearable
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="municipality_id"
+                                            label="Municipio"
+                                            :rules="[requiredValidator]"
+                                            :items="getMunicipalities"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            @update:model-value="selectMunicipalities"
+                                            @click:clear="clearMunicipality"
+                                            clearable
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="parish_id"
+                                            label="Parroquia"
+                                            :rules="[requiredValidator]"
+                                            :items="getParishes"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            @update:model-value="selectParishes"
+                                            @click:clear="clearParish"
+                                            clearable
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="circuit_id"
+                                            label="Circuito Comunal"
+                                            :items="getCircuits"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            @update:model-value="selectCircuit"
+                                            @click:clear="clearCircuit"
+                                            clearable
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="community_council_id"
+                                            label="Consejo Comunal"
+                                            :items="getCommunityCouncils"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            @click:clear="clearCommunityCouncil"
+                                            clearable
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="theme_id"
+                                            label="Transformación"
+                                            :rules="[requiredValidator]"
+                                            :items="listThemes"
+                                            item-title="name"
+                                            item-value="id"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            clearable
                                     />
                                     </VCol>
-                                    <VCol cols="12" md="6" v-if="Number(type) >= 2">
-                                    <VAutocomplete
-                                        v-model="municipality_id"
-                                        label="Municipio"
-                                        :rules="[requiredValidator]"
-                                        :items="getMunicipalities"
-                                        :menu-props="{ maxHeight: '200px' }"
-                                        @update:model-value="selectMunicipalities"
-                                    />
+                                    <VCol cols="12" md="6"> 
+                                        <VTextField
+                                            v-model="form.name"
+                                            label="Nombre"
+                                            placeholder="Nombre"
+                                            :rules="[requiredValidator]"
+                                        />
                                     </VCol>
-                                    <VCol cols="12" md="6" v-if="Number(type) === 3">
-                                    <VAutocomplete
-                                        v-model="circuit_id"
-                                        label="Circuito Comunal"
-                                        :rules="[requiredValidator]"
-                                        :items="getCircuits"
-                                        :menu-props="{ maxHeight: '200px' }"
-                                    />
+                                    <VCol cols="12" md="6">
+                                        <VTextField
+                                            v-model="form.document"
+                                            type="tel"
+                                            label="Cédula"
+                                            placeholder="Cédula"
+                                            :rules="[phoneValidator, requiredValidator]"
+                                        />
                                     </VCol>
-                                    <VCol cols="12">
-                                    <VAutocomplete
-                                        v-model="theme_id"
-                                        label="Transformación"
-                                        :rules="[requiredValidator]"
-                                        :items="listThemes"
-                                        item-title="name"
-                                        item-value="id"
-                                        :menu-props="{ maxHeight: '200px' }"
-                                    />
+                                    <VCol cols="12" md="6">
+                                        <VTextField
+                                            type="tel"
+                                            v-model="form.phone"
+                                            label="Teléfono"
+                                            placeholder="+(XX) XXXXXXXXX"
+                                            :rules="[phoneValidator, requiredValidator]"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VTextField
+                                            v-model="form.email"
+                                            label="E-mail"
+                                            type="email"
+                                            :rules="[emailValidator]"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="12">
+                                        <VTextarea
+                                            v-model="form.address"
+                                            rows="3"
+                                            label="Dirección"
+                                        />
                                     </VCol>
                                 </VRow>
-                                </VWindowItem>
-                                <VWindowItem>
-                                    <h5 class="text-h5 mb-2">
-                                        Información Personal
-                                    </h5>
-                                    <p class="text-sm">
-                                        Ingrese la información personal de los voluntarios
-                                    </p>
-                                    <VCard>
-                                        <VCardTitle>
-                                            Voluntario
-                                        </VCardTitle>
-                                        <VCardText>
-                                            <VRow no-gutters>
-                                                <VCol cols="12" md="12"> 
-                                                    <VTextField
-                                                        v-model="form.name"
-                                                        label="Nombre"
-                                                        placeholder="Nombre"
-                                                        :rules="[requiredValidator]"
-                                                        class="mb-2"
-                                                        />
-                                                    </VCol>
-                                                <VCol cols="12" md="6">
-                                                    <VTextField
-                                                        v-model="form.document"
-                                                        type="tel"
-                                                        label="Cédula"
-                                                        placeholder="Cédula"
-                                                        :rules="[phoneValidator, requiredValidator]"
-                                                        class="mb-2 me-3"
-                                                    />
-                                                </VCol>
-                                                <VCol cols="12" md="6">
-                                                    <VTextField
-                                                        type="tel"
-                                                        v-model="form.phone"
-                                                        label="Teléfono"
-                                                        placeholder="+(XX) XXXXXXXXX"
-                                                        :rules="[phoneValidator, requiredValidator]"
-                                                        class="mb-2"
-                                                    />
-                                                </VCol>
-                                                <VCol cols="12" md="12">
-                                                    <VTextField
-                                                        v-model="form.email"
-                                                        label="E-mail"
-                                                        type="email"
-                                                        :rules="[emailValidator]"
-                                                    />
-                                                </VCol>
-                                            </VRow>
-                                        </VCardText>
-                                    </VCard>                                
-                                </VWindowItem>
-                            </VWindow>
-
-                            <div class="d-flex flex-wrap justify-sm-space-between justify-center gap-x-4 gap-y-2 mt-8">
-                                <VBtn
-                                v-if="currentStep > 0"
-                                color="secondary"
-                                :disabled="currentStep === 0"
-                                variant="tonal"
-                                @click="currentStep--"
-                                >
-                                <VIcon
-                                    icon="tabler-arrow-left"
-                                    start
-                                    class="flip-in-rtl"
-                                />
-                                Atrás
-                                </VBtn>
-
-                                <VSpacer />
-                                <VBtn
-                                v-if="items.length - 1 === currentStep"
-                                color="primary"
-                                append-icon="tabler-check"
-                                type="submit"
-                                >
-                                Enviar
-                                </VBtn>
-
-                                <VBtn
-                                v-else
-                                type="submit"
-                                >
-                                Siguiente
-
-                                <VIcon
-                                    icon="tabler-arrow-right"
-                                    end
-                                    class="flip-in-rtl"
-                                />
-                                </VBtn>
-                            </div>
+                            </VCardText>                      
+                            <VCardText class="px-2 px-md-10">
+                                <div class="d-flex flex-wrap justify-sm-space-between justify-center gap-x-4 gap-y-2 mt-8">
+                                    <VSpacer />
+                                    <VBtn
+                                        color="primary"
+                                        append-icon="tabler-check"
+                                        type="submit"
+                                    >
+                                        Enviar
+                                    </VBtn>
+                                </div>
+                            </VCardText>
                         </VCard>
                     </VForm>
                 </div>
@@ -546,7 +546,12 @@ const register = () => {
     @media (max-width: 768px) {
 
         .v-btn--size-default {
-        font-size: 13px;
+            font-size: 13px;
+        }
+
+        .v-card-title {
+            text-overflow: clip;
+            font-size: 1rem !important;
         }
 
         .backgroundMobile {

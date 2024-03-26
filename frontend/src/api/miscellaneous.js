@@ -2,8 +2,8 @@ import axios from '@axios'
 
 class Miscellaneous {
 
-    getData() {
-        return axios.get('miscellaneous/data')
+    getData(params) {
+        return axios.get('miscellaneous/data', {params})
     }
 
     getDataMigrant() {
