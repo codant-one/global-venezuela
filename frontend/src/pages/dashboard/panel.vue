@@ -170,30 +170,39 @@ async function fetchData() {
   volunteerData.value = [
     {
       title: 'Estados',
-      registers: listStatistics.value.stateCount,
       completed: listStatistics.value.completedState,
       total: listStatistics.value.completedState + '/' + listStatistics.value.stateCount,
       progress: roundCustom((listStatistics.value.completedState * 100) / listStatistics.value.stateCount),
       color: 'primary',
-      link: 'dashboard-volunteers-states'
+      link: 'dashboard-volunteers-states',
+      label: 'Registros Completados'
     },
     {
       title: 'Municipios',
-      registers: listStatistics.value.municipalityCount,
       completed: listStatistics.value.completedMunicipality,
       total: listStatistics.value.completedMunicipality + '/' + listStatistics.value.municipalityCount,
       progress: roundCustom((listStatistics.value.completedMunicipality * 100) / listStatistics.value.municipalityCount),
       color: 'success',
-      link: 'dashboard-volunteers-municipalities'
+      link: 'dashboard-volunteers-municipalities',
+      label: 'Registros Completados'
     },
     {
       title: 'Circuitos',
-      registers: listStatistics.value.circuitCount,
       completed: listStatistics.value.completedCircuit,
       total: listStatistics.value.completedCircuit + '/' + listStatistics.value.circuitCount,
       progress: roundCustom((listStatistics.value.completedCircuit * 100) / listStatistics.value.circuitCount),
       color: 'error',
-      link: 'dashboard-volunteers-circuits'
+      link: 'dashboard-volunteers-circuits',
+      label: 'Registros Completados'
+    },
+    {
+      title: ' DE CARÁCTER INDIVIDUAL',
+      completed: listStatistics.value.individualVolunteerCounter,
+      total: listStatistics.value.individualVolunteerCounter + '/' + volunteerCount.value,
+      progress: roundCustom((listStatistics.value.individualVolunteerCounter * 100) / volunteerCount.value),
+      color: 'warning',
+      link: false,
+      label: 'Voluntarios Registrados'
     }
   ]
 
@@ -392,9 +401,10 @@ const go = (name) => {
                 {{ volunteer.title }} {{ volunteer.total }}
               </VListItemTitle>
 
-              <VListItemSubtitle>{{ volunteer.completed }} Registros completados</VListItemSubtitle>
+              <VListItemSubtitle>{{ volunteer.completed }} {{ volunteer.label}}</VListItemSubtitle>
               <template #append>
                 <VBtn
+                  v-if="volunteer.link"
                   variant="tonal"
                   color="default"
                   class="rounded-sm"

@@ -198,7 +198,7 @@ const onSubmit = () => {
                 </tr>
 
                 <tr>
-                  <td class="text-wrap w-20 w-md-50">¿Cuantos años tiene el país?</td>
+                  <td class="text-wrap w-20 w-md-50">¿Cuantos años tiene en el país?</td>
                   <td></td>
                   <td></td>
                   <td>

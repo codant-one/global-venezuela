@@ -21,7 +21,7 @@ class MiscellaneousController extends Controller
     */
     public function allData(Request $request)
     {
-        $themes = Theme::all();
+        $themes = Theme::where('id', '<', 8)->get();
         $states = State::all();
         $municipalities = Municipality::all();
         $parishes = Parish::all();

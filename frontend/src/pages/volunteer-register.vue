@@ -207,7 +207,7 @@ const onSubmit = () => {
         .then((res) => {
           if (res.data.success) {
             isTonalSnackbarVisible.value = true
-            message.value = 'Voluntarios credos con exito!!'
+            message.value = 'Voluntarios creados con exito!!'
             color.value = 'primary'
 
             setTimeout(() => {
