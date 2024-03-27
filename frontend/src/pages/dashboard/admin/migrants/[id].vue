@@ -2,7 +2,6 @@
 
 import { useMigrantsStores } from '@/stores/useMigrants'
 import { themeConfig } from '@themeConfig'
-import axios from 'axios';
 import CustomerBioPanel from '@/views/apps/ecommerce/customer/view/CustomerBioPanel.vue'
 import CustomerTabDocuments from '@/views/apps/ecommerce/customer/view/CustomerTabDocuments.vue'
 import CustomerTabLocation from '@/views/apps/ecommerce/customer/view/CustomerTabLocation.vue'
