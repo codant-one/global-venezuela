@@ -59,7 +59,7 @@ class MigrantImport implements ToModel
         $parish_id = $parishes_arr[$key]['id'];
         $unixDate = ($row[9] - 25569) * 86400; // 25569 es el número de días desde la fecha base de Excel hasta la fecha base de Unix (1 de enero de 1970)
         $date = gmdate('Y-m-d', $unixDate);
-        echo print_r($row[0]);
+        echo print_r($row[6]);
         echo print_r($country[0]['id']);
         // return new Migrant([
         //     'country_id' => $country[0]['id'],
