@@ -33,7 +33,11 @@ class DatabaseSeeder extends Seeder
             VolunteerSeeder::class,
             VolunteerPermissionsSeeder::class,
 
-            OperatorPermissionsSeeder::class
+            OperatorPermissionsSeeder::class,
+            OtherThemeSeeder::class,
+
+            ProfessionSeeder::class,
+            InstructionDegreeSeeder::class
 
         ]);
 

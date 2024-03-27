@@ -204,15 +204,20 @@ const downloadCSV = async () => {
       ESTADO: element.parish.municipality.state.name,
       MUNICIPIO: element.parish.municipality.name,
       PARROQUIA: element.parish.name,
-      CONSEJO_COMUNAL: element.community_council.name,
+      CONSEJO_COMUNAL: element.community_council?.name ?? '',
       TRANSFORMACIÓN: element.theme.name,
       NOMBRE: element.name ?? '',
       DOCUMENTO: element.document ?? '',
       TELÉFONO: element.phone ?? '',
       E_MAIL: element.email ?? '',
       DIRECCIÓN: element.address ?? '',
+      PROFESIÓN: element.profession?.name ?? '',
+      GRADO_DE_INSTRUCCIÓN: element.instruction_degree?.name ?? '',
+      INSTRAGRAM: element.instagram ?? '',
+      FACEBOOK: element.facebook ?? '',
+      TWITTER: element.twitter ?? ''
     }
-  
+
     dataArray.push(data)
   })
 
@@ -347,14 +352,13 @@ const downloadCSV = async () => {
             <thead>
               <tr>
                 <th scope="col"> #ID </th>
-                <th scope="col"> ESTADO </th>
-                <th scope="col"> MUNICIPIO </th>
-                <th scope="col"> PARROQUIA </th>
+                <th scope="col"> UBICACIÓN </th>
                 <th scope="col"> CONSEJO COMUNAL </th>
                 <th scope="col"> TRANSFORMACIÓN </th>
                 <th scope="col"> NOMBRE </th>
-                <th scope="col"> DOCUMENTO </th>
-                <th scope="col"> TELÉFONO </th> 
+                <th scope="col"> PROFESIÓN </th> 
+                <th scope="col"> GRADO DE INST. </th>
+                <th scope="col"> SOCIAL LINK </th>
               </tr>
             </thead>
             <!-- 👉 table body -->
@@ -364,14 +368,66 @@ const downloadCSV = async () => {
                 :key="volunteer.id"
                 style="height: 3.75rem;">
                 <td> {{volunteer.id }} </td>
-                <td> {{volunteer.parish.municipality.state.name }} </td>
-                <td> {{volunteer.parish.municipality.name }} </td>
-                <td class="text-wrap text-base font-weight-medium mb-0"> {{ volunteer.parish.name }} </td>
+                <td class="text-wrap text-uppercase">
+                  <div class="d-flex align-center">
+                    <div class="d-flex flex-column">
+                      <h6 class="text-base font-weight-medium mb-0">
+                        {{volunteer.parish.municipality.state.name }}: {{volunteer.parish.municipality.name }}
+                      </h6>
+                      <span class="text-disabled text-sm">{{ volunteer.parish.name }}</span>
+                    </div>
+                  </div>
+                </td>
                 <td class="text-wrap text-base font-weight-medium mb-0"> {{ volunteer.community_council?.name }} </td>
                 <td class="text-wrap"> {{volunteer.theme.name }} </td>
-                <td class="text-wrap"> {{volunteer.name }} </td>
-                <td class="text-wrap"> {{volunteer.document }} </td>
-                <td class="text-wrap"> {{volunteer.phone }} </td>
+                <td class="text-wrap text-uppercase">
+                  <div class="d-flex align-center">
+                    <div class="d-flex flex-column">
+                      <h6 class="text-base font-weight-medium mb-0">
+                        {{volunteer.name}}
+                      </h6>
+                      <span class="text-disabled text-sm"><VIcon>mdi-card-account-details</VIcon>{{ volunteer.document }}</span>
+                      <span class="text-disabled text-sm"><VIcon>mdi-phone</VIcon>{{ volunteer.phone }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-wrap"> {{volunteer.profession?.name }} </td>
+                <td class="text-wrap"> {{volunteer.instruction_degree?.name }} </td>
+                <td class="text-wrap">
+                  <span class="text-disabled text-sm me-2">
+                    <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent">
+                      <template #activator="{ props }">
+                        <VIcon v-bind="props"> mdi-instagram </VIcon>
+                      </template>
+                      <span> {{ volunteer.instagram ?? 'NO POSEE' }}</span>
+                    </VTooltip>
+                  </span>
+                  <span class="text-disabled text-sm me-2">
+                    <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent">
+                      <template #activator="{ props }">
+                        <VIcon v-bind="props"> mdi-facebook </VIcon>
+                      </template>
+                      <span> {{ volunteer.facebook ?? 'NO POSEE' }}</span>
+                    </VTooltip>
+                  </span>
+                  <span class="text-disabled text-sm">
+                    <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent">
+                      <template #activator="{ props }">
+                        <VIcon v-bind="props"> mdi-twitter </VIcon>
+                      </template>
+                      <span> {{ volunteer.twitter ?? 'NO POSEE' }}</span>
+                    </VTooltip>
+                  </span>
+                </td>
               </tr>
             </tbody>
             <!-- 👉 table footer  -->

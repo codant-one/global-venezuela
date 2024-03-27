@@ -13,6 +13,8 @@ use App\Models\City;
 use App\Models\Gender;
 use App\Models\CommunityCouncil;
 use App\Models\Country;
+use App\Models\Profession;
+use App\Models\InstructionDegree;
 
 class MiscellaneousController extends Controller
 {
@@ -27,6 +29,8 @@ class MiscellaneousController extends Controller
         $parishes = Parish::all();
         $circuits = Circuit::all();
         $cities = City::all();
+        $professions = Profession::all();
+        $instructionDegrees = InstructionDegree::all();
 
         return response()->json([
             'success' => true,
@@ -38,6 +42,8 @@ class MiscellaneousController extends Controller
                 'circuits' => $circuits,
                 'cities' => $cities,
                 'communityCouncils' => $request->communityCouncil ? CommunityCouncil::all() : [],
+                'professions' => $professions,
+                'instructionDegrees' => $instructionDegrees
             ]
         ], 200);
     }

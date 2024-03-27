@@ -24,6 +24,8 @@ const listMunicipalities = ref([])
 const listCircuits = ref([])
 const listParishes = ref([])
 const listCommunityCouncils = ref([])
+const listProfessions = ref([])
+const listInstructionDegrees = ref([])
 
 const listMunicipalitiesByStates = ref([])
 const listParishesByMunicipalities = ref([])
@@ -39,6 +41,8 @@ const parishOld_id = ref('')
 const circuit_id = ref('')
 const circuitOld_id = ref('')
 const community_council_id = ref('')
+const profession_id = ref('')
+const instruction_degree_id = ref('')
 
 const isTonalSnackbarVisible = ref(false)
 const message = ref('')
@@ -58,18 +62,23 @@ const panel = ref([0])
 
 const form = ref({ name: null, document: null, phone: null, email: null, address: null})
 const responsible = ref({ name: null, document: null, phone: null, email: null })
+const instagram = ref(null)
+const facebook = ref(null)
+const twitter = ref(null)
 
 const loadData = () => {
-  listThemes.value = miscellaneousStores.getData.themes
-  listStates.value = miscellaneousStores.getData.states
-  listCircuits.value = miscellaneousStores.getData.circuits
-  listMunicipalities.value = miscellaneousStores.getData.municipalities
-  listParishes.value = miscellaneousStores.getData.parishes
-  listCommunityCouncils.value = miscellaneousStores.getData.communityCouncils
+    listThemes.value = miscellaneousStores.getData.themes
+    listStates.value = miscellaneousStores.getData.states
+    listCircuits.value = miscellaneousStores.getData.circuits
+    listMunicipalities.value = miscellaneousStores.getData.municipalities
+    listParishes.value = miscellaneousStores.getData.parishes
+    listCommunityCouncils.value = miscellaneousStores.getData.communityCouncils
+    listProfessions.value = miscellaneousStores.getData.professions
+    listInstructionDegrees.value = miscellaneousStores.getData.instructionDegrees
 
-  let newTheme = {id: 8, name: 'OTRO'};
+    let newTheme = {id: 8, name: 'OTRO'};
 
-  listThemes.value.unshift(newTheme);
+    listThemes.value.unshift(newTheme);
 }
 
 watchEffect(fetchData)
@@ -230,7 +239,12 @@ const onSubmit = () => {
             municipality_id: municipalityOld_id.value,
             circuit_id: circuitOld_id.value,
             parish_id: parishOld_id.value,
-            community_council_id: community_council_id.value
+            community_council_id: community_council_id.value,
+            profession_id: profession_id.value,
+            instruction_degree_id: instruction_degree_id.value,
+            instagram: instagram.value,
+            facebook: facebook.value,
+            twitter: twitter.value
         }
 
         console.log('data', data)
@@ -375,7 +389,7 @@ const register = () => {
                                 Registro Individual de Voluntareado
                             </VCardTitle>
                                
-                            <VCardText class="px-2 px-md-10">
+                            <VCardText class="px-2 px-md-10 pb-0">
                                 <VRow>
                                     <VCol cols="12" md="6">
                                         <VAutocomplete
@@ -448,6 +462,28 @@ const register = () => {
                                             clearable
                                     />
                                     </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="profession_id"
+                                            label="Profesión"
+                                            :items="listProfessions"
+                                            item-title="name"
+                                            item-value="id"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            clearable
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <VAutocomplete
+                                            v-model="instruction_degree_id"
+                                            label="Grado de Instrucción"
+                                            :items="listInstructionDegrees"
+                                            item-title="name"
+                                            item-value="id"
+                                            :menu-props="{ maxHeight: '200px' }"
+                                            clearable
+                                        />
+                                    </VCol>
                                     <VCol cols="12" md="6"> 
                                         <VTextField
                                             v-model="form.name"
@@ -487,6 +523,30 @@ const register = () => {
                                             v-model="form.address"
                                             rows="3"
                                             label="Dirección"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="4"> 
+                                        <VTextField
+                                            v-model="instagram"
+                                            label="Instagram"
+                                            placeholder="Instagram"
+                                            prepend-inner-icon="mdi-instagram"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="4"> 
+                                        <VTextField
+                                            v-model="facebook"
+                                            label="Facebook"
+                                            placeholder="Facebook"
+                                            prepend-inner-icon="mdi-facebook"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="4"> 
+                                        <VTextField
+                                            v-model="twitter"
+                                            label="twitter"
+                                            placeholder="twitter"
+                                            prepend-inner-icon="mdi-twitter"
                                         />
                                     </VCol>
                                 </VRow>

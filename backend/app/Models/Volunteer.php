@@ -41,8 +41,16 @@ class Volunteer extends Model
         return $this->belongsTo(CommunityCouncil::class, 'community_council_id', 'id');
     }    
 
-     /**** Scopes ****/
-     public function scopeWhereSearch($query, $search) {
+    public function profession() {
+        return $this->belongsTo(Profession::class, 'profession_id', 'id');
+    }
+
+    public function instruction_degree() {
+        return $this->belongsTo(InstructionDegree::class, 'instruction_degree_id', 'id');
+    }
+
+    /**** Scopes ****/
+    public function scopeWhereSearch($query, $search) {
         foreach (explode(' ', $search) as $term) {
             $query->whereHas('state', function ($q) use ($term) {
                     $q->where('name', 'LIKE', '%' . $term . '%');
@@ -220,6 +228,11 @@ class Volunteer extends Model
                 'circuit_id' => $request->type === '3' ? $request->circuit_id : null,
                 'parish_id' => $request->type === '4' ? $request->parish_id : null,
                 'community_council_id' => $request->type === '4' ? $request->community_council_id : null,
+                'profession_id' => $request->type === '4' ? $request->profession_id : null,
+                'instruction_degree_id' => $request->type === '4' ? $request->instruction_degree_id : null,
+                'instagram' => $request->type === '4' ? $request->instagram : null,
+                'facebook' => $request->type === '4' ? $request->facebook : null,
+                'twitter' => $request->type === '4' ? $request->twitter : null,
                 'isResponsible' => 0,
                 'name' => $volunteer['name'],
                 'document' => $volunteer['document'],

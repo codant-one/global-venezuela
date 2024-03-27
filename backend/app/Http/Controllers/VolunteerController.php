@@ -15,40 +15,49 @@ class VolunteerController extends Controller
     {
         $limit = $request->has('limit') ? $request->limit : 10;
 
-        $query = Volunteer::with(['theme', 'state', 'municipality.state', 'circuit.municipality.state', 'parish.municipality.state', 'community_council'])
-                        ->applyFilters(
-                            $request->only([
-                                'search',
-                                'orderByField',
-                                'orderBy',
-                                'isState',
-                                'state_id',
-                                'theme_id',
-                                'isMunicipality',
-                                'municipality_id',
-                                'isCircuit',
-                                'circuit_id',
-                                'isParish',
-                                'parish_id'
-                            ])
-                        );
+        $query = Volunteer::with([
+                    'theme', 
+                    'state', 
+                    'municipality.state', 
+                    'circuit.municipality.state', 
+                    'parish.municipality.state', 
+                    'community_council', 
+                    'profession', 
+                    'instruction_degree'
+                ])
+                ->applyFilters(
+                    $request->only([
+                        'search',
+                        'orderByField',
+                        'orderBy',
+                        'isState',
+                        'state_id',
+                        'theme_id',
+                        'isMunicipality',
+                        'municipality_id',
+                        'isCircuit',
+                        'circuit_id',
+                        'isParish',
+                        'parish_id'
+                    ])
+                );
 
          $count = $query->applyFilters(
-                            $request->only([
-                                'search',
-                                'orderByField',
-                                'orderBy',
-                                'isState',
-                                'state_id',
-                                'theme_id',
-                                'isMunicipality',
-                                'municipality_id',
-                                'isCircuit',
-                                'circuit_id',
-                                'isParish',
-                                'parish_id'
-                            ])
-                        )->count();
+                    $request->only([
+                        'search',
+                        'orderByField',
+                        'orderBy',
+                        'isState',
+                        'state_id',
+                        'theme_id',
+                        'isMunicipality',
+                        'municipality_id',
+                        'isCircuit',
+                        'circuit_id',
+                        'isParish',
+                        'parish_id'
+                    ])
+                )->count();
 
         $volunteers = ($limit == -1) ? $query->paginate($query->count()) : $query->paginate($limit);
 
