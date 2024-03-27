@@ -386,8 +386,8 @@ const downloadCSV = async () => {
                       <h6 class="text-base font-weight-medium mb-0">
                         {{volunteer.name}}
                       </h6>
-                      <span class="text-disabled text-sm"><VIcon>mdi-card-account-details</VIcon>{{ volunteer.document }}</span>
-                      <span class="text-disabled text-sm"><VIcon>mdi-phone</VIcon>{{ volunteer.phone }}</span>
+                      <span class="text-disabled text-sm"><VIcon class="me-1">mdi-card-account-details</VIcon>{{ volunteer.document }}</span>
+                      <span class="text-disabled text-sm"><VIcon class="me-1">mdi-phone</VIcon>{{ volunteer.phone }}</span>
                     </div>
                   </div>
                 </td>
