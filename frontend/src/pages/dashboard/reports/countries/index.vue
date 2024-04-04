@@ -111,7 +111,7 @@ const downloadCSV = async () => {
       NÚMERO_PASAPORTE: element.passport_number,
       PASAPORTE_VIGENTE: element.passport_status ? 'SI' : 'NO',
       TELÉFONO: element.phone,
-      DIRECCIÓN: element.address.replace(/\r?\n/g, " "),
+      DIRECCIÓN: (element.address !== null) ? element.address.replace(/\r?\n/g, " ") : '',
       CÉDULA_TRANSEUNTE: element.transient ? 'SI' : 'NO',
       CÉDULA_RESIDENTE: element.resident ? 'SI' : 'NO',
       AÑOS_EN_EL_PAÍS: element.years_in_country,
