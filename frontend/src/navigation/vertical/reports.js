@@ -24,6 +24,13 @@ export default [
       to: 'dashboard-reports-documentations',
       action: 'ver', 
       subject: 'reportes'
+    },
+    { 
+      title: 'Por estatus', 
+      icon: { icon: 'mdi-chart-arc' },
+      to: 'dashboard-reports-general',
+      action: 'ver', 
+      subject: 'reportes'
     }
   ]
   

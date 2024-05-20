@@ -102,6 +102,21 @@ class Migrant extends Model
             $query->where('process_saime', $filters->get('process_saime'));
         }
 
+        if($filters->get('woman') !== null && $filters->get('woman') === '1') {
+            $query->where('gender_id', 1);
+        }
+
+        if($filters->get('man') !== null && $filters->get('man') === '1') {
+            $query->orWhere('gender_id', 2);
+        }
+
+        if($filters->get('isMarried') !== null) {
+            $query->where('isMarried', $filters->get('isMarried'));
+        }
+
+        if($filters->get('has_children') !== null) {
+            $query->where('has_children', $filters->get('has_children'));
+        }
 
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
             $field = $filters->get('orderByField') ? $filters->get('orderByField') : 'created_at';

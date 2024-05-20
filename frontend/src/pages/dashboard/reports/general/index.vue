@@ -17,24 +17,16 @@ const totalMigrants = ref(0)
 const isRequestOngoing = ref(true)
 
 const infoDetail = ref({
-    transient: null,
-    resident: null,
-    process_saime: null,
-    antecedents: null,
+    woman: null,
+    man: null,
     isMarried: null,
-    has_children: null,
-    passport_status: null
+    has_children: null
 })
 
 const advisor = ref({
   type: '',
   message: '',
   show: false
-})
-
-const alert = ref({
-  show: false,
-  message: ''
 })
 
 // 👉 Computing pagination data
@@ -61,13 +53,10 @@ async function fetchData() {
     orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value,
-    transient: infoDetail.value.transient === null ? null : Number(infoDetail.value.transient),
-    resident: infoDetail.value.resident === null ? null : Number(infoDetail.value.resident),
-    process_saime: infoDetail.value.process_saime === null ? null : Number(infoDetail.value.process_saime),
-    antecedents: infoDetail.value.antecedents === null ? null : Number(infoDetail.value.antecedents),
+    woman: infoDetail.value.woman === null ? null : Number(infoDetail.value.woman),
+    man: infoDetail.value.man === null ? null : Number(infoDetail.value.man),
     isMarried: infoDetail.value.isMarried === null ? null : Number(infoDetail.value.isMarried),
-    has_children: infoDetail.value.has_children === null ? null : Number(infoDetail.value.has_children),
-    passport_status: infoDetail.value.passport_status === null ? null : Number(infoDetail.value.passport_status)
+    has_children: infoDetail.value.has_children === null ? null : Number(infoDetail.value.has_children)
   }
 
   isRequestOngoing.value = true
@@ -83,13 +72,10 @@ async function fetchData() {
 
 const refresh = () => {
   infoDetail.value = { 
-    transient: null,
-    resident: null,
-    process_saime: null,
-    antecedents: null,
+    woman: null,
+    man: null,
     isMarried: null,
-    has_children: null,
-    passport_status: null
+    has_children: null
   }
 }
 
@@ -103,13 +89,10 @@ const downloadCSV = async () => {
   isRequestOngoing.value = true
 
   let data = {
-    transient: infoDetail.value.transient === null ? null : Number(infoDetail.value.transient),
-    resident: infoDetail.value.resident === null ? null : Number(infoDetail.value.resident),
-    process_saime: infoDetail.value.process_saime === null ? null : Number(infoDetail.value.process_saime),
-    antecedents: infoDetail.value.antecedents === null ? null : Number(infoDetail.value.antecedents),
+    woman: infoDetail.value.woman === null ? null : Number(infoDetail.value.woman),
+    man: infoDetail.value.man === null ? null : Number(infoDetail.value.man),
     isMarried: infoDetail.value.isMarried === null ? null : Number(infoDetail.value.isMarried),
     has_children: infoDetail.value.has_children === null ? null : Number(infoDetail.value.has_children),
-    passport_status: infoDetail.value.passport_status === null ? null : Number(infoDetail.value.passport_status),
     limit: -1
   }
 
@@ -197,17 +180,17 @@ const downloadCSV = async () => {
                         sm="2"
                     >
                       <div class="align-center d-flex">
-                        <span class="me-2">Antecedentes</span>
+                        <span class="me-2">Mujer</span>
                         <VCheckbox
-                          v-if="infoDetail.antecedents !== null"
-                          v-model="infoDetail.antecedents"
-                          :label="infoDetail.antecedents === true ? 'SI' : 'NO'"
+                          v-if="infoDetail.woman !== null"
+                          v-model="infoDetail.woman"
+                          :label="infoDetail.woman === true ? 'SI' : 'NO'"
                           true-icon="tabler-check"
                           false-icon="tabler-x"
                         />
                         <VCheckbox
                           v-else
-                          v-model="infoDetail.antecedents"
+                          v-model="infoDetail.woman"
                         />
                       </div>
                     </VCol>
@@ -216,17 +199,17 @@ const downloadCSV = async () => {
                         sm="2"
                     >
                       <div class="align-center d-flex">
-                        <span class="me-2">Visa transeunte</span>
+                        <span class="me-2">Hombre</span>
                         <VCheckbox
-                          v-if="infoDetail.transient !== null"
-                          v-model="infoDetail.transient"
-                          :label="infoDetail.transient === true ? 'SI' : 'NO'"
+                          v-if="infoDetail.man !== null"
+                          v-model="infoDetail.man"
+                          :label="infoDetail.man === true ? 'SI' : 'NO'"
                           true-icon="tabler-check"
                           false-icon="tabler-x"
                         />
                         <VCheckbox
                           v-else
-                          v-model="infoDetail.transient"
+                          v-model="infoDetail.man"
                         />
                       </div>
                     </VCol>
@@ -235,55 +218,41 @@ const downloadCSV = async () => {
                         sm="2"
                     >
                       <div class="align-center d-flex">
-                        <span class="me-2">Céd. residente</span>
+                        <span class="me-2">Casado</span>
                         <VCheckbox
-                          v-if="infoDetail.resident !== null"
-                          v-model="infoDetail.resident"
-                          :label="infoDetail.resident === true ? 'SI' : 'NO'"
+                          v-if="infoDetail.isMarried !== null"
+                          v-model="infoDetail.isMarried"
+                          :label="infoDetail.isMarried === true ? 'SI' : 'NO'"
                           true-icon="tabler-check"
                           false-icon="tabler-x"
                         />
                         <VCheckbox
                           v-else
-                          v-model="infoDetail.resident"
+                          v-model="infoDetail.isMarried"
                         />
                       </div>
                     </VCol>
 
                     <VCol
                         cols="12"
-                        sm="3"
+                        sm="2"
                     >
                       <div class="align-center d-flex">
-                        <span class="me-2">Naturalización ante el SAIME</span>
+                        <span class="me-2">Con hijos</span>
                         <VCheckbox
-                          v-if="infoDetail.process_saime !== null"
-                          v-model="infoDetail.process_saime"
-                          :label="infoDetail.process_saime === true ? 'SI' : 'NO'"
+                          v-if="infoDetail.has_children !== null"
+                          v-model="infoDetail.has_children"
+                          :label="infoDetail.has_children === true ? 'SI' : 'NO'"
                           true-icon="tabler-check"
                           false-icon="tabler-x"
                         />
                         <VCheckbox
                           v-else
-                          v-model="infoDetail.process_saime"
+                          v-model="infoDetail.has_children"
                         />
                       </div>
                     </VCol>
-                    <VCol cols="12" sm="2">
-                      <div class="align-center d-flex">
-                        <span class="me-2">Pasaporte vencido</span>
-                        <VCheckbox
-                          v-if="infoDetail.passport_status !== null"
-                          v-model="infoDetail.passport_status"
-                          :label="infoDetail.passport_status === true ? 'SI' : 'NO'"
-                          true-icon="tabler-check"
-                          false-icon="tabler-x"
-                        />
-                        <VCheckbox
-                          v-else
-                          v-model="infoDetail.passport_status"                        />
-                      </div>
-                    </VCol>
+                    <VCol cols="12" sm="3"></VCol>
                     <VCol cols="12" sm="1">
                       <div class="align-center d-flex">
                         <VTooltip
@@ -347,10 +316,10 @@ const downloadCSV = async () => {
               <tr>
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
-                <th scope="col"> ANTECEDENTES</th>
-                <th scope="col"> CÉDULA DE TRANSEÚNTE </th>
-                <th scope="col"> CÉDULA DE RESIDENTE</th>
-                <th scope="col"> PASAPORTE VENCIDO</th>
+                <th scope="col"> GÉNERO</th>
+                <th scope="col"> CASADO </th>
+                <th scope="col"> CON HIJOS</th>
+                <th scope="col"> CUANTOS</th>
                 <th scope="col" v-if="$can('ver','migrantes')">
                   ACCIONES
                 </th>
@@ -366,20 +335,19 @@ const downloadCSV = async () => {
                 <td> {{ migrant.id }} </td>
                 <td class="text-base font-weight-medium mb-0"> {{migrant.name }}  {{migrant.last_name }} </td>
                 <td> 
-                  <VChip v-if="migrant.antecedents" color="primary">SI</VChip>
+                    {{ migrant.gender.name }}
+                </td>
+                <td>
+                  <VChip v-if="migrant.isMarried" color="primary">SI</VChip>
                   <VChip v-else color="error">NO</VChip>
                 </td>
                 <td>
-                  <VChip v-if="migrant.transient" color="primary">SI</VChip>
+                  <VChip v-if="migrant.has_children" color="primary">SI</VChip>
                   <VChip v-else color="error">NO</VChip>
                 </td>
                 <td>
-                  <VChip v-if="migrant.resident" color="primary">SI</VChip>
-                  <VChip v-else color="error">NO</VChip>
-                </td>
-                <td>
-                  <VChip v-if="migrant.passport_status" color="primary">SI</VChip>
-                  <VChip v-else color="error">NO</VChip>
+                  <span v-if="migrant.has_children" class="text-primary">{{ migrant.children_number ?? 1 }}</span>
+                  <span v-else class="text-error">0</span>
                 </td>
                 <!-- 👉 Acciones -->
                 <td class="text-center" style="width: 5rem;" v-if="$can('ver','migrantes')">      

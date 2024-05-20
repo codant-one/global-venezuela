@@ -30,6 +30,10 @@ class ReportController extends Controller
                                 'antecedents',
                                 'transient',
                                 'resident',
+                                'woman',
+                                'man',
+                                'isMarried',
+                                'has_children',
                                 'orderByField',
                                 'orderBy'
                             ])
@@ -46,6 +50,10 @@ class ReportController extends Controller
                                 'antecedents',
                                 'transient',
                                 'resident',
+                                'woman',
+                                'man',
+                                'isMarried',
+                                'has_children',
                                 'orderByField',
                                 'orderBy'
                             ])
