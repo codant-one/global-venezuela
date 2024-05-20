@@ -118,6 +118,10 @@ class Migrant extends Model
             $query->where('has_children', $filters->get('has_children'));
         }
 
+        if($filters->get('process_saime') !== null) {
+            $query->where('process_saime', $filters->get('process_saime'));
+        }
+
         if ($filters->get('orderByField') || $filters->get('orderBy')) {
             $field = $filters->get('orderByField') ? $filters->get('orderByField') : 'created_at';
             $orderBy = $filters->get('orderBy') ? $filters->get('orderBy') : 'asc';
