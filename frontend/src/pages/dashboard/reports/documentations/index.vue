@@ -61,13 +61,13 @@ async function fetchData() {
     orderBy: 'desc',
     limit: rowPerPage.value,
     page: currentPage.value,
-    transient: Number(infoDetail.value.transient),
-    resident: Number(infoDetail.value.resident),
-    process_saime: Number(infoDetail.value.process_saime),
-    antecedents: Number(infoDetail.value.antecedents),
-    isMarried: Number(infoDetail.value.isMarried),
-    has_children: Number(infoDetail.value.has_children),
-    passport_status: Number(infoDetail.value.passport_status)
+    transient: infoDetail.value.transient === null ? null : Number(infoDetail.value.transient),
+    resident: infoDetail.value.resident === null ? null : Number(infoDetail.value.resident),
+    process_saime: infoDetail.value.process_saime === null ? null : Number(infoDetail.value.process_saime),
+    antecedents: infoDetail.value.antecedents === null ? null : Number(infoDetail.value.antecedents),
+    isMarried: infoDetail.value.isMarried === null ? null : Number(infoDetail.value.isMarried),
+    has_children: infoDetail.value.has_children === null ? null : Number(infoDetail.value.has_children),
+    passport_status: infoDetail.value.passport_status === null ? null : Number(infoDetail.value.passport_status)
   }
 
   isRequestOngoing.value = true
@@ -81,6 +81,18 @@ async function fetchData() {
   isRequestOngoing.value = false
 }
 
+const refresh = () => {
+  infoDetail.value = { 
+    transient: null,
+    resident: null,
+    process_saime: null,
+    antecedents: null,
+    isMarried: null,
+    has_children: null,
+    passport_status: null
+  }
+}
+
 const seeMigrant = migrantData => {
   router.push({ name : 'dashboard-admin-migrants-id', params: { id: migrantData.id } })
 }
@@ -91,13 +103,13 @@ const downloadCSV = async () => {
   isRequestOngoing.value = true
 
   let data = {
-    transient: Number(infoDetail.value.transient),
-    resident: Number(infoDetail.value.resident),
-    process_saime: Number(infoDetail.value.process_saime),
-    antecedents: Number(infoDetail.value.antecedents),
-    isMarried: Number(infoDetail.value.isMarried),
-    has_children: Number(infoDetail.value.has_children),
-    passport_status: Number(infoDetail.value.passport_status),
+    transient: infoDetail.value.transient === null ? null : Number(infoDetail.value.transient),
+    resident: infoDetail.value.resident === null ? null : Number(infoDetail.value.resident),
+    process_saime: infoDetail.value.process_saime === null ? null : Number(infoDetail.value.process_saime),
+    antecedents: infoDetail.value.antecedents === null ? null : Number(infoDetail.value.antecedents),
+    isMarried: infoDetail.value.isMarried === null ? null : Number(infoDetail.value.isMarried),
+    has_children: infoDetail.value.has_children === null ? null : Number(infoDetail.value.has_children),
+    passport_status: infoDetail.value.passport_status === null ? null : Number(infoDetail.value.passport_status),
     limit: -1
   }
 
@@ -184,39 +196,57 @@ const downloadCSV = async () => {
                         cols="12"
                         sm="2"
                     >
-                      <div class="align-center">
-                        <span>Antecendentes</span>
-                        <VRadioGroup v-model="infoDetail.antecedents" inline class="py-2">
-                          <VRadio value="1" label="SI"/>
-                          <VSpacer />
-                          <VRadio value="0" label="NO" class="radio-custom"/>
-                        </VRadioGroup>
+                      <div class="align-center d-flex">
+                        <span class="me-2">Antecendentes</span>
+                        <VCheckbox
+                          v-if="infoDetail.antecedents !== null"
+                          v-model="infoDetail.antecedents"
+                          :label="infoDetail.antecedents === true ? 'SI' : 'NO'"
+                          true-icon="tabler-check"
+                          false-icon="tabler-x"
+                        />
+                        <VCheckbox
+                          v-else
+                          v-model="infoDetail.antecedents"
+                        />
                       </div>
                     </VCol>
                     <VCol
                         cols="12"
                         sm="2"
                     >
-                      <div class="align-center">
-                        <span>Visa de transeunte</span>
-                        <VRadioGroup v-model="infoDetail.transient" inline class="py-2">
-                          <VRadio value="1" label="SI"/>
-                          <VSpacer />
-                          <VRadio value="0" label="NO" class="radio-custom"/>
-                        </VRadioGroup>
+                      <div class="align-center d-flex">
+                        <span class="me-2">Visa transeunte</span>
+                        <VCheckbox
+                          v-if="infoDetail.transient !== null"
+                          v-model="infoDetail.transient"
+                          :label="infoDetail.transient === true ? 'SI' : 'NO'"
+                          true-icon="tabler-check"
+                          false-icon="tabler-x"
+                        />
+                        <VCheckbox
+                          v-else
+                          v-model="infoDetail.transient"
+                        />
                       </div>
                     </VCol>
                     <VCol
                         cols="12"
                         sm="2"
                     >
-                      <div class="align-center">
-                        <span>Cédula de residente</span>
-                        <VRadioGroup v-model="infoDetail.resident" inline class="py-2">
-                          <VRadio value="1" label="SI"/>
-                          <VSpacer />
-                          <VRadio value="0" label="NO" class="radio-custom"/>
-                        </VRadioGroup>
+                      <div class="align-center d-flex">
+                        <span class="me-2">Céd. residente</span>
+                        <VCheckbox
+                          v-if="infoDetail.resident !== null"
+                          v-model="infoDetail.resident"
+                          :label="infoDetail.resident === true ? 'SI' : 'NO'"
+                          true-icon="tabler-check"
+                          false-icon="tabler-x"
+                        />
+                        <VCheckbox
+                          v-else
+                          v-model="infoDetail.resident"
+                        />
                       </div>
                     </VCol>
 
@@ -224,26 +254,50 @@ const downloadCSV = async () => {
                         cols="12"
                         sm="3"
                     >
-                      <div class="align-center">
-                        <span>Naturalización ante el SAIME</span>
-                        <VRadioGroup v-model="infoDetail.process_saime" inline class="py-2">
-                          <VRadio value="1" label="SI"/>
-                          <VSpacer />
-                          <VRadio value="0" label="NO" class="radio-custom2"/>
-                        </VRadioGroup>
+                      <div class="align-center d-flex">
+                        <span class="me-2">Naturalización ante el SAIME</span>
+                        <VCheckbox
+                          v-if="infoDetail.process_saime !== null"
+                          v-model="infoDetail.process_saime"
+                          :label="infoDetail.process_saime === true ? 'SI' : 'NO'"
+                          true-icon="tabler-check"
+                          false-icon="tabler-x"
+                        />
+                        <VCheckbox
+                          v-else
+                          v-model="infoDetail.process_saime"
+                        />
                       </div>
                     </VCol>
                     <VCol cols="12" sm="2">
-                      <div class="align-center">
-                        <span>Pasaporte vencido</span>
-                        <VRadioGroup v-model="infoDetail.passport_status" inline class="py-2">
-                          <VRadio value="1" label="SI"/>
-                          <VSpacer />
-                          <VRadio value="0" label="NO" class="radio-custom"/>
-                        </VRadioGroup>
+                      <div class="align-center d-flex">
+                        <span class="me-2">Pasaporte vencido</span>
+                        <VCheckbox
+                          v-if="infoDetail.passport_status !== null"
+                          v-model="infoDetail.passport_status"
+                          :label="infoDetail.passport_status === true ? 'SI' : 'NO'"
+                          true-icon="tabler-check"
+                          false-icon="tabler-x"
+                        />
+                        <VCheckbox
+                          v-else
+                          v-model="infoDetail.passport_status"                        />
                       </div>
                     </VCol>
-                    <VCol cols="12" sm="1"></VCol>
+                    <VCol cols="12" sm="1">
+                      <div class="align-center d-flex">
+                        <VTooltip
+                          location="top"
+                        >
+                          <template #activator="{ props }">
+                            <VBtn color="error"  v-bind="props" @click="refresh">
+                              <VIcon icon="tabler-trash" />
+                            </VBtn>
+                          </template>
+                          <span>Limpiar</span>
+                        </VTooltip>
+                      </div>
+                    </VCol>
                     <VCol
                         cols="12"
                         sm="4"
