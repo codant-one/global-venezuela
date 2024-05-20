@@ -348,8 +348,8 @@ const downloadCSV = async () => {
                 <th scope="col"> #ID </th>
                 <th scope="col"> NOMBRE </th>
                 <th scope="col"> ANTECEDENTES</th>
-                <th scope="col"> CÉDULA DE TRANSEÚNTE </th>
-                <th scope="col"> CÉDULA DE RESIDENTE</th>
+                <th scope="col"> CÉD. TRANSEÚNTE </th>
+                <th scope="col"> CÉD. RESIDENTE</th>
                 <th scope="col"> SAIME</th>
                 <th scope="col"> PASAPORTE VENCIDO</th>
                 <th scope="col" v-if="$can('ver','migrantes')">
