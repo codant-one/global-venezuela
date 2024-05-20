@@ -350,6 +350,7 @@ const downloadCSV = async () => {
                 <th scope="col"> ANTECEDENTES</th>
                 <th scope="col"> CÉDULA DE TRANSEÚNTE </th>
                 <th scope="col"> CÉDULA DE RESIDENTE</th>
+                <th scope="col"> SAIME</th>
                 <th scope="col"> PASAPORTE VENCIDO</th>
                 <th scope="col" v-if="$can('ver','migrantes')">
                   ACCIONES
@@ -375,6 +376,10 @@ const downloadCSV = async () => {
                 </td>
                 <td>
                   <VChip v-if="migrant.resident" color="primary">SI</VChip>
+                  <VChip v-else color="error">NO</VChip>
+                </td>
+                <td>
+                  <VChip v-if="migrant.process_saime" color="primary">SI</VChip>
                   <VChip v-else color="error">NO</VChip>
                 </td>
                 <td>
