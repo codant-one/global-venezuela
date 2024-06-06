@@ -144,6 +144,8 @@ const downloadCSV = async () => {
     isRequestOngoing.value = true
 
     let data = { 
+        orderByField: 'user_id',
+        orderBy: 'asc',
         user_id: user_id.value,
         limit: -1 
     }
