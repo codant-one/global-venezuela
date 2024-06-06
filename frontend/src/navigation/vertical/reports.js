@@ -31,6 +31,13 @@ export default [
       to: 'dashboard-reports-general',
       action: 'ver', 
       subject: 'reportes'
+    },
+    { 
+      title: 'Por usuarios', 
+      icon: { icon: 'mdi-poll' },
+      to: 'dashboard-reports-users',
+      action: 'ver', 
+      subject: 'reportes'
     }
   ]
   

@@ -17,7 +17,6 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const totalMigrants = ref(0)
 const isRequestOngoing = ref(true)
-const selectedMigrant = ref({})
 
 const listCountries = ref([])
 const country_id = ref(null)

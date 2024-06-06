@@ -244,7 +244,7 @@ const downloadCSV = async () => {
 
   isRequestOngoing.value = true
 
-  let data = { limit: -1}
+  let data = { limit: -1 }
 
   await usersStores.fetchUsers(data)
 

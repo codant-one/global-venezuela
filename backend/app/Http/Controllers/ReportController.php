@@ -23,6 +23,7 @@ class ReportController extends Controller
                             $request->only([
                                 'search',
                                 'country_id',
+                                'user_id',
                                 'state_id',
                                 'municipality_id',
                                 'parish_id',
@@ -44,6 +45,7 @@ class ReportController extends Controller
                             $request->only([
                                 'search',
                                 'country_id',
+                                'user_id',
                                 'state_id',
                                 'municipality_id',
                                 'parish_id',

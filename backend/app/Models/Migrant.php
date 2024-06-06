@@ -70,6 +70,10 @@ class Migrant extends Model
             $query->where('country_id', $filters->get('country_id'));
         }
 
+        if ($filters->get('user_id') !== null) {
+            $query->where('user_id', $filters->get('user_id'));
+        }
+
         if($filters->get('state_id') !== null) {
             $query->whereState($filters->get('state_id'));
         }
