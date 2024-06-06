@@ -153,7 +153,7 @@ const downloadCSV = async () => {
     let dataArray = [];
     
     reportsStores.getMigrants.forEach(element => {
-
+        console.log('migrante', element)
         let data = {
             REGISTRADO_POR: element.user.name + ' ' + (element.user.last_name ?? '') + ': ' + element.user.email,
             NOMBRE: element.name,
